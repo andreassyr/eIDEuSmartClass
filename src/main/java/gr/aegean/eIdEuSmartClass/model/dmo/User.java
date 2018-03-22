@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gr.aegean.eIdEuSmartClass.model;
+package gr.aegean.eIdEuSmartClass.model.dmo;
 
 import java.time.LocalDate;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -22,14 +25,24 @@ import javax.persistence.Table;
 @Table(name = "Users")
 public class User {
 
+    private final static int UNSPECIFIED = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private long id;
-    private int role_id = 0;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     private String eIDAS_id;
     private String name;
     private String surname;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "gender_id")
+    private Gender gender;
 
     @Column(name = "date_of_birth")
     private LocalDate birthday;
@@ -40,13 +53,15 @@ public class User {
     protected User() {
     }
 
-    public User(String eIDAS_id, String name,
-            String surname, LocalDate birthday) {
+    public User(String eIDAS_id, String name, String surname, LocalDate birthday,
+            Role role, Gender gender) {
         this.eIDAS_id = eIDAS_id;
         this.name = name;
         this.surname = surname;
         this.birthday = birthday;
         this.lastLogin = new Date();
+        this.gender = gender;
+        this.role = role;
     }
 
     /**
@@ -146,18 +161,20 @@ public class User {
         return result;
     }
 
-    /**
-     * @return the role_id
-     */
-    public int getRole_id() {
-        return role_id;
+    public Gender getGender() {
+        return gender;
     }
 
-    /**
-     * @param role_id the role_id to set
-     */
-    public void setRole_id(int role_id) {
-        this.role_id = role_id;
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 }
