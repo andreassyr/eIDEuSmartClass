@@ -16,5 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GenderRepository extends JpaRepository<Gender, Long>{
 
     @Override
-    List<Gender> findAll();
+    List<Gender> findAll(); 
 }
