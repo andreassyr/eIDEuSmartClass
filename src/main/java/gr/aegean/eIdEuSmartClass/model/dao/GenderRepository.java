@@ -7,14 +7,17 @@ package gr.aegean.eIdEuSmartClass.model.dao;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
  * @author nikos
  */
-public interface GenderRepository extends JpaRepository<Gender, Long>{
+public interface GenderRepository extends JpaRepository<Gender, Long> {
 
     @Override
-    List<Gender> findAll(); 
+    List<Gender> findAll();
+
+    Optional<Gender> findByName(String name);
 }
