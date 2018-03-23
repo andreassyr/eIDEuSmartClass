@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gr.aegean.eIdEuSmartClass.model;
+package gr.aegean.eIdEuSmartClass.model.dmo;
 
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,24 +22,26 @@ import javax.persistence.Table;
 @Table(name = "Roles")
 public class Role {
 
+    @Id
+    @Column(name = "role_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String name;
+
+    @OneToMany(mappedBy = "role")
     private Set<User> users;
 
     public Role() {
     }
 
     public Role(String name) {
-
+        this.name = name;
     }
 
     /**
      * @return the id
      */
-    @Id
-    @Column(name = "role_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }
@@ -69,7 +70,6 @@ public class Role {
     /**
      * @return the users
      */
-    @OneToMany(mappedBy = "role_id", cascade = CascadeType.ALL)
     public Set<User> getUsers() {
         return users;
     }
@@ -87,7 +87,8 @@ public class Role {
                 "Role [id=%d, name='%s']%n", this.id, this.name);
 
         if (this.users != null) {
-            for(User user : this.users){}
+            for (User user : this.users) {
+            }
         }
 
         return result;

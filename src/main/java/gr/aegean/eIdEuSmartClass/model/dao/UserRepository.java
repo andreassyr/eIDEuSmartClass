@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gr.aegean.eIdEuSmartClass.model;
+package gr.aegean.eIdEuSmartClass.model.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import gr.aegean.eIdEuSmartClass.model.User;
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import java.util.List;
 
 /**
