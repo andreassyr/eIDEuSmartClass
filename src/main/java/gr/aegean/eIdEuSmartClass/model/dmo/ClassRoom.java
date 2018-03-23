@@ -5,10 +5,68 @@
  */
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  *
  * @author nikos
  */
+@Entity
+@Table(name = "Classrooms")
 public class ClassRoom {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
+    private long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "room_states_status_id")
+    public RoomState roomStates;
+
+    public ClassRoom() {
+    }
+
+    public ClassRoom(RoomState states, String name) {
+        this.roomStates = states;
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RoomState getRoomStates() {
+        return roomStates;
+    }
+
+    public void setRoomStates(RoomState roomStates) {
+        this.roomStates = roomStates;
+    }
+
+
     
+
 }

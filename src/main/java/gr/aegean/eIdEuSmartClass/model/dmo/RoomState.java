@@ -5,11 +5,13 @@
  */
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -17,8 +19,8 @@ import javax.persistence.Table;
  * @author nikos
  */
 @Entity
-@Table(name = "RoomStates")
-public class RoomStates {
+@Table(name = "roomstates")
+public class RoomState {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +28,10 @@ public class RoomStates {
     private long statusId;
     private String name;
 
-    public RoomStates() {
+    @OneToMany(mappedBy = "roomStates")
+    public Set<ClassRoom> classRooms;
+
+    public RoomState() {
     }
 
     public long getStatusId() {
