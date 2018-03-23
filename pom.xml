@@ -45,6 +45,12 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.0.4.RELEASE</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

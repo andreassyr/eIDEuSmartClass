@@ -17,4 +17,5 @@ public interface GenderRepository extends JpaRepository<Gender, Long>{
 
     @Override
     List<Gender> findAll(); 
+    public Gender findFirstByName(String name);
 }

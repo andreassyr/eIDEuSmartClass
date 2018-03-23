@@ -16,5 +16,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Override
-    List<Role> findAll();
+    public List<Role> findAll();
+
+    public Role findFirstByName(String name);
+
 }

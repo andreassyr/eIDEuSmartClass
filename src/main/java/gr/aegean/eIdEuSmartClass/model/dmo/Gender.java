@@ -6,7 +6,6 @@
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +22,8 @@ import javax.persistence.Table;
 @Table(name = "Genders")
 public class Gender {
 
+    public static final String UNDEFINED ="Unspecified";
+    
     @Id
     @Column(name = "gender_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

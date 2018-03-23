@@ -51,6 +51,20 @@ public class DbIntegrationTests {
         User user2 = userRepository.findById(user.getId()).get();
         System.out.println(user2.toString());
         assertEquals(user.getName(), user2.getName());
+
+    }
+
+    @Test
+    public void testFindUserByEidas() {
+        Role r = new Role("test");
+        Gender g = new Gender("n/a");
+        LocalDate birthday = LocalDate.now();
+        User user = new User("eidas-id4", "name2", "surname", birthday, r, g);
+        System.out.println(user.toString());
+        userRepository.save(user);
+        User user3 = userRepository.findFirstByEIDASId("eidas-id4");
+        assertEquals(user3.geteIDAS_id(), "eidas-id4");
+
     }
 
     @Test
@@ -87,18 +101,19 @@ public class DbIntegrationTests {
         if (state2.isPresent()) {
             room.setRoomStates(state2.get());
         }
-        
+
         classRepo.save(room);
         userRepository.save(user);
         ac.setGrantedAt(LocalDate.now());
         ac.setContent("testContent");
-        
+
         ActiveCodePK key = new ActiveCodePK();
         key.setClassRoom(room);
         key.setUser(user);
-        
+
         ac.setId(key);
         activeRepo.save(ac);
+        assertEquals(activeRepo.getContentFromClassRoom("testName2"), "testContent");
 
     }
 
