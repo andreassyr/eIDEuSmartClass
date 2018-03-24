@@ -7,7 +7,9 @@ package gr.aegean.eIdEuSmartClass.model.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import java.sql.Timestamp;
 import java.util.List;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,5 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("from User U where U.eIDAS_id = :id")
     public User findFirstByEIDASId(@Param("id")String eIDASid);
+    
+    @Modifying(clearAutomatically = true)
+    @Query("update User u set u.lastLogin = :date where u.eIDAS_id = :eId")
+    public void updateLastLoginByeIDASID(@Param("eId")String eId, @Param("date") Timestamp date);
 
 }

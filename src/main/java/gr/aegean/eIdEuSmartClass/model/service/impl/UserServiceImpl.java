@@ -13,7 +13,9 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -57,19 +59,19 @@ public class UserServiceImpl implements UserService {
 
     /*
         date format dd/MM/yyyy
-    */
+     */
     @Override
     @Transactional
     public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate birthDau = LocalDate.parse(dateOfBirth, formatter);
-            
+            LocalDate birthDay = LocalDate.parse(dateOfBirth, formatter);
+
             User user = userRepo.findFirstByEIDASId(eIDASid);
             Role role = roleRepo.findFirstByName(Role.UNREGISTERED);
             Gender gender = genderRepo.findFirstByName(Gender.UNDEFINED);
             if (user == null) {
-                user = new User(eIDASid, name, surname, LocalDate.now(),role, gender);
+                user = new User(eIDASid, name, surname, birthDay, role, gender);
                 userRepo.save(user);
             } else {
                 user.setName(name);
@@ -82,6 +84,21 @@ public class UserServiceImpl implements UserService {
 
         } catch (Error e) {
             log.error("ERROR", e);
+        }
+        return new RasberyrResponse(RasberyrResponse.FAILED);
+    }
+
+    @Override
+    @Transactional
+    public RasberyrResponse updateLogin(String eIDasid) {
+        if (userRepo.findFirstByEIDASId(eIDasid) != null) {
+            try {
+                Timestamp time = Timestamp.valueOf(LocalDateTime.now());
+                userRepo.updateLastLoginByeIDASID(eIDasid, time);
+                return new RasberyrResponse(RasberyrResponse.SUCCESS);
+            } catch (Error e) {
+                log.error("ERROR", e);
+            }
         }
         return new RasberyrResponse(RasberyrResponse.FAILED);
     }

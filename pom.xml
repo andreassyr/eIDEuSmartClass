@@ -51,6 +51,8 @@
             <version>5.0.4.RELEASE</version>
             <type>jar</type>
         </dependency>
+        
+        
     </dependencies>
 
     <build>
