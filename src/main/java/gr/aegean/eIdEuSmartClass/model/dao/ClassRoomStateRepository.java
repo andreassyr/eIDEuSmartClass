@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.dao;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -14,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ClassRoomStateRepository extends JpaRepository<ClassRoomState, Long>
 {
-    
+    Optional<ClassRoomState> findByName(String name);
 }

@@ -22,6 +22,8 @@ import javax.persistence.Table;
 @Table(name = "Roles")
 public class Role {
 
+    public static final String UNREGISTERED = "unregistered";
+    
     @Id
     @Column(name = "role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
