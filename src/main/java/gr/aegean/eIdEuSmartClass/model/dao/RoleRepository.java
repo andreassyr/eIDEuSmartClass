@@ -19,5 +19,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Override
     List<Role> findAll();
     Optional<Role> findByName(String name);
-
+    public Role findFirstByName(String name);
 }

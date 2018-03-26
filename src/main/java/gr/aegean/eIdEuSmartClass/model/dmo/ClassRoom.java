@@ -34,6 +34,14 @@ public class ClassRoom {
 
     private String name;
 
+    public ClassRoom() {
+    }
+
+    public ClassRoom(ClassRoomState state, String name) {
+        this.state = state;
+        this.name = name;
+    }
+
     /**
      * @return the id
      */
@@ -75,4 +83,5 @@ public class ClassRoom {
     public void setName(String name) {
         this.name = name;
     }
+
 }
