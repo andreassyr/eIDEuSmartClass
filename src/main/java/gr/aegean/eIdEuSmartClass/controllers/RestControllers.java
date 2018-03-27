@@ -58,7 +58,7 @@ public class RestControllers {
     public @ResponseBody
     RasberyrResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
-        if (roomServ.getValidCodeByName(roomId).equals(qrCode)) {
+        if (roomServ.getValidCodeByName(roomId)!= null &&roomServ.getValidCodeByName(roomId).equals(qrCode)) {
             return new RasberyrResponse(RasberyrResponse.SUCCESS);
         } else {
             return new RasberyrResponse(RasberyrResponse.FAILED);

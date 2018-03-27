@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>TODO write content</div>
+
+        <button id="login" onclick="login()">Login</button>
+        <button id="register" onclick="register()">Register</button>
+        <button id="test" onclick="test()">Register</button>
+
+
+        <script>
+            function setCookie(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+            
+            function login(){
+                setCookie("flow","login",1);
+            }
+            
+            function register(){
+                setCookie("flow","register",1);
+            }
+            
+            function test(){
+                setCookie("access_token","test",1);
+            }
+
+        </script>
+    </body>
+</html>
