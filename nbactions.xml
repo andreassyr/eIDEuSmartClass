@@ -35,6 +35,7 @@
             </goals>
             <properties>
                 <skipTests>true</skipTests>
+                <Env.KEY>secret</Env.KEY>
             </properties>
         </action>
         <action>
@@ -64,6 +65,7 @@
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
                 <skipTests>true</skipTests>
+                <Env.KEY>secret</Env.KEY>
             </properties>
         </action>
     </actions>
