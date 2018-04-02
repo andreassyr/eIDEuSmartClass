@@ -50,11 +50,9 @@ public class DbIntegrationTests {
     @Autowired
     private ActiveCodeRepository activeRepo;
 
-    
-    @Autowired 
+    @Autowired
     private ClassRoomService roomServ;
-    
-    
+
     @Test
     @Transactional
     public void createNewUser() {
@@ -88,6 +86,7 @@ public class DbIntegrationTests {
     }
 
     @Test
+    @Transactional
     public void saveRoomState() {
         ClassRoomState state = new ClassRoomState();
         state.setName("testState");
@@ -117,7 +116,7 @@ public class DbIntegrationTests {
         Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
         LocalDate birthday = LocalDate.now();
         User user = new User("eidas-id3", "name3", "surname", birthday, r, g);
-        
+
         Role r2 = new Role("test");
         Gender g2 = new Gender("n/a");
         User user2 = new User("eidas-id5", "name5", "surname5", birthday, r2, g2);
@@ -133,19 +132,18 @@ public class DbIntegrationTests {
 
         classRepo.save(room);
 
-        ActiveCode ac = new ActiveCode();
-        ac.setGrantedAt(LocalDate.now());
-        ac.setContent("testContent");
+        ActiveCode ac2 = new ActiveCode();
+        ac2.setGrantedAt(LocalDate.now());
+        ac2.setContent("testContent");
         ActiveCodePK key = new ActiveCodePK();
         key.setClassRoom(room);
         key.setUser(user);
-        ac.setId(key);
-        activeRepo.save(ac);
+        ac2.setId(key);
+        activeRepo.save(ac2);
 
-        
-        ActiveCode ac2 = new ActiveCode();
-        ac2.setGrantedAt(LocalDate.now());
-        ac2.setContent("testContent2");
+        ActiveCode ac3 = new ActiveCode();
+        ac3.setGrantedAt(LocalDate.now());
+        ac3.setContent("testContent2");
         ActiveCodePK key2 = new ActiveCodePK();
         key2.setClassRoom(room);
         key2.setUser(user2);
@@ -158,14 +156,14 @@ public class DbIntegrationTests {
     }
 
     @Test
-    public void updateClassRoomState(){
-        Optional<RoomState> inactive = statesRepo.findByName("Inactive");
+    @Transactional
+    public void updateClassRoomState() {
+        Optional<ClassRoomState> inactive = classRoomStateRepository.findByName("Inactive");
         roomServ.setRoomStatusByStateName("inactive", "testName");
-        assertEquals(classRepo.findByName("testName").getRoomStates().getName(),"Inactive");
-    
+        assertEquals(classRepo.findByName("testName").getState().getName(), "Inactive");
+
     }
-    
-    
+
     @Test
     @Transactional
     public void createClassroom() {
@@ -176,7 +174,7 @@ public class DbIntegrationTests {
         classRoom.setState(classState);
         classRoomRepository.save(classRoom);
 
-        ClassRoom classRoom2 = classRoomRepository.getOne(classRoom.getId()             );
+        ClassRoom classRoom2 = classRoomRepository.getOne(classRoom.getId());
         assertEquals(classRoom.getName(), classRoom2.getName());
     }
 
