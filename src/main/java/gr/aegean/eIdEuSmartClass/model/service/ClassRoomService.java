@@ -14,7 +14,10 @@ import java.util.List;
  */
 public interface ClassRoomService {
     
-    public String getValidCodeByName(String roomName);
+    public List<String> getValidCodeByName(String roomName);
     public List<ClassRoom> findAll();
+    
+    public boolean setRoomStatusByStateName(String stateName, String name); 
+   
     
 }

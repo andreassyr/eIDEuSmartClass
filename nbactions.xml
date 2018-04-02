@@ -66,6 +66,8 @@
                 <jpda.listen>true</jpda.listen>
                 <skipTests>true</skipTests>
                 <Env.KEY>secret</Env.KEY>
+                <Env.RASBERRY_URL>http://www.test.com</Env.RASBERRY_URL>
+                <Env.RASBERRY_CLOSE_ROOM>closeroom</Env.RASBERRY_CLOSE_ROOM>
             </properties>
         </action>
         <action>

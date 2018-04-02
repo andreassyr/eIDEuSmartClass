@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/loggedIn")
 //                .authorizeRequests()
                 .antMatcher("/register")
+                .antMatcher("/requestCloseRoom")
                 .authorizeRequests()
 //                .mvcMatchers(HttpMethod.GET, "/login").anonymous() //anonymous()
                 .mvcMatchers(HttpMethod.GET, "/landing").anonymous() //anonymous()
