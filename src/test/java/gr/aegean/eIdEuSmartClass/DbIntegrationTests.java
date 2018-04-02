@@ -17,6 +17,7 @@ import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCodePK;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
+import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.time.LocalDate;
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -49,6 +50,11 @@ public class DbIntegrationTests {
     @Autowired
     private ActiveCodeRepository activeRepo;
 
+    
+    @Autowired 
+    private ClassRoomService roomServ;
+    
+    
     @Test
     @Transactional
     public void createNewUser() {
@@ -105,11 +111,18 @@ public class DbIntegrationTests {
     @Test
     @Transactional
     public void testActiveCode() {
+
         ActiveCode ac = new ActiveCode();
         Role r = roleRepository.findFirstByName(Role.UNREGISTERED);
         Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
         LocalDate birthday = LocalDate.now();
         User user = new User("eidas-id3", "name3", "surname", birthday, r, g);
+        
+        Role r2 = new Role("test");
+        Gender g2 = new Gender("n/a");
+        User user2 = new User("eidas-id5", "name5", "surname5", birthday, r2, g2);
+        userRepository.save(user);
+        userRepository.save(user2);
 
         ClassRoom room = new ClassRoom();
         room.setName("testName2");
@@ -119,20 +132,40 @@ public class DbIntegrationTests {
         }
 
         classRepo.save(room);
-        userRepository.save(user);
+
+        ActiveCode ac = new ActiveCode();
         ac.setGrantedAt(LocalDate.now());
         ac.setContent("testContent");
-
         ActiveCodePK key = new ActiveCodePK();
         key.setClassRoom(room);
         key.setUser(user);
-
         ac.setId(key);
         activeRepo.save(ac);
-        assertEquals(activeRepo.getContentFromClassRoom("testName2"), "testContent");
+
+        
+        ActiveCode ac2 = new ActiveCode();
+        ac2.setGrantedAt(LocalDate.now());
+        ac2.setContent("testContent2");
+        ActiveCodePK key2 = new ActiveCodePK();
+        key2.setClassRoom(room);
+        key2.setUser(user2);
+        ac2.setId(key2);
+        activeRepo.save(ac2);
+
+        assertEquals(activeRepo.getContentFromClassRoom("testName2").contains("testContent"), true);
+//        assertEquals(activeRepo.getContentFromClassRoom("testName2").contains("testContent2"), true);
 
     }
 
+    @Test
+    public void updateClassRoomState(){
+        Optional<RoomState> inactive = statesRepo.findByName("Inactive");
+        roomServ.setRoomStatusByStateName("inactive", "testName");
+        assertEquals(classRepo.findByName("testName").getRoomStates().getName(),"Inactive");
+    
+    }
+    
+    
     @Test
     @Transactional
     public void createClassroom() {

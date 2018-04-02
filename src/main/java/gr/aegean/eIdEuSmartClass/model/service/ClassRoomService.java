@@ -5,13 +5,19 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import java.util.List;
+
 /**
  *
  * @author nikos
  */
 public interface ClassRoomService {
     
-    public String getValidCodeByName(String roomName);
+    public List<String> getValidCodeByName(String roomName);
+    public List<ClassRoom> findAll();
     
+    public boolean setRoomStatusByStateName(String stateName, String name); 
+   
     
 }

@@ -21,6 +21,6 @@ public interface ActiveCodeRepository extends JpaRepository<ActiveCode, Long> {
     List<ActiveCode> findAll();
     
     @Query("select ac.content from ActiveCode ac join ClassRoom cl on ac.id.classRoom = cl.id where cl.name = :name")
-    public String getContentFromClassRoom(@Param("name")String name);
+    public List<String> getContentFromClassRoom(@Param("name")String name);
     
 }
