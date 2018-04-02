@@ -68,4 +68,18 @@
                 <Env.KEY>secret</Env.KEY>
             </properties>
         </action>
+        <action>
+            <actionName>test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test-compile</goal>
+                <goal>surefire:test</goal>
+            </goals>
+            <properties>
+                <test>${packageClassName}</test>
+                <Env.KEY>secret</Env.KEY>
+            </properties>
+        </action>
     </actions>

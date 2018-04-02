@@ -27,15 +27,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class RestControllers {
 
-    private static final Logger log = LoggerFactory.getLogger(RestControllers.class) ;
-    
-    
+    private static final Logger log = LoggerFactory.getLogger(RestControllers.class);
+
     @Autowired
     private UserService userServ;
 
     @Autowired
     private ClassRoomService roomServ;
-    
+
     @Autowired
     private ActiveDirectoryService asServ;
 
@@ -58,21 +57,27 @@ public class RestControllers {
     public @ResponseBody
     RasberyrResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
-        if (roomServ.getValidCodeByName(roomId)!= null &&roomServ.getValidCodeByName(roomId).equals(qrCode)) {
+        if (roomServ.getValidCodeByName(roomId) != null && roomServ.getValidCodeByName(roomId).equals(qrCode)) {
             return new RasberyrResponse(RasberyrResponse.SUCCESS);
         } else {
             return new RasberyrResponse(RasberyrResponse.FAILED);
 
         }
     }
-    
-    
+
     @RequestMapping(value = "loginUser", method = {RequestMethod.POST, RequestMethod.PUT}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public @ResponseBody  RasberyrResponse updateLogin(@RequestParam(value = "eIDASID", required = true) String eId){
-        
+    public @ResponseBody
+    RasberyrResponse updateLogin(@RequestParam(value = "eIDASID", required = true) String eId) {
+
         //TODO make API call to AD
         return userServ.updateLogin(eId);
     }
-    
+
+    @RequestMapping(value = {"registerUser"}, method = {RequestMethod.POST})
+    public @ResponseBody
+    String successPage(@RequestParam(value = "email", required = true) String email) {
+        
+        return "OK";
+    }
 
 }

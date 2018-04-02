@@ -103,4 +103,9 @@ public class UserServiceImpl implements UserService {
         return new RasberyrResponse(RasberyrResponse.FAILED);
     }
 
+    @Override
+    public User findByEid(String eID) {
+        return userRepo.findFirstByEIDASId(eID);
+    }
+
 }

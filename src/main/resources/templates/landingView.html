@@ -11,12 +11,14 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>TODO write content</div>
+        <div>This is the landing page</div>
 
-        <button id="login" onclick="login()">Login</button>
-        <button id="register" onclick="register()">Register</button>
-        <button id="test" onclick="test()">Set Access Cookie</button>
-
+<!--        <button id="login" onclick="login()">Login</button>
+        <button id="register" onclick="register()">Register</button>-->
+        <button id="test" onclick="test()">Set Dummy JWT cookie</button>
+        <button id="test" onclick="physical()">Gain Physical Access</button>
+        <button id="test" onclick="team()">Join Team </button>
+        <button id="test" onclick="skype()">Join Skype</button>
 
         <script>
             function setCookie(name, value, days) {
@@ -29,12 +31,24 @@ and open the template in the editor.
                 document.cookie = name + "=" + (value || "") + expires + "; path=/";
             }
             
-            function login(){
-                setCookie("flow","login",1);
+//            function login(){
+//                setCookie("flow","login",1);
+//            }
+//            
+//            function register(){
+//                setCookie("flow","register",1);
+//            }
+            
+            function physical(){
+                setCookie("type","physical",1);
             }
             
-            function register(){
-                setCookie("flow","register",1);
+            function skype(){
+                setCookie("type","skype",1);
+            }
+            
+            function team(){
+                setCookie("type","team",1);
             }
             
             function test(){

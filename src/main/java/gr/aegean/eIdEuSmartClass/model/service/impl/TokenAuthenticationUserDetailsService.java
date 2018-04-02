@@ -6,16 +6,12 @@
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import io.jsonwebtoken.InvalidClaimException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class TokenAuthenticationUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
     private TokenService tokenService;
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(TokenAuthenticationUserDetailsService.class);
 
     @Autowired
     public TokenAuthenticationUserDetailsService(TokenService tokenService) {
@@ -42,6 +39,7 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
             String token;
             try {
                 token = tokenService.decode((String) authentication.getPrincipal());
+                log.info("Token: "+token);
             } catch (InvalidClaimException ex) {
                 throw new UsernameNotFoundException("Token has been expired", ex);
             } catch (UnsupportedEncodingException ex) {
@@ -56,7 +54,7 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
 //                    .stream()
 //                    .map(SimpleGrantedAuthority::new)
 //                    .collect(Collectors.toList()));
-                return UserWrappers.wrapEidasToTokenUser(UserWrappers.wrapDecodedJwtEidasUser(token),token,authentication);
+                return UserWrappers.wrapEidasToTokenUser(UserWrappers.wrapDecodedJwtEidasUser(token), token, authentication);
             } catch (IOException ex) {
                 throw new UsernameNotFoundException("Could not wrap token", ex);
             }

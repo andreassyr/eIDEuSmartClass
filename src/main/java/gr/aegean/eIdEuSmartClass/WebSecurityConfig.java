@@ -45,16 +45,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .antMatcher("/loggedIn")
+//                .authorizeRequests()
+                .antMatcher("/register")
                 .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/login").anonymous() //anonymous()
+//                .mvcMatchers(HttpMethod.GET, "/login").anonymous() //anonymous()
+                .mvcMatchers(HttpMethod.GET, "/landing").anonymous() //anonymous()
+                .mvcMatchers(HttpMethod.GET, "/").anonymous() //anonymous()
                 .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/landing")
                 .and()
                 .addFilterBefore(authFilter(), RequestHeaderAuthenticationFilter.class)
                 .authenticationProvider(preAuthProvider())
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .csrf().disable();
+                .csrf().disable()
+                ;
     }
 
     @Bean

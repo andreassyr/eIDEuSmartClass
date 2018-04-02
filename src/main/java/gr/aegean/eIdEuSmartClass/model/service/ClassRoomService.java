@@ -5,6 +5,9 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import java.util.List;
+
 /**
  *
  * @author nikos
@@ -12,6 +15,6 @@ package gr.aegean.eIdEuSmartClass.model.service;
 public interface ClassRoomService {
     
     public String getValidCodeByName(String roomName);
-    
+    public List<ClassRoom> findAll();
     
 }
