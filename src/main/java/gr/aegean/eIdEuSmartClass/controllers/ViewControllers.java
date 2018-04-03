@@ -36,7 +36,7 @@ public class ViewControllers {
 
     @Autowired
     TokenService tokenServ;
-    
+
     @Autowired
     ClassRoomRepository classRepo;
 
@@ -60,22 +60,14 @@ public class ViewControllers {
 //    public String loginOrRegister() {
 //        return "loginView";
 //    }
-
 //    @RequestMapping(value = {"loggedIn"})
 //    public String loggedIn() {
 //        return "loggedInView";
 //    }
-
     @RequestMapping(value = {"register"})
-    public String register(HttpServletRequest request,
-            Model model
-    ) throws UnsupportedEncodingException, IOException {
-        Optional<String> token = Arrays.asList(request.getCookies()).stream().filter(cookie -> {
-            return cookie.getName().equals("access_token");
-        }).map(cookie -> {
-            return cookie.getValue();
-        }).findFirst();
-        FormUser user = UserWrappers.wrapDecodedJwtEidasUser(tokenServ.decode(token.get()));
+    public String register(HttpServletRequest request, Model model, Principal principal) throws UnsupportedEncodingException, IOException {
+
+        FormUser user = UserWrappers.wrapDecodedJwtEidasUser(tokenServ.decode(principal.toString()));
 
         model.addAttribute("user", user);
         return "registerView";
@@ -103,9 +95,9 @@ public class ViewControllers {
     public String login(@CookieValue(value = TOKEN_NAME, required = true) String jwtCookie,
             @CookieValue(value = "type", required = true) String typeCookie,
             HttpServletRequest req, Principal principal) {
-        
+
         principal.getName(); //eID;
-        
+
         return "loggedInView";
     }
 

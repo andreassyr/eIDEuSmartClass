@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
-import java.util.ArrayList;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
@@ -18,10 +17,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * @author nikos
  */
 public class UserWrappers {
-
+ 
     public static TokenUserDetails wrapEidasToTokenUser(FormUser usr, String token, PreAuthenticatedAuthenticationToken authentication) throws IOException {
         return new TokenUserDetails(usr.getEid(), usr.getProfileName(), (String) authentication.getCredentials(),
-                token, usr.getEid(), usr.getProfileName(), true, new ArrayList());
+                token, usr.getEid(), usr.getProfileName(), true, authentication.getAuthorities());
 
     }
 

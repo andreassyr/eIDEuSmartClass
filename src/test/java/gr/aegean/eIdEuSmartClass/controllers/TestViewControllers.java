@@ -6,8 +6,8 @@
 package gr.aegean.eIdEuSmartClass.controllers;
 
 import gr.aegean.eIdEuSmartClass.EIdEuSmartClassApplication;
-import gr.aegean.eIdEuSmartClass.TokenAuthenticationFilter;
-import gr.aegean.eIdEuSmartClass.WebSecurityConfig;
+import gr.aegean.eIdEuSmartClass.security.TokenAuthenticationFilter;
+import gr.aegean.eIdEuSmartClass.security.WebSecurityConfig;
 import javax.servlet.http.Cookie;
 import org.junit.Before;
 import org.junit.Test;
