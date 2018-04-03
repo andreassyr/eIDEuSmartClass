@@ -12,7 +12,7 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
+import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,16 +45,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public RasberyrResponse saveUser(User user) {
+    public BaseResponse saveUser(User user) {
         try {
             userRepo.save(user);
-            return new RasberyrResponse(RasberyrResponse.SUCCESS);
+            return new BaseResponse(BaseResponse.SUCCESS);
         } catch (Error e) {
             log.info("ERROR Saving user " + user.toString());
             log.error("ERROR", e);
         }
 
-        return new RasberyrResponse(RasberyrResponse.FAILED);
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
     /*
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
+    public BaseResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
             String email, String mobile, String affiliation, String country) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD");
@@ -82,27 +82,27 @@ public class UserServiceImpl implements UserService {
                 user.setBirthday(birthDay);
                 userRepo.save(user);
             }
-            return new RasberyrResponse(RasberyrResponse.SUCCESS);
+            return new BaseResponse(BaseResponse.SUCCESS);
 
         } catch (Error e) {
             log.error("ERROR", e);
         }
-        return new RasberyrResponse(RasberyrResponse.FAILED);
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
     @Override
     @Transactional
-    public RasberyrResponse updateLogin(String eIDasid) {
+    public BaseResponse updateLogin(String eIDasid) {
         if (userRepo.findFirstByEIDASId(eIDasid) != null) {
             try {
                 Timestamp time = Timestamp.valueOf(LocalDateTime.now());
                 userRepo.updateLastLoginByeIDASID(eIDasid, time);
-                return new RasberyrResponse(RasberyrResponse.SUCCESS);
+                return new BaseResponse(BaseResponse.SUCCESS);
             } catch (Error e) {
                 log.error("ERROR", e);
             }
         }
-        return new RasberyrResponse(RasberyrResponse.FAILED);
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
     @Override

@@ -6,7 +6,7 @@
 package gr.aegean.eIdEuSmartClass;
 
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
+import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,22 +27,22 @@ public class IntegrationServiceTests {
 
     @Test
     public void testSaveNew() {
-        RasberyrResponse resp = userServ.saveUser("eidasTestServ", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
-        assertEquals(resp.getStatus(), RasberyrResponse.SUCCESS);
+        BaseResponse resp = userServ.saveUser("eidasTestServ", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
+        assertEquals(resp.getStatus(), BaseResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLogin() {
         userServ.saveUser("eidasTestServ2", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
-        RasberyrResponse resp = userServ.updateLogin("eidasTestServ2");
-        assertEquals(resp.getStatus(), RasberyrResponse.SUCCESS);
+        BaseResponse resp = userServ.updateLogin("eidasTestServ2");
+        assertEquals(resp.getStatus(), BaseResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLoginUserNotFound() {
         userServ.saveUser("eidasTestServ3", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
-        RasberyrResponse resp = userServ.updateLogin("eidasTestServErr");
-        assertEquals(resp.getStatus(), RasberyrResponse.FAILED);
+        BaseResponse resp = userServ.updateLogin("eidasTestServErr");
+        assertEquals(resp.getStatus(), BaseResponse.FAILED);
     }
 
 }

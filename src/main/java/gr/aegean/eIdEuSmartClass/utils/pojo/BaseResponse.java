@@ -9,19 +9,19 @@ package gr.aegean.eIdEuSmartClass.utils.pojo;
  *
  * @author nikos
  */
-public class RasberyrResponse {
+public class BaseResponse {
 
     public static final String SUCCESS = "OK";
     public static final String FAILED = "NOK";
 
     private String status;
 
-    public RasberyrResponse() {
+    public BaseResponse() {
     }
 
     ;
     
-    public RasberyrResponse(String status) {
+    public BaseResponse(String status) {
         this.status = status;
     }
 

@@ -12,7 +12,7 @@ import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.RasberryInterface;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
-import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
+import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
@@ -69,13 +69,13 @@ public class RestControllers {
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    RasberyrResponse createUser( @ModelAttribute("user") FormUser user) {
+    BaseResponse createUser( @ModelAttribute("user") FormUser user) {
         try {
             adServ.registerUser("smartclassguest1@outlook.com");
         } catch (IOException ex) {
             log.error("ERROR", ex);
         }
-        RasberyrResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
+        BaseResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
                 "Unspecified", user.getDateOfBirth(), user.getEmail(),user.getMobile(), user.getAffiliation(), user.getCountry());
         if(resp.getStatus().equals("OK")){
             mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
@@ -85,23 +85,23 @@ public class RestControllers {
 
     @RequestMapping(value = "validateQR", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    RasberyrResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
+    BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
         if (roomServ.getValidCodeByName(roomId) != null && roomServ.getValidCodeByName(roomId).contains(qrCode)) {
-            return new RasberyrResponse(RasberyrResponse.SUCCESS);
+            return new BaseResponse(BaseResponse.SUCCESS);
         } else {
-            return new RasberyrResponse(RasberyrResponse.FAILED);
+            return new BaseResponse(BaseResponse.FAILED);
         }
     }
 
     @RequestMapping(value = "changeRoomStatusRasb", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    RasberyrResponse changeRoomStatus(@RequestParam(value = "roomName", required = true) String roomName,
+    BaseResponse changeRoomStatus(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "statusName", required = true) String statusName) {
         if (roomServ.setRoomStatusByStateName(statusName, roomName)) {
-            return new RasberyrResponse(RasberyrResponse.SUCCESS);
+            return new BaseResponse(BaseResponse.SUCCESS);
         }
-        return new RasberyrResponse(RasberyrResponse.FAILED);
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
     

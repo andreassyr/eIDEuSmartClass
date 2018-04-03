@@ -6,7 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
-import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
+import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 
 /**
  *
@@ -14,12 +14,12 @@ import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
  */
 public interface UserService {
     
-    public RasberyrResponse saveUser(User user);
+    public BaseResponse saveUser(User user);
     
-    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
+    public BaseResponse saveUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
             String mobile, String affiliation, String country);
     
-    public RasberyrResponse updateLogin(String eIDasid);
+    public BaseResponse updateLogin(String eIDasid);
     
     public User findByEid(String eID);
 }
