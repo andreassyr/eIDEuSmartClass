@@ -13,7 +13,7 @@ import java.net.ProtocolException;
  *
  * @author nikos
  */
-public interface RasberryInterface {
+public interface RaspberryInterface {
     
     public boolean requestCloseRoom(String roomName) throws MalformedURLException, ProtocolException, IOException;
     

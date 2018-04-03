@@ -5,7 +5,6 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
-import gr.aegean.eIdEuSmartClass.model.service.RasberryInterface;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,13 +14,14 @@ import java.net.ProtocolException;
 import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 
 /**
  *
  * @author nikos
  */
 @Service
-public class RasberryInterfaceImpl implements RasberryInterface {
+public class RaspberryInterfaceImpl implements RaspberryInterface {
 
     private final String USER_AGENT = "Mozilla/5.0";
 
