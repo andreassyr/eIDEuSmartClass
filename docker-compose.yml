@@ -1,0 +1,15 @@
+version: '2'
+services:
+    loginWebApp:
+        container_name: loginWebApp
+        image: endimion13/eidas-gr-smartclass:0.1
+        expose:
+            - 8090
+        ports:
+            - 8090:8090
+        environment:
+            - KEY=secret
+            - RASBERRY_URL=http://test.com
+            - RASBERRY_CLOSE_ROOM=closeroom
+        volumes:
+            

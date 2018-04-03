@@ -13,6 +13,8 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.RoomState;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 
@@ -38,11 +40,9 @@ public class DbIntegrationTests {
     @Autowired
     private ActiveCodeRepository activeRepo;
 
-    
-    @Autowired 
+    @Autowired
     private ClassRoomService roomServ;
-    
-    
+
     @Test
     public void createNewUser() {
 
@@ -50,7 +50,8 @@ public class DbIntegrationTests {
         Gender g = new Gender("n/a");
 
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id2", "name2", "surname", birthday, r, g);
+        User user = new User(r, "eidas-id2", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        //new User("eidas-id2", "name2", "surname", birthday, r, g);
         System.out.println(user.toString());
         userRepository.save(user);
 
@@ -65,7 +66,7 @@ public class DbIntegrationTests {
         Role r = new Role("test");
         Gender g = new Gender("n/a");
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id4", "name2", "surname", birthday, r, g);
+        User user = new User(r, "eidas-id4", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         System.out.println(user.toString());
         userRepository.save(user);
         User user3 = userRepository.findFirstByEIDASId("eidas-id4");
@@ -80,6 +81,14 @@ public class DbIntegrationTests {
         statesRepo.save(state);
     }
 
+//    @Test
+//    public void saveState(){
+//        RoomState s = new RoomState();
+//        s.setName("Restricted");
+//        statesRepo.save(s);
+//    }
+    
+    
     @Test
     public void saveClassRomm() {
         ClassRoom room = new ClassRoom();
@@ -98,11 +107,11 @@ public class DbIntegrationTests {
         Role r = new Role("test");
         Gender g = new Gender("n/a");
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id3", "name3", "surname", birthday, r, g);
-        
+        User user = new User(r, "eidas-id3", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
         Role r2 = new Role("test");
         Gender g2 = new Gender("n/a");
-        User user2 = new User("eidas-id5", "name5", "surname5", birthday, r2, g2);
+        User user2 = new User(r2, "eidas-id5", "name5", "surname5", "email", "1234", "ntua", "gr", g2, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         userRepository.save(user);
         userRepository.save(user2);
 
@@ -124,7 +133,6 @@ public class DbIntegrationTests {
         ac.setId(key);
         activeRepo.save(ac);
 
-        
         ActiveCode ac2 = new ActiveCode();
         ac2.setGrantedAt(LocalDate.now());
         ac2.setContent("testContent2");
@@ -140,14 +148,13 @@ public class DbIntegrationTests {
     }
 
     @Test
-    public void updateClassRoomState(){
+    public void updateClassRoomState() {
         Optional<RoomState> inactive = statesRepo.findByName("Inactive");
         roomServ.setRoomStatusByStateName("inactive", "testName");
-        assertEquals(classRepo.findByName("testName").getRoomStates().getName(),"Inactive");
-    
+        assertEquals(classRepo.findByName("testName").getRoomStates().getName(), "Inactive");
+
     }
-    
-    
+
     @Test
     public void contextLoads() {
     }

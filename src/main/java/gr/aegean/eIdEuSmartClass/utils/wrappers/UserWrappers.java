@@ -7,7 +7,7 @@ package gr.aegean.eIdEuSmartClass.utils.wrappers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gr.aegean.eIdEuSmartClass.utils.pojo.EidasUser;
+import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,14 +19,14 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  */
 public class UserWrappers {
 
-    public static TokenUserDetails wrapEidasToTokenUser(EidasUser usr, String token, PreAuthenticatedAuthenticationToken authentication) throws IOException {
+    public static TokenUserDetails wrapEidasToTokenUser(FormUser usr, String token, PreAuthenticatedAuthenticationToken authentication) throws IOException {
         return new TokenUserDetails(usr.getEid(), usr.getProfileName(), (String) authentication.getCredentials(),
                 token, usr.getEid(), usr.getProfileName(), true, new ArrayList());
 
     }
 
-    public static EidasUser wrapDecodedJwtEidasUser(String jwt) throws IOException {
+    public static FormUser wrapDecodedJwtEidasUser(String jwt) throws IOException {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(jwt, EidasUser.class);
+        return mapper.readValue(jwt, FormUser.class);
     }
 }

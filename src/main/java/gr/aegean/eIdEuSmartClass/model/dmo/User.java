@@ -25,8 +25,6 @@ import javax.persistence.Table;
 @Table(name = "Users")
 public class User {
 
-    private final static int UNSPECIFIED = 1;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -39,6 +37,14 @@ public class User {
     private String eIDAS_id;
     private String name;
     private String surname;
+
+    /**
+     * new columns!!
+     */
+    private String email;
+    private String mobile;
+    private String affiliation;
+    private String country;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gender_id")
@@ -53,15 +59,19 @@ public class User {
     protected User() {
     }
 
-    public User(String eIDAS_id, String name, String surname, LocalDate birthday,
-            Role role, Gender gender) {
+    public User(Role role, String eIDAS_id, String name, String surname, String email, String mobile, String affiliation, String country, Gender gender, LocalDate birthday, Date lastLogin) {
+
+        this.role = role;
         this.eIDAS_id = eIDAS_id;
         this.name = name;
         this.surname = surname;
-        this.birthday = birthday;
-        this.lastLogin = new Date();
+        this.email = email;
+        this.mobile = mobile;
+        this.affiliation = affiliation;
+        this.country = country;
         this.gender = gender;
-        this.role = role;
+        this.birthday = birthday;
+        this.lastLogin = lastLogin;
     }
 
     /**
@@ -175,6 +185,38 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(String affiliation) {
+        this.affiliation = affiliation;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
 }

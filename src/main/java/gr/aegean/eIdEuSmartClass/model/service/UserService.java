@@ -16,7 +16,8 @@ public interface UserService {
     
     public RasberyrResponse saveUser(User user);
     
-    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String Gender, String DateOfBirth);
+    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
+            String mobile, String affiliation, String country);
     
     public RasberyrResponse updateLogin(String eIDasid);
     

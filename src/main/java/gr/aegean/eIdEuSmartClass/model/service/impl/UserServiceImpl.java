@@ -62,22 +62,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth) {
+    public RasberyrResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
+            String email, String mobile, String affiliation, String country) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD");
             LocalDate birthDay = LocalDate.parse(dateOfBirth, formatter);
 
             User user = userRepo.findFirstByEIDASId(eIDASid);
             Role role = roleRepo.findFirstByName(Role.UNREGISTERED);
             Gender gender = genderRepo.findFirstByName(Gender.UNDEFINED);
             if (user == null) {
-                user = new User(eIDASid, name, surname, birthDay, role, gender);
+                user = new User(role, eIDASid, name, surname, email, mobile, affiliation, country, gender, birthDay, 
+                                Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 userRepo.save(user);
             } else {
                 user.setName(name);
                 user.setSurname(surname);
                 user.setLastLogin(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                user.setBirthday(LocalDate.MIN);
+                user.setBirthday(birthDay);
                 userRepo.save(user);
             }
             return new RasberyrResponse(RasberyrResponse.SUCCESS);
