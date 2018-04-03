@@ -63,7 +63,7 @@ public class DbIntegrationTests {
         Gender storedGender = genderRepository.findByName(Gender.MALE).get();
 
         LocalDate birthday = LocalDate.now();
-        User user = new User(r, "eidas-id2", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        User user = new User(storedRole, "eidas-id2", "name2", "surname2", "email", "1234", "ntua", "gr", storedGender, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         //new User("eidas-id2", "name2", "surname", birthday, r, g);
 
         System.out.println(user.toString());
