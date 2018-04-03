@@ -8,8 +8,7 @@ package gr.aegean.eIdEuSmartClass.controllers;
 import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
 import gr.aegean.eIdEuSmartClass.model.service.ConfigPropertiesServices;
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
-import gr.aegean.eIdEuSmartClass.model.service.UserService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.EidasUser;
+import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -76,7 +75,7 @@ public class ViewControllers {
         }).map(cookie -> {
             return cookie.getValue();
         }).findFirst();
-        EidasUser user = UserWrappers.wrapDecodedJwtEidasUser(tokenServ.decode(token.get()));
+        FormUser user = UserWrappers.wrapDecodedJwtEidasUser(tokenServ.decode(token.get()));
 
         model.addAttribute("user", user);
         return "registerView";

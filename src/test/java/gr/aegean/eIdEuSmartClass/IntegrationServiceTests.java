@@ -27,20 +27,20 @@ public class IntegrationServiceTests {
 
     @Test
     public void testSaveNew() {
-        RasberyrResponse resp = userServ.saveUser("eidasTestServ", "n1", "n2", "", "10/10/1983");
+        RasberyrResponse resp = userServ.saveUser("eidasTestServ", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
         assertEquals(resp.getStatus(), RasberyrResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLogin() {
-        userServ.saveUser("eidasTestServ2", "n1", "n2", "", "10/10/1983");
+        userServ.saveUser("eidasTestServ2", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
         RasberyrResponse resp = userServ.updateLogin("eidasTestServ2");
         assertEquals(resp.getStatus(), RasberyrResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLoginUserNotFound() {
-        userServ.saveUser("eidasTestServ3", "n1", "n2", "", "10/10/1983");
+        userServ.saveUser("eidasTestServ3", "n1", "n2", "", "10/10/1983","test@test.gr","123456","ntua","GR");
         RasberyrResponse resp = userServ.updateLogin("eidasTestServErr");
         assertEquals(resp.getStatus(), RasberyrResponse.FAILED);
     }

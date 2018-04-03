@@ -19,6 +19,8 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import javax.transaction.Transactional;
 import java.util.Optional;
 import static org.junit.Assert.assertEquals;
@@ -61,7 +63,8 @@ public class DbIntegrationTests {
         Gender storedGender = genderRepository.findByName(Gender.MALE).get();
 
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id2", "name2", "surname", birthday, storedRole, storedGender);
+        User user = new User(r, "eidas-id2", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        //new User("eidas-id2", "name2", "surname", birthday, r, g);
 
         System.out.println(user.toString());
         userRepository.save(user);
@@ -77,7 +80,7 @@ public class DbIntegrationTests {
         Role r = new Role("test");
         Gender g = new Gender("n/a");
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id4", "name2", "surname", birthday, r, g);
+        User user = new User(r, "eidas-id4", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         System.out.println(user.toString());
         userRepository.save(user);
         User user3 = userRepository.findFirstByEIDASId("eidas-id4");
@@ -93,6 +96,14 @@ public class DbIntegrationTests {
         classRoomStateRepository.save(state);
     }
 
+//    @Test
+//    public void saveState(){
+//        RoomState s = new RoomState();
+//        s.setName("Restricted");
+//        statesRepo.save(s);
+//    }
+    
+    
     @Test
     @Transactional
     public void saveClassRomm() {
@@ -115,11 +126,12 @@ public class DbIntegrationTests {
         Role r = roleRepository.findFirstByName(Role.UNREGISTERED);
         Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
         LocalDate birthday = LocalDate.now();
-        User user = new User("eidas-id3", "name3", "surname", birthday, r, g);
+        User user = new User(r, "eidas-id3", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
 
         Role r2 = new Role("test");
         Gender g2 = new Gender("n/a");
-        User user2 = new User("eidas-id5", "name5", "surname5", birthday, r2, g2);
+        User user2 = new User(r2, "eidas-id5", "name5", "surname5", "email", "1234", "ntua", "gr", g2, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         userRepository.save(user);
         userRepository.save(user2);
 
@@ -140,6 +152,7 @@ public class DbIntegrationTests {
         key.setUser(user);
         ac2.setId(key);
         activeRepo.save(ac2);
+
 
         ActiveCode ac3 = new ActiveCode();
         ac3.setGrantedAt(LocalDate.now());

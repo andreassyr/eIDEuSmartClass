@@ -8,21 +8,21 @@ package gr.aegean.eIdEuSmartClass.controllers;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
+import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.RasberryInterface;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
+import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.RasberyrResponse;
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.security.Principal;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,10 +45,14 @@ public class RestControllers {
     private ClassRoomService roomServ;
 
     @Autowired
-    private ActiveDirectoryService asServ;
+    private ActiveDirectoryService adServ;
 
     @Autowired
     private RasberryInterface rasbServ;
+    
+    @Autowired
+    private MailService mailServ;
+    
 
     public RestControllers() {
         SUPER_USERS = new HashSet<String>();
@@ -57,19 +61,26 @@ public class RestControllers {
         this.SUPER_USERS.add("superadmin");
     }
 
+    /**
+     * Adds a new user to the database and to the Active Directory by making an
+     * appropriate API call
+     *
+     * @return
+     */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    RasberyrResponse createUser(@RequestParam(value = "eIDASid", required = true) String eIDASid,
-            @RequestParam(value = "name", required = true) String name, @RequestParam(value = "surname", required = true) String surname,
-            @RequestParam(value = "gender", required = true) String gender,
-            @RequestParam(value = "dateOfBirth", required = true) String dateOfBirth) {
+    RasberyrResponse createUser( @ModelAttribute("user") FormUser user) {
         try {
-            //TODO call microservice that writes in the Active Directory server
-            asServ.registerUser("smartclassguest1@outlook.com");
+            adServ.registerUser("smartclassguest1@outlook.com");
         } catch (IOException ex) {
             log.error("ERROR", ex);
         }
-        return userServ.saveUser(eIDASid, name, surname, gender, dateOfBirth);
+        RasberyrResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
+                "Unspecified", user.getDateOfBirth(), user.getEmail(),user.getMobile(), user.getAffiliation(), user.getCountry());
+        if(resp.getStatus().equals("OK")){
+            mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
+        }
+        return resp;
     }
 
     @RequestMapping(value = "validateQR", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
@@ -93,7 +104,14 @@ public class RestControllers {
         return new RasberyrResponse(RasberyrResponse.FAILED);
     }
 
-    @RequestMapping(value = "requestCloseRoom", method = {RequestMethod.POST,RequestMethod.GET }, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    
+    /**
+     * TODO change only allowed status se inactive
+     * @param roomName
+     * @param principal
+     * @return 
+     */
+    @RequestMapping(value = "requestCloseRoom", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     String sendCloseRoom(@RequestParam(value = "roomName", required = true) String roomName, Principal principal) {
         String userEid = principal.getName();
@@ -107,13 +125,6 @@ public class RestControllers {
             }
         }
         return "NOK";
-    }
-
-    @RequestMapping(value = {"registerUser"}, method = {RequestMethod.POST})
-    public @ResponseBody
-    String successPage(@RequestParam(value = "email", required = true) String email) {
-
-        return "OK";
     }
 
 }

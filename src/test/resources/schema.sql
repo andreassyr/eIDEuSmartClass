@@ -60,6 +60,10 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Users` (
   `gender_id` INT NOT NULL DEFAULT 0,
   `role_id` INT NOT NULL DEFAULT 0,
   `last_login` DATETIME NULL,
+   `email` VARCHAR(45) NOT NULL,
+   `mobile` VARCHAR(45),
+   `affiliation` VARCHAR(45),
+   `country` VARCHAR(45),
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_Users_Roles1`
     FOREIGN KEY (`role_id`)

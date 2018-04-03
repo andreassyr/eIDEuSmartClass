@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
  *
  * @author nikos
  */
-public class EidasUser {
+public class FormUser {
 
     //{"firstName":"ΑΝΔΡΕΑΣ, ANDREAS","eid":"GR/GR/ERMIS-11076669","familyName":"ΠΕΤΡΟΥ, PETROU","personIdentifier":"GR/GR/ERMIS-11076669","dateOfBirth":"1980-01-01"}
     private String profileName;
@@ -23,7 +23,15 @@ public class EidasUser {
     private String personIdentifier;
     private String dateOfBirth;
 
-    public EidasUser() {
+    /**
+     * new columns!!
+     */
+    private String email;
+    private String mobile;
+    private String affiliation;
+    private String country;
+
+    public FormUser() {
     }
 
     public String getProfileName() {
@@ -72,6 +80,38 @@ public class EidasUser {
 
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(String affiliation) {
+        this.affiliation = affiliation;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
 }
