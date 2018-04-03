@@ -8,6 +8,7 @@ package gr.aegean.eIdEuSmartClass.model.dmo;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,20 +23,23 @@ import javax.persistence.Table;
 @Table(name = "Genders")
 public class Gender {
 
-    public static final String UNDEFINED ="Unspecified";
-    
+    public final static String UNSPECIFIED = "UNSPECIFIED";
+    public final static String MALE = "MALE";
+    public final static String FEMALE = "FEMALE";
+
     @Id
     @Column(name = "gender_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long genderId;
 
-    @OneToMany(mappedBy = "gender")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "gender")
     private Set<User> users;
 
     private String name;
 
-    public Gender(){}
-    
+    public Gender() {
+    }
+
     public Gender(String name) {
         this.name = name;
     }

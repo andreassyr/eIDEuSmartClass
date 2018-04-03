@@ -1,8 +1,15 @@
 package gr.aegean.eIdEuSmartClass;
 
+import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
+import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomStateRepository;
+import gr.aegean.eIdEuSmartClass.model.dao.GenderRepository;
+import gr.aegean.eIdEuSmartClass.model.dao.RoleRepository;
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.dao.UserRepository;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dao.ActiveCodeRepository;
 import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
-import gr.aegean.eIdEuSmartClass.model.dao.RoomStatesRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.dao.UserRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCode;
@@ -10,11 +17,11 @@ import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCodePK;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
-import gr.aegean.eIdEuSmartClass.model.dmo.RoomState;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import javax.transaction.Transactional;
 import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 
@@ -30,12 +37,17 @@ public class DbIntegrationTests {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private GenderRepository genderRepository;
+    @Autowired
+    private ClassRoomRepository classRoomRepository;
+    @Autowired
+    private ClassRoomStateRepository classRoomStateRepository;
 
     @Autowired
     private ClassRoomRepository classRepo;
-
-    @Autowired
-    private RoomStatesRepository statesRepo;
 
     @Autowired
     private ActiveCodeRepository activeRepo;
@@ -44,14 +56,16 @@ public class DbIntegrationTests {
     private ClassRoomService roomServ;
 
     @Test
+    @Transactional
     public void createNewUser() {
 
-        Role r = new Role("test");
-        Gender g = new Gender("n/a");
+        Role storedRole = roleRepository.findByName("unregistered").get();
+        Gender storedGender = genderRepository.findByName(Gender.MALE).get();
 
         LocalDate birthday = LocalDate.now();
         User user = new User(r, "eidas-id2", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         //new User("eidas-id2", "name2", "surname", birthday, r, g);
+
         System.out.println(user.toString());
         userRepository.save(user);
 
@@ -75,10 +89,11 @@ public class DbIntegrationTests {
     }
 
     @Test
+    @Transactional
     public void saveRoomState() {
-        RoomState state = new RoomState();
+        ClassRoomState state = new ClassRoomState();
         state.setName("testState");
-        statesRepo.save(state);
+        classRoomStateRepository.save(state);
     }
 
 //    @Test
@@ -90,24 +105,29 @@ public class DbIntegrationTests {
     
     
     @Test
+    @Transactional
     public void saveClassRomm() {
         ClassRoom room = new ClassRoom();
         room.setName("testName");
 //        Optional<RoomState> state2 = statesRepo.findById(new Long(1));
-        Optional<RoomState> state2 = statesRepo.findByName("Restricted");
+        Optional<ClassRoomState> state2 = classRoomStateRepository.findByName("Restricted");
 //        List<RoomState> states = statesRepo.findAll();
         if (state2.isPresent()) {
-            room.setRoomStates(state2.get());
+            room.setState(state2.get());
         }
         classRepo.save(room);
     }
 
     @Test
+    @Transactional
     public void testActiveCode() {
-        Role r = new Role("test");
-        Gender g = new Gender("n/a");
+
+        ActiveCode ac = new ActiveCode();
+        Role r = roleRepository.findFirstByName(Role.UNREGISTERED);
+        Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
         LocalDate birthday = LocalDate.now();
         User user = new User(r, "eidas-id3", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
 
         Role r2 = new Role("test");
         Gender g2 = new Gender("n/a");
@@ -117,25 +137,26 @@ public class DbIntegrationTests {
 
         ClassRoom room = new ClassRoom();
         room.setName("testName2");
-        Optional<RoomState> state2 = statesRepo.findByName("Restricted");
+        Optional<ClassRoomState> state2 = classRoomStateRepository.findByName("Restricted");
         if (state2.isPresent()) {
-            room.setRoomStates(state2.get());
+            room.setState(state2.get());
         }
 
         classRepo.save(room);
 
-        ActiveCode ac = new ActiveCode();
-        ac.setGrantedAt(LocalDate.now());
-        ac.setContent("testContent");
+        ActiveCode ac2 = new ActiveCode();
+        ac2.setGrantedAt(LocalDate.now());
+        ac2.setContent("testContent");
         ActiveCodePK key = new ActiveCodePK();
         key.setClassRoom(room);
         key.setUser(user);
-        ac.setId(key);
-        activeRepo.save(ac);
+        ac2.setId(key);
+        activeRepo.save(ac2);
 
-        ActiveCode ac2 = new ActiveCode();
-        ac2.setGrantedAt(LocalDate.now());
-        ac2.setContent("testContent2");
+
+        ActiveCode ac3 = new ActiveCode();
+        ac3.setGrantedAt(LocalDate.now());
+        ac3.setContent("testContent2");
         ActiveCodePK key2 = new ActiveCodePK();
         key2.setClassRoom(room);
         key2.setUser(user2);
@@ -148,14 +169,44 @@ public class DbIntegrationTests {
     }
 
     @Test
+    @Transactional
     public void updateClassRoomState() {
-        Optional<RoomState> inactive = statesRepo.findByName("Inactive");
+        Optional<ClassRoomState> inactive = classRoomStateRepository.findByName("Inactive");
         roomServ.setRoomStatusByStateName("inactive", "testName");
-        assertEquals(classRepo.findByName("testName").getRoomStates().getName(), "Inactive");
+        assertEquals(classRepo.findByName("testName").getState().getName(), "Inactive");
 
     }
 
     @Test
+    @Transactional
+    public void createClassroom() {
+        ClassRoomState classState = classRoomStateRepository.getOne(new Long(1));
+
+        ClassRoom classRoom = new ClassRoom();
+        classRoom.setName("My test class");
+        classRoom.setState(classState);
+        classRoomRepository.save(classRoom);
+
+        ClassRoom classRoom2 = classRoomRepository.getOne(classRoom.getId());
+        assertEquals(classRoom.getName(), classRoom2.getName());
+    }
+
+    @Test
+    @Transactional
+    public void changeClassRoomStatus() {
+        //TODO:: write a classroom first
+        ClassRoom classRoom = classRoomRepository.getOne(new Long(1));
+        ClassRoomState classState = classRoomStateRepository.getOne(new Long(2));
+
+        classRoom.setState(classState);
+
+        classRoomRepository.save(classRoom);
+
+        ClassRoom classRoom2 = classRoomRepository.getOne(new Long(1));
+        assertEquals(classRoom2.getState().getName(), classState.getName());
+    }
+
+//    @Test
     public void contextLoads() {
     }
 

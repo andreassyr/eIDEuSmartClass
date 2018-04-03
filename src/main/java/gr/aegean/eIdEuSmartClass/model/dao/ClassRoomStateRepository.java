@@ -5,19 +5,15 @@
  */
 package gr.aegean.eIdEuSmartClass.model.dao;
 
-import gr.aegean.eIdEuSmartClass.model.dmo.Role;
-import java.util.List;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author nikos
+ * @author Dante
  */
-public interface RoleRepository extends JpaRepository<Role, Long> {
-
-    @Override
-    List<Role> findAll();
-    Optional<Role> findByName(String name);
-    public Role findFirstByName(String name);
+public interface ClassRoomStateRepository extends JpaRepository<ClassRoomState, Long>
+{
+    Optional<ClassRoomState> findByName(String name);
 }

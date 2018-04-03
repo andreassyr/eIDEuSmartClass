@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
             User user = userRepo.findFirstByEIDASId(eIDASid);
             Role role = roleRepo.findFirstByName(Role.UNREGISTERED);
-            Gender gender = genderRepo.findFirstByName(Gender.UNDEFINED);
+            Gender gender = genderRepo.findFirstByName(Gender.UNSPECIFIED);
             if (user == null) {
                 user = new User(role, eIDASid, name, surname, email, mobile, affiliation, country, gender, birthDay, 
                                 Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));

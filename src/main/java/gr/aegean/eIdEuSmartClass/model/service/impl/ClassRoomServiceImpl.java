@@ -7,9 +7,9 @@ package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import gr.aegean.eIdEuSmartClass.model.dao.ActiveCodeRepository;
 import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
-import gr.aegean.eIdEuSmartClass.model.dao.RoomStatesRepository;
+import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomStateRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
-import gr.aegean.eIdEuSmartClass.model.dmo.RoomState;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     
     @Autowired
-    private RoomStatesRepository statesRepo;
+    private ClassRoomStateRepository statesRepo;
     
     @Autowired
     private ClassRoomRepository classRoomRepo;
@@ -49,10 +49,10 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Override
     @Transactional
     public boolean setRoomStatusByStateName(String stateName, String roomName) {
-        Optional<RoomState> state = statesRepo.findByName(stateName);
+        Optional<ClassRoomState> state = statesRepo.findByName(stateName);
         ClassRoom room = classRoomRepo.findByName(roomName);
         if(state.isPresent() && room != null){
-            room.setRoomStates(state.get());
+            room.setState(state.get());
             classRoomRepo.save(room);
             return true;
         }

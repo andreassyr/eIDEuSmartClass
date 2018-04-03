@@ -20,53 +20,68 @@ import javax.persistence.Table;
  * @author nikos
  */
 @Entity
-@Table(name = "Classrooms")
+@Table(name = "classrooms")
 public class ClassRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id")
+    @Column(name = "classroom_id")
     private long id;
 
-    private String name;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "classroom_status_id")
+    private ClassRoomState state;
 
-    @ManyToOne
-    @JoinColumn(name = "room_states_status_id")
-    public RoomState roomStates;
+    private String name;
 
     public ClassRoom() {
     }
 
-    public ClassRoom(RoomState states, String name) {
-        this.roomStates = states;
+    public ClassRoom(ClassRoomState state, String name) {
+        this.state = state;
         this.name = name;
     }
 
+    /**
+     * @return the id
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * @param id the id to set
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * @return the state
+     */
+    public ClassRoomState getState() {
+        return state;
+    }
+
+    /**
+     * @param state the state to set
+     */
+    public void setState(ClassRoomState state) {
+        this.state = state;
+    }
+
+    /**
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name the name to set
+     */
     public void setName(String name) {
         this.name = name;
     }
-
-    public RoomState getRoomStates() {
-        return roomStates;
-    }
-
-    public void setRoomStates(RoomState roomStates) {
-        this.roomStates = roomStates;
-    }
-
-
-    
 
 }
