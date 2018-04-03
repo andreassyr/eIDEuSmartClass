@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public BaseResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
             String email, String mobile, String affiliation, String country) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate birthDay = LocalDate.parse(dateOfBirth, formatter);
 
             User user = userRepo.findFirstByEIDASId(eIDASid);
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
             return new BaseResponse(BaseResponse.SUCCESS);
 
         } catch (Error e) {
-            log.error("ERROR", e);
+            log.info("ERROR::"+ e);
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
