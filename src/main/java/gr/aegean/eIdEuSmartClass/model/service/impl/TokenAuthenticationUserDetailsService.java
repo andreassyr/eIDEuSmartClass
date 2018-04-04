@@ -8,6 +8,7 @@ package gr.aegean.eIdEuSmartClass.model.service.impl;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.GenderService;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenAuthenticationUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(TokenAuthenticationUserDetailsService.class);
 
@@ -40,7 +41,7 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
     private RoleService roleServ;
 
     @Autowired
-    public TokenAuthenticationUserDetailsService(UserServiceImpl userService) {
+    public TokenAuthenticationUserDetailsService(UserService userService) {
         this.userService = userService;
     }
 

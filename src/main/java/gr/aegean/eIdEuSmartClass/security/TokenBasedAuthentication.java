@@ -21,6 +21,11 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
         super( principle.getAuthorities() );
         this.principle = principle;
     }
+    
+//    
+//    public TokenBasedAuthentication() {
+//        this.principle =null;
+//    }
 
     public String getToken() {
         return token;

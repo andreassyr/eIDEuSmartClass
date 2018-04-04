@@ -15,8 +15,10 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import javax.transaction.Transactional;
 import java.util.Optional;
 import static org.junit.Assert.assertEquals;
@@ -117,7 +119,7 @@ public class DbIntegrationTests {
     @Transactional
     public void testActiveCode() {
 
-        ActiveCode ac = new ActiveCode();
+        
         Role r = roleRepository.findFirstByName(Role.UNREGISTERED);
         Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
         LocalDate birthday = LocalDate.now();
@@ -140,7 +142,7 @@ public class DbIntegrationTests {
         classRepo.save(room);
 
         ActiveCode ac2 = new ActiveCode();
-        ac2.setGrantedAt(LocalDate.now());
+        ac2.setGrantedAt(LocalDateTime.now());
         ac2.setContent("testContent");
         ActiveCodePK key = new ActiveCodePK();
         key.setClassRoom(room);
@@ -150,17 +152,19 @@ public class DbIntegrationTests {
 
 
         ActiveCode ac3 = new ActiveCode();
-        ac3.setGrantedAt(LocalDate.now());
+        ac3.setGrantedAt(LocalDateTime.now());
         ac3.setContent("testContent2");
         ActiveCodePK key2 = new ActiveCodePK();
         key2.setClassRoom(room);
         key2.setUser(user2);
-        ac2.setId(key2);
-        activeRepo.save(ac2);
-
+        ac3.setId(key2);
+        activeRepo.save(ac3);
         assertEquals(activeRepo.getContentFromClassRoom("testName2").contains("testContent"), true);
 //        assertEquals(activeRepo.getContentFromClassRoom("testName2").contains("testContent2"), true);
-
+        
+        List<ActiveCode> codes =activeRepo.getCodeFromContent("testContent");
+        assertEquals(codes.size(),1);
+        assertEquals(codes.get(0).getContent(),"testContent");
     }
 
 

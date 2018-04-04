@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.controllers;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
+import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
+import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.util.List;
 
 /**
  *
@@ -53,6 +57,9 @@ public class RestControllers {
 
     @Autowired
     private MailService mailServ;
+    
+    @Autowired
+    private ActiveCodeService activeServ;
 
     public RestControllers() {
         SUPER_USERS = new HashSet<String>();
@@ -83,28 +90,32 @@ public class RestControllers {
         return resp;
     }
 
+    
+    /**
+     * checks taht the give qr code/pin was belongs to the codes issued for the give roomID
+     * that the room is ACTIVE and that the code was issued in the last 4 hours. and that it is not past 22:00
+     * @param roomId
+     * @param qrCode
+     * @return 
+     */
     @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
-        
-        if (classroomServ.getValidCodeByName(roomId) != null && classroomServ.getValidCodeByName(roomId).contains(qrCode)) {
-            
-            //TODO check time less that 10:00pm
-            //check if time issues is less taht 4hours
-            // chake that when it was created it was less thean 10 min
-            
+        List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
+        if ( !classroomServ.getRoomStatus("roomId").getName().equals(RoomStatesEnum.INACTIVE.state()) 
+                &&  roomCodes != null && roomCodes.contains(qrCode) 
+                && ValidateRoomCode.isValidActiveCode(qrCode, activeServ)) {
             return new BaseResponse(BaseResponse.SUCCESS);
-        } else {
+        }  
             return new BaseResponse(BaseResponse.FAILED);
-        }
     }
 
     /**
      * Changes the given room status to the provided one if the new status is
      * close (inActive) then an API calle is made to a raspberry to close the
      * lights etc.
-     *
+     * Can only be used if user has role: admin,superadmin,coordinator
      * @param roomName
      * @param principal
      * @return
@@ -116,9 +127,9 @@ public class RestControllers {
             Principal principal) {
         String userEid = principal.getName();
         User user = userServ.findByEid(userEid);
-        if (user != null && SUPER_USERS.contains(user.getRole().getName())) {
+        if (user != null) {
             try {
-                if (status.equals(INACTIVE)) {
+                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
                     rasbServ.requestCloseRoom(roomName);
                 }
                 classroomServ.setRoomStatusByStateName(status, roomName);
