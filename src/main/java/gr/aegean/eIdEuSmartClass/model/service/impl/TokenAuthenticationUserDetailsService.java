@@ -6,6 +6,8 @@
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.service.GenderService;
+import gr.aegean.eIdEuSmartClass.model.service.RoleService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
@@ -32,6 +34,12 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(TokenAuthenticationUserDetailsService.class);
 
     @Autowired
+    private GenderService genServ;
+
+    @Autowired
+    private RoleService roleServ;
+
+    @Autowired
     public TokenAuthenticationUserDetailsService(UserServiceImpl userService) {
         this.userService = userService;
     }
@@ -50,12 +58,19 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
 
             FormUser formUser = UserWrappers.wrapDecodedJwtEidasUser(token);
             User user = this.userService.findByEid(formUser.getEid());
+
+            if (user == null) {
+                user = UserWrappers.wrapFormUserToDBUser(formUser, roleServ, genServ);
+            }
+
             List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole().getName());
+
             PreAuthenticatedAuthenticationToken withAuthorities
                     = new PreAuthenticatedAuthenticationToken(token, token, authorities);
 
             return UserWrappers.wrapEidasToTokenUser(formUser, token, withAuthorities);
         } catch (IOException ex) {
+            log.info("ERROR" + ex.getMessage());
             throw new UsernameNotFoundException("Could not wrap token", ex);
         }
     }

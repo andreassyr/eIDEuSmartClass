@@ -91,7 +91,7 @@ public class ViewControllers {
      *
      * @return
      */
-    @RequestMapping(value = {"loggedIn"})
+    @RequestMapping(value = {"eIdasSuccess"})
     public String login(@CookieValue(value = TOKEN_NAME, required = true) String jwtCookie,
             @CookieValue(value = "type", required = true) String typeCookie,
             HttpServletRequest req, Principal principal) {
