@@ -49,12 +49,7 @@ public class TestViewControllers {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain).build();
     }
-
-//    @Test
-//    public void testLoggedInNoJWT() throws Exception {
-//        mockMvc.perform(get("/loggedIn"))
-//                .andExpect(redirectedUrl("http://localhost/landing"));
-//    }
+ 
     @Test
     public void testLoggedValidJWT() throws Exception {
         Cookie c = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48");
@@ -62,39 +57,22 @@ public class TestViewControllers {
         Cookie[] cookies = new Cookie[2];
         cookies[0] = c;
         cookies[1] = c2;
-        mockMvc.perform(get("/loggedIn")
+        mockMvc.perform(get("/eIdasSuccess")
                 .cookie(cookies))
                 .andExpect(status().isOk());
     }
+    
+    @Test
+    public void testLoggedNotValidJWT() throws Exception {
+        Cookie c = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O41");
+        Cookie c2 = new Cookie("type", "skype");
+        Cookie[] cookies = new Cookie[2];
+        cookies[0] = c;
+        cookies[1] = c2;
+        mockMvc.perform(get("/eIdasSuccess")
+                .cookie(cookies))
+                .andExpect(redirectedUrl("http://localhost/landing"));
+    }
 
-//    @Test
-//    public void testLoggedInValidJWT() throws Exception {
-//        Cookie c = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O482");
-//        mockMvc.perform(get("/loggedIn")
-//                .cookie(c))
-//                .andExpect(redirectedUrl("http://localhost/landing"));
-//    }
-//    @Test
-//    public void testLoggedInJWTLandingLoginFlow() throws Exception {
-//        Cookie c = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48");
-//        Cookie c2 = new Cookie("flow", "login");
-//        Cookie[] cookies = new Cookie[2];
-//        cookies[0] = c;
-//        cookies[1] = c2;
-//        mockMvc.perform(get("/")
-//                .cookie(cookies))
-//                .andExpect(redirectedUrl("/loggedIn"));
-//    }
-//
-//    @Test
-//    public void testLoggedInJWTLandingRegisterFlow() throws Exception {
-//        Cookie c = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48");
-//        Cookie c2 = new Cookie("flow", "register");
-//        Cookie[] cookies = new Cookie[2];
-//        cookies[0] = c;
-//        cookies[1] = c2;
-//        mockMvc.perform(get("/")
-//                .cookie(cookies))
-//                .andExpect(redirectedUrl("/landingView"));
-//    }
+
 }

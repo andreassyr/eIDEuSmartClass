@@ -6,6 +6,9 @@
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.service.GenderService;
+import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
@@ -27,12 +30,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenAuthenticationUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(TokenAuthenticationUserDetailsService.class);
 
     @Autowired
-    public TokenAuthenticationUserDetailsService(UserServiceImpl userService) {
+    private GenderService genServ;
+
+    @Autowired
+    private RoleService roleServ;
+
+    @Autowired
+    public TokenAuthenticationUserDetailsService(UserService userService) {
         this.userService = userService;
     }
 
@@ -50,12 +59,19 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
 
             FormUser formUser = UserWrappers.wrapDecodedJwtEidasUser(token);
             User user = this.userService.findByEid(formUser.getEid());
+
+            if (user == null) {
+                user = UserWrappers.wrapFormUserToDBUser(formUser, roleServ, genServ);
+            }
+
             List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole().getName());
+
             PreAuthenticatedAuthenticationToken withAuthorities
                     = new PreAuthenticatedAuthenticationToken(token, token, authorities);
 
             return UserWrappers.wrapEidasToTokenUser(formUser, token, withAuthorities);
         } catch (IOException ex) {
+            log.info("ERROR" + ex.getMessage());
             throw new UsernameNotFoundException("Could not wrap token", ex);
         }
     }

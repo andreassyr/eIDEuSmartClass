@@ -22,4 +22,6 @@ public interface ClassRoomRepository extends JpaRepository<ClassRoom, Long> {
     ClassRoom findByName(String name);
 
     List<ClassRoom> findByState(ClassRoomState state);
+    
+   
 }

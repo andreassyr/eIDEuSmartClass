@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -25,7 +26,7 @@ public class ActiveCode {
     private String content;
 
     @Column(name = "granted_at")
-    private LocalDate grantedAt;
+    private LocalDateTime grantedAt;
 
     public ActiveCode() {
     }
@@ -46,11 +47,11 @@ public class ActiveCode {
         this.content = content;
     }
 
-    public LocalDate getGrantedAt() {
+    public LocalDateTime getGrantedAt() {
         return grantedAt;
     }
 
-    public void setGrantedAt(LocalDate grantedAt) {
+    public void setGrantedAt(LocalDateTime grantedAt) {
         this.grantedAt = grantedAt;
     }
 

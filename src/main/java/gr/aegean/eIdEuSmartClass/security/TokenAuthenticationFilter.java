@@ -42,23 +42,26 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain chain) throws ServletException, IOException {
 
-        Optional<String> token = Arrays.asList(request.getCookies()).stream().filter(cookie -> {
-            return cookie.getName().equals("access_token");
-        }).map(cookie -> {
-            return cookie.getValue();
-        }).findFirst();
+        if (request.getCookies() != null) {
 
-        if (token.isPresent()) {
+            Optional<String> token = Arrays.asList(request.getCookies()).stream().filter(cookie -> {
+                return cookie.getName().equals("access_token");
+            }).map(cookie -> {
+                return cookie.getValue();
+            }).findFirst();
 
-            String tokenDecoded = this.tokenService.decode(token.get());
+            if (token.isPresent()) {
 
-            if (!tokenDecoded.equals("")) {
-                PreAuthenticatedAuthenticationToken authtoken = new PreAuthenticatedAuthenticationToken(tokenDecoded, tokenDecoded);
-                UserDetails userDetails = this.tokenAuthUserDetailsService.loadUserDetails(authtoken);
-                SecurityContextHolder.getContext().setAuthentication(new TokenBasedAuthentication(userDetails));
+                String tokenDecoded = this.tokenService.decode(token.get());
+
+                if (!tokenDecoded.equals("")) {
+                    PreAuthenticatedAuthenticationToken authtoken = new PreAuthenticatedAuthenticationToken(tokenDecoded, tokenDecoded);
+                    UserDetails userDetails = this.tokenAuthUserDetailsService.loadUserDetails(authtoken);
+                    SecurityContextHolder.getContext().setAuthentication(new TokenBasedAuthentication(userDetails));
+                }
             }
+        
         }
-
         chain.doFilter(request, response);
     }
 }

@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import java.util.List;
 
 /**
@@ -19,5 +20,5 @@ public interface ClassRoomService {
     
     public boolean setRoomStatusByStateName(String stateName, String name); 
    
-    
+    public ClassRoomState getRoomStatus(String roomName);
 }

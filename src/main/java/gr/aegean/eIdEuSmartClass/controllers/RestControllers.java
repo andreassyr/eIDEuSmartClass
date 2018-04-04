@@ -6,10 +6,10 @@
 package gr.aegean.eIdEuSmartClass.controllers;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
-import gr.aegean.eIdEuSmartClass.model.service.RasberryInterface;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
@@ -27,6 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
+import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
+import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.util.List;
 
 /**
  *
@@ -37,22 +41,25 @@ public class RestControllers {
 
     private static final Logger log = LoggerFactory.getLogger(RestControllers.class);
     private final Set<String> SUPER_USERS;
+    private final static String INACTIVE = "inactive";
 
     @Autowired
     private UserService userServ;
 
     @Autowired
-    private ClassRoomService roomServ;
+    private ClassRoomService classroomServ;
 
     @Autowired
     private ActiveDirectoryService adServ;
 
     @Autowired
-    private RasberryInterface rasbServ;
-    
+    private RaspberryInterface rasbServ;
+
     @Autowired
     private MailService mailServ;
     
+    @Autowired
+    private ActiveCodeService activeServ;
 
     public RestControllers() {
         SUPER_USERS = new HashSet<String>();
@@ -69,62 +76,69 @@ public class RestControllers {
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    BaseResponse createUser( @ModelAttribute("user") FormUser user) {
+    BaseResponse createUser(@ModelAttribute("user") FormUser user) {
         try {
             adServ.registerUser("smartclassguest1@outlook.com");
         } catch (IOException ex) {
             log.error("ERROR", ex);
         }
         BaseResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
-                "Unspecified", user.getDateOfBirth(), user.getEmail(),user.getMobile(), user.getAffiliation(), user.getCountry());
-        if(resp.getStatus().equals("OK")){
+                "Unspecified", user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry());
+        if (resp.getStatus().equals("OK")) {
             mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
         }
         return resp;
     }
 
-    @RequestMapping(value = "validateQR", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    
+    /**
+     * checks taht the give qr code/pin was belongs to the codes issued for the give roomID
+     * that the room is ACTIVE and that the code was issued in the last 4 hours. and that it is not past 22:00
+     * @param roomId
+     * @param qrCode
+     * @return 
+     */
+    @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
-        if (roomServ.getValidCodeByName(roomId) != null && roomServ.getValidCodeByName(roomId).contains(qrCode)) {
+        List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
+        if ( !classroomServ.getRoomStatus("roomId").getName().equals(RoomStatesEnum.INACTIVE.state()) 
+                &&  roomCodes != null && roomCodes.contains(qrCode) 
+                && ValidateRoomCode.isValidActiveCode(qrCode, activeServ)) {
             return new BaseResponse(BaseResponse.SUCCESS);
-        } else {
+        }  
             return new BaseResponse(BaseResponse.FAILED);
-        }
     }
 
-    @RequestMapping(value = "changeRoomStatusRasb", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public @ResponseBody
-    BaseResponse changeRoomStatus(@RequestParam(value = "roomName", required = true) String roomName,
-            @RequestParam(value = "statusName", required = true) String statusName) {
-        if (roomServ.setRoomStatusByStateName(statusName, roomName)) {
-            return new BaseResponse(BaseResponse.SUCCESS);
-        }
-        return new BaseResponse(BaseResponse.FAILED);
-    }
-
-    
     /**
-     * TODO change only allowed status se inactive
+     * Changes the given room status to the provided one if the new status is
+     * close (inActive) then an API calle is made to a raspberry to close the
+     * lights etc.
+     * Can only be used if user has role: admin,superadmin,coordinator
      * @param roomName
      * @param principal
-     * @return 
+     * @return
      */
-    @RequestMapping(value = "requestCloseRoom", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value = "updateclass", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    String sendCloseRoom(@RequestParam(value = "roomName", required = true) String roomName, Principal principal) {
+    BaseResponse sendCloseRoom(@RequestParam(value = "roomName", required = true) String roomName,
+            @RequestParam(value = "roomStatus", required = true) String status,
+            Principal principal) {
         String userEid = principal.getName();
         User user = userServ.findByEid(userEid);
-        if (user != null && SUPER_USERS.contains(user.getRole().getName())) {
+        if (user != null) {
             try {
-                rasbServ.requestCloseRoom(roomName);
-                return "OK";
+                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
+                    rasbServ.requestCloseRoom(roomName);
+                }
+                classroomServ.setRoomStatusByStateName(status, roomName);
+                return new BaseResponse(BaseResponse.SUCCESS);
             } catch (Exception err) {
                 log.info("ERROR: " + err.getMessage());
             }
         }
-        return "NOK";
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
 }

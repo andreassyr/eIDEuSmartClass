@@ -22,16 +22,18 @@ import org.springframework.stereotype.Service;
 public class TokenServiceImpl implements TokenService {
 
     private static final Logger log = LoggerFactory.getLogger(TokenServiceImpl.class);
-    
+
     @Autowired
     private ConfigPropertiesServices propServ;
 
     @Override
     public String decode(String token) throws UnsupportedEncodingException {
-        try{
-        return Jwts.parser().setSigningKey(propServ.getPropByName("KEY").getBytes("UTF-8"))
-                .parseClaimsJws(token).getBody().getSubject();
-        }catch(Exception e){
+        try {
+            log.info("JWT KEY" + propServ.getPropByName("KEY"));
+            return Jwts.parser().setSigningKey(propServ.getPropByName("KEY").getBytes("UTF-8"))
+                    .parseClaimsJws(token).getBody().getSubject();
+        } catch (Exception e) {
+            log.info("Error" + e.getMessage());
             return "";
         }
     }

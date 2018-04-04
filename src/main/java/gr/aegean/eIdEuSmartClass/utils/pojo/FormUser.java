@@ -22,6 +22,7 @@ public class FormUser {
     private String currentFamilyName;
     private String personIdentifier;
     private String dateOfBirth;
+    private String gender;
 
     /**
      * new columns!!
@@ -112,6 +113,14 @@ public class FormUser {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
 }

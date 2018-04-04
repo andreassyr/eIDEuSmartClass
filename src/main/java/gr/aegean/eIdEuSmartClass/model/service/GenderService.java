@@ -5,17 +5,19 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
+import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 
 /**
  *
  * @author nikos
  */
-public interface RasberryInterface {
+public interface GenderService {
     
-    public boolean requestCloseRoom(String roomName) throws MalformedURLException, ProtocolException, IOException;
-    
+    /**
+     * if name is null or empty then unspecified gender is returned
+     * @param genderName
+     * @return 
+     */
+    public Gender getGenderByName(String genderName);
     
 }

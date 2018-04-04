@@ -13,6 +13,7 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
+import gr.aegean.eIdEuSmartClass.utils.wrappers.DateWrappers;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,8 +66,8 @@ public class UserServiceImpl implements UserService {
     public BaseResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
             String email, String mobile, String affiliation, String country) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate birthDay = LocalDate.parse(dateOfBirth, formatter);
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate birthDay =  DateWrappers.parseEidasDate(dateOfBirth);//LocalDate.parse(dateOfBirth, formatter);
 
             User user = userRepo.findFirstByEIDASId(eIDASid);
             Role role = roleRepo.findFirstByName(Role.UNREGISTERED);
@@ -95,8 +96,8 @@ public class UserServiceImpl implements UserService {
     public BaseResponse updateLogin(String eIDasid) {
         if (userRepo.findFirstByEIDASId(eIDasid) != null) {
             try {
-                Timestamp time = Timestamp.valueOf(LocalDateTime.now());
-                userRepo.updateLastLoginByeIDASID(eIDasid, time);
+//                Timestamp time = Timestamp.valueOf(LocalDateTime.now());
+                userRepo.updateLastLoginByeIDASID(eIDasid, DateWrappers.getNowTimeStamp());
                 return new BaseResponse(BaseResponse.SUCCESS);
             } catch (Error e) {
                 log.error("ERROR", e);

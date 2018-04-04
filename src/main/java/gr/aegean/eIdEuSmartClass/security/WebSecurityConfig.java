@@ -7,9 +7,11 @@ package gr.aegean.eIdEuSmartClass.security;
 
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
 import gr.aegean.eIdEuSmartClass.model.service.impl.TokenAuthenticationUserDetailsService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,13 +46,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()
+                .antMatchers("/updateclass").access("hasAuthority('" + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" + RolesEnum.COORDINATOR.role() + "')")
+                .mvcMatchers(HttpMethod.GET, "/validateCode").anonymous()
                 .anyRequest().authenticated()
                 //                .antMatcher("/loggedIn")
                 //                .antMatchers("/register")
                 //                .antMatchers("/requestCloseRoom")
                 //                .antMatchers("/createUser")
                 //                .authorizeRequests()
-                .anyRequest().authenticated()
+//                .anyRequest().anonymous()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()
