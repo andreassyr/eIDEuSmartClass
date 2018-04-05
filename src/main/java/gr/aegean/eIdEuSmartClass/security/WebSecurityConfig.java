@@ -62,6 +62,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //                .antMatchers("/createUser")
                 //                .authorizeRequests()
                 //                .anyRequest().anonymous()
+
+                .antMatchers("/team").access("hasAuthority('" 
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" 
+                + RolesEnum.COORDINATOR.role()  + "') or hasAuthority('"
+                + RolesEnum.VIRTUALPARTICIPANT.role()  + "') or hasAuthority('"
+                + RolesEnum.VISITOR.role() + "')")
+                .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()

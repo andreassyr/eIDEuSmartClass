@@ -151,6 +151,20 @@ CREATE INDEX `fk_ActiveCodes_Users_idx` ON `eidSmartClass`.`ActiveCodes` (`user_
 CREATE INDEX `fk_ActiveCodes_Rooms1_idx` ON `eidSmartClass`.`ActiveCodes` (`classroom_id` ASC);
 
 
+-- -----------------------------------------------------
+-- Table `eidSmartClass`.`Skyperooms`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `eidSmartClass`.`Skyperooms` ;
+
+CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Skyperooms` (
+  `skyperoom_id` BIGINT NOT NULL AUTO_INCREMENT,
+  `url` VARCHAR(45) NOT NULL,
+   `name` VARCHAR(45) NOT NULL,
+ PRIMARY KEY (`skyperoom_id`))
+ENGINE = InnoDB;
+
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
@@ -192,6 +206,16 @@ USE `eidSmartClass`;
 INSERT INTO `eidSmartClass`.`ClassroomStates` (`status_id`, `name`) VALUES (DEFAULT, 'Inactive');
 INSERT INTO `eidSmartClass`.`ClassroomStates` (`status_id`, `name`) VALUES (DEFAULT, 'Active');
 INSERT INTO `eidSmartClass`.`ClassroomStates` (`status_id`, `name`) VALUES (DEFAULT, 'Restricted');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `eidSmartClass`.`ClassroomStates`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `eidSmartClass`;
+INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`) VALUES (DEFAULT, 'dummyurl1','room1');
+INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`) VALUES (DEFAULT, 'dummyurl2','room2');
 
 COMMIT;
 
