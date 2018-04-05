@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -96,8 +97,8 @@ public class RestControllers {
      * checks taht the give qr code/pin was belongs to the codes issued for the give roomID
      * that the room is ACTIVE and that the code was issued in the last 4 hours. and that it is not past 22:00
      * 
-     * TODO Also, if the key is not used within 5 mins of creation it is made inactive!!!
-     * TODO the admin keys codes do not expire!!!
+     * Also, if the key is not used within 5 mins of creation it is made inactive!!!
+     * the admin keys codes do not expire!!!
      * @param roomId
      * @param qrCode
      * @return 
@@ -110,7 +111,7 @@ public class RestControllers {
         ClassRoomState state = classroomServ.getRoomStatus(roomId);
         if ( state!=null &&!state.getName().equals(RoomStatesEnum.INACTIVE.state()) 
                 &&  roomCodes != null && roomCodes.contains(qrCode) 
-                && ValidateRoomCode.isValidActiveCode(qrCode, activeServ)) {
+                && ValidateRoomCode.validateCode(qrCode, activeServ,LocalDateTime.now())) {
             return new BaseResponse(BaseResponse.SUCCESS);
         }  
             return new BaseResponse(BaseResponse.FAILED);

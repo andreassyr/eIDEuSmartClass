@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`ActiveCodes` (
   `user_id` BIGINT NOT NULL,
   `classroom_id` INT NOT NULL,
   `granted_at` DATETIME NOT NULL,
+   `activated` tinyint DEFAULT 0,
   PRIMARY KEY (`active_code_id`, `user_id`, `classroom_id`),
   CONSTRAINT `fk_ActiveCodes_Users`
     FOREIGN KEY (`user_id`)
@@ -213,7 +214,7 @@ COMMIT;
 -- Data for table `eidSmartClass`.`classrooms`
 -- -----------------------------------------------------
 START TRANSACTION;
-insert into eidsmartclass.classrooms (name,classroom_status_id) values ('testroom',2);
+insert into eidsmartclass.classrooms (name,classroom_status_id) values ('atestroom',2);
 COMMIT;
 -- -----------------------------------------------------
 -- Data for table `eidSmartClass`.`ClassroomStates`

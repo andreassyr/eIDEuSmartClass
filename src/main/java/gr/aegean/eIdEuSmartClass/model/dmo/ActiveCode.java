@@ -27,6 +27,8 @@ public class ActiveCode {
 
     @Column(name = "granted_at")
     private LocalDateTime grantedAt;
+    
+    private boolean activated;
 
     public ActiveCode() {
     }
@@ -54,5 +56,15 @@ public class ActiveCode {
     public void setGrantedAt(LocalDateTime grantedAt) {
         this.grantedAt = grantedAt;
     }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+    
+    
 
 }
