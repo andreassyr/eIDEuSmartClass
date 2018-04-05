@@ -61,7 +61,8 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     @Override
     public ClassRoomState getRoomStatus(String roomName) {
-        return classRoomRepo.findByName(roomName).getState();
+        ClassRoom room = classRoomRepo.findByName(roomName);
+        return (room!=null)?room.getState():null;
     }
 
 }
