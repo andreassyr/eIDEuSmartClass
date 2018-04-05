@@ -43,19 +43,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/", "/home").permitAll()
+        http.authorizeRequests()
+                .antMatchers("/", "/home", "/validateCode").permitAll()
                 .antMatchers("/updateclass").access("hasAuthority('" + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" + RolesEnum.COORDINATOR.role() + "')")
-                .mvcMatchers(HttpMethod.GET, "/validateCode").anonymous()
                 .anyRequest().authenticated()
                 //                .antMatcher("/loggedIn")
                 //                .antMatchers("/register")
                 //                .antMatchers("/requestCloseRoom")
                 //                .antMatchers("/createUser")
                 //                .authorizeRequests()
-//                .anyRequest().anonymous()
+                //                .anyRequest().anonymous()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()
