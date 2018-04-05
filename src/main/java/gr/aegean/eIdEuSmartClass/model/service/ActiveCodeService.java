@@ -14,4 +14,6 @@ import java.util.List;
  */
 public interface ActiveCodeService {
     public  List<ActiveCode> getCodesByContent(String content);
+    public  void save(ActiveCode ac);
+
 }

@@ -210,6 +210,12 @@ INSERT INTO `eidSmartClass`.`ClassroomStates` (`status_id`, `name`) VALUES (DEFA
 COMMIT;
 
 -- -----------------------------------------------------
+-- Data for table `eidSmartClass`.`classrooms`
+-- -----------------------------------------------------
+START TRANSACTION;
+insert into eidsmartclass.classrooms (name,classroom_status_id) values ('testroom',2);
+COMMIT;
+-- -----------------------------------------------------
 -- Data for table `eidSmartClass`.`ClassroomStates`
 -- -----------------------------------------------------
 START TRANSACTION;
