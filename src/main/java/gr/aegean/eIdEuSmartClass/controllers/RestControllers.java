@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,12 +30,13 @@ import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author nikos
  */
-@Controller
+@RestController
 public class RestControllers {
 
     private static final Logger log = LoggerFactory.getLogger(RestControllers.class);
@@ -57,7 +57,7 @@ public class RestControllers {
 
     @Autowired
     private MailService mailServ;
-    
+
     @Autowired
     private ActiveCodeService activeServ;
 
@@ -90,32 +90,34 @@ public class RestControllers {
         return resp;
     }
 
-    
     /**
-     * checks taht the give qr code/pin was belongs to the codes issued for the give roomID
-     * that the room is ACTIVE and that the code was issued in the last 4 hours. and that it is not past 22:00
+     * checks taht the give qr code/pin was belongs to the codes issued for the
+     * give roomID that the room is ACTIVE and that the code was issued in the
+     * last 4 hours. and that it is not past 22:00
+     *
      * @param roomId
      * @param qrCode
-     * @return 
+     * @return
      */
     @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
         List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
-        if ( !classroomServ.getRoomStatus("roomId").getName().equals(RoomStatesEnum.INACTIVE.state()) 
-                &&  roomCodes != null && roomCodes.contains(qrCode) 
+        if (!classroomServ.getRoomStatus(roomId).getName().equals(RoomStatesEnum.INACTIVE.state())
+                && roomCodes != null && roomCodes.contains(qrCode)
                 && ValidateRoomCode.isValidActiveCode(qrCode, activeServ)) {
             return new BaseResponse(BaseResponse.SUCCESS);
-        }  
-            return new BaseResponse(BaseResponse.FAILED);
+        }
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
     /**
      * Changes the given room status to the provided one if the new status is
      * close (inActive) then an API calle is made to a raspberry to close the
-     * lights etc.
-     * Can only be used if user has role: admin,superadmin,coordinator
+     * lights etc. Can only be used if user has role:
+     * admin,superadmin,coordinator
+     *
      * @param roomName
      * @param principal
      * @return
