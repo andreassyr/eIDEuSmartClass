@@ -12,6 +12,7 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.GenderService;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class UserWrappers {
 
     public static User wrapFormUserToDBUser(FormUser user, RoleService roleServ, GenderService genServ) {
         if (user != null) {
-            Role unregisteredRole = roleServ.getRoleByName("unregistered");
+            Role unregisteredRole = roleServ.getRoleByName(RolesEnum.UNIDENTIFIED.role());
             Gender gender = genServ.getGenderByName(user.getGender());
             return new User(unregisteredRole, user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
                     user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry(), gender, 

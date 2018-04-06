@@ -15,5 +15,9 @@ import java.util.List;
 public interface MailService {
      
     public String prepareAndSend(String recipient, String message, String userName);
+    
+    public String prepareAndSendTeamCredentials(String recipient, String teamUserName, String teamPassword, String name);
+    
+    public String prepareAndSendSkypeLink(String recipient, String name, String url);
    
 }

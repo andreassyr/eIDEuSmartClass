@@ -28,5 +28,11 @@ public class ActiveCodeServiceImpl implements ActiveCodeService{
     public List<ActiveCode> getCodesByContent(String content) {
         return activeRepo.getCodeFromContent(content);
     }
+
+    @Override
+    @Transactional
+    public void save(ActiveCode ac) {
+        activeRepo.save(ac);
+    }
     
 }

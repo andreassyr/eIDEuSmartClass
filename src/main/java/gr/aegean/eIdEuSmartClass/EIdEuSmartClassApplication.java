@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @SpringBootApplication
+@Import({MvcConfig.class,MailConfig.class})
 public class EIdEuSmartClassApplication {
 
     public static void main(String[] args) {

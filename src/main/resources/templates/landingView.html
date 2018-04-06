@@ -13,11 +13,37 @@ and open the template in the editor.
     <body>
         <div>This is the landing page</div>
 
-<!--        <button id="login" onclick="login()">Login</button>
-        <button id="register" onclick="register()">Register</button>-->
+        <!--        <button id="login" onclick="login()">Login</button>
+                <button id="register" onclick="register()">Register</button>-->
         <button id="test" onclick="test()">Set Dummy JWT cookie</button>
         <button id="test" onclick="physical()">Gain Physical Access</button>
+
+
+        <div>
+            <select id="roomSelect">
+                Select class room:
+                <option value=""> -- </option>
+                <option th:each="room : ${classRooms}"
+                        th:value="${room.id}"
+                        th:utext="${room.name}"/>
+            </select>
+        </div>
+
+
+
+
         <button id="test" onclick="team()">Join Team </button>
+
+
+        <div>
+            Select skype conference:
+            <select id="skypeSelect">
+                <option value=""> -- </option>
+                <option th:each="room : ${skypeRooms}"
+                        th:value="${room.id}"
+                        th:utext="${room.name}"/>
+            </select>
+        </div>
         <button id="test" onclick="skype()">Join Skype</button>
 
         <script>
@@ -30,7 +56,7 @@ and open the template in the editor.
                 }
                 document.cookie = name + "=" + (value || "") + expires + "; path=/";
             }
-            
+
 //            function login(){
 //                setCookie("flow","login",1);
 //            }
@@ -38,21 +64,25 @@ and open the template in the editor.
 //            function register(){
 //                setCookie("flow","register",1);
 //            }
-            
-            function physical(){
-                setCookie("type","physical",1);
+
+            function physical() {
+                var e = document.getElementById("roomSelect");
+                var roomId = e.options[e.selectedIndex].value;
+                setCookie("type", "physical-"+roomId, 1);
             }
-            
-            function skype(){
-                setCookie("type","skype",1);
+
+            function skype() {
+                var e = document.getElementById("skypeSelect");
+                var roomId = e.options[e.selectedIndex].value;
+                setCookie("type", "skype-" + roomId, 1);
             }
-            
-            function team(){
-                setCookie("type","team",1);
+
+            function team() {
+                setCookie("type", "team", 1);
             }
-            
-            function test(){
-                setCookie("access_token","eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48",1);
+
+            function test() {
+                setCookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48", 1);
             }
 
         </script>

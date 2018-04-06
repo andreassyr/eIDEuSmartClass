@@ -5,6 +5,7 @@
  */
 package gr.aegean.eIdEuSmartClass.controllers;
 
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,7 +73,7 @@ public class RestControllers {
     /**
      * Adds a new user to the database and to the Active Directory by making an
      * appropriate API call
-     *
+     *  ***TODO desired role!!!!!****
      * @return
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
@@ -95,6 +97,8 @@ public class RestControllers {
      * give roomID that the room is ACTIVE and that the code was issued in the
      * last 4 hours. and that it is not past 22:00
      *
+     * Also, if the key is not used within 5 mins of creation it is made inactive!!!
+     * the admin keys codes do not expire!!!
      * @param roomId
      * @param qrCode
      * @return
@@ -104,9 +108,11 @@ public class RestControllers {
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
         List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
-        if (!classroomServ.getRoomStatus(roomId).getName().equals(RoomStatesEnum.INACTIVE.state())
-                && roomCodes != null && roomCodes.contains(qrCode)
-                && ValidateRoomCode.isValidActiveCode(qrCode, activeServ)) {
+
+        ClassRoomState state = classroomServ.getRoomStatus(roomId);
+        if ( state!=null &&!state.getName().equals(RoomStatesEnum.INACTIVE.state()) 
+                &&  roomCodes != null && roomCodes.contains(qrCode) 
+                && ValidateRoomCode.validateCode(qrCode, activeServ,LocalDateTime.now())) {
             return new BaseResponse(BaseResponse.SUCCESS);
         }
         return new BaseResponse(BaseResponse.FAILED);
