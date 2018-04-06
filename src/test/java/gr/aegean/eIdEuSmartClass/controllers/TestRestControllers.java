@@ -114,7 +114,7 @@ public class TestRestControllers {
 
 //        Mockito.when(roleServ.getRoleByName(any(String.class))).thenReturn(adminRole);
         Mockito.when(userServ.findByEid("GR/GR/ERMIS-11076669")).thenReturn(adminUser);
-
+//
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TestRestControllers {
         cookies[0] = c;
         cookies[1] = c2;
         mockMvc.perform(get("/updateclass").param("roomName", "room1").param("roomStatus", "testStatus"))
-                .andExpect(status().isOk());
+                .andExpect(status().is(302));
     }
 
     @Test

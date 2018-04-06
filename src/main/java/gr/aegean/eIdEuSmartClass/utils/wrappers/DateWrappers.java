@@ -24,5 +24,11 @@ public class DateWrappers {
     public static Timestamp getNowTimeStamp(){
         return Timestamp.valueOf(LocalDateTime.now());
     }
+    
+    
+    public static LocalDateTime parseDateTime(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(date, formatter);
+    }
 
 }
