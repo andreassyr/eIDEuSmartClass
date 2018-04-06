@@ -5,21 +5,31 @@
  */
 package gr.aegean.eIdEuSmartClass.controllers;
 
-import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
+import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCode;
+import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCodePK;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
+import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.ConfigPropertiesServices;
 import gr.aegean.eIdEuSmartClass.model.service.GenderService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.enums.GenderEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
+import gr.aegean.eIdEuSmartClass.utils.generators.QRGenerator;
+import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +54,7 @@ public class ViewControllers {
     private TokenService tokenServ;
 
     @Autowired
-    private ClassRoomRepository classRepo;
+    private ClassRoomService classServ;
 
     @Autowired
     private UserService userServ;
@@ -57,6 +67,12 @@ public class ViewControllers {
 
     @Autowired
     private MailService mailServ;
+
+    @Autowired
+    private SkypeRoomService skypeRoomServ;
+
+    @Autowired
+    private ActiveCodeService activeServ;
 
     public final static String TOKEN_NAME = "access_token";
     private final static Logger log = LoggerFactory.getLogger(ViewControllers.class);
@@ -73,11 +89,13 @@ public class ViewControllers {
      * Returns the landing view containing options to register, gain physical
      * access, skype room, team
      *
+     * @param model
      * @return
      */
     @RequestMapping(value = {"landing", "/", ""})
     public String landing(Model model) {
-        model.addAttribute("classRooms", classRepo.findAll());
+        model.addAttribute("classRooms", classServ.findAll());
+        model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
         return "landingView";
     }
 
@@ -90,6 +108,12 @@ public class ViewControllers {
      * the login physical (QR), skype, or team and the browser is redirected to
      * the appropriate view
      *
+     * @param jwtCookie
+     * @param typeCookie
+     * @param req
+     * @param principal
+     * @param model
+     * @param redirectAttrs
      * @return
      */
     @RequestMapping(value = {"eIDASSuccess"})
@@ -120,12 +144,16 @@ public class ViewControllers {
             return "redirect:/pending";
         }
 
-        if (typeCookie.equals("Team")) {
-            return "teamView";
+        if (typeCookie.contains("team")) {
+            return "redirect:/team";
         }
 
-        if (typeCookie.equals("skype")) {
-            return "skypeView";
+        if (typeCookie.contains("skype")) {
+            return "redirect:/skype";
+        }
+
+        if (typeCookie.contains("physical")) {
+            return "redirect:/roomaccess";
         }
 
         return "loggedInView";
@@ -136,26 +164,67 @@ public class ViewControllers {
         return "pendingView";
     }
 
-    @RequestMapping(value = {"register"})
-    public String register() {
-        return "registerView";
+    @RequestMapping(value = {"team"})
+    public String team(Principal principal, Model model) {
+        User user = userServ.findByEid(principal.getName());
+        //TODO  insert User into the Group “Teams” of the Azure AD
+        String teamName = user.getName();
+        String teamPass = UtilGenerators.generateRandomPass(10);
+        mailServ.prepareAndSendTeamCredentials(user.getEmail(), teamName, teamPass, user.getName() + " " + user.getSurname());
+        model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+        return "teamView";
     }
 
     @RequestMapping(value = {"skype"})
-    public String skype() {
+    public String skype(Model model,
+            Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
+        User user = userServ.findByEid(principal.getName());
+        //TODO insert user to Group “SkypeForBusiness” of the Azure AD
+        String roomId = typeCookie.split("-")[1];
+        SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
+        if (room != null) {
+            model.addAttribute("room", room);
+            mailServ.prepareAndSendSkypeLink(user.getEmail(), user.getName() + user.getSurname(), room.getUrl());
+        }
         return "skypeView";
     }
-    
-    @RequestMapping(value = {"team"})
-    public String team() {
-        return "teamView";
+
+    @RequestMapping(value = {"register"})
+    public String register(Principal principal) {
+        return "registerView";
     }
-    
-    @RequestMapping(value = {"physical"})
-    public String physical() {
-        return "physical";
+
+    @RequestMapping(value = {"roomaccess"})
+    public String physical(Model model,
+            Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
+
+        User user = userServ.findByEid(principal.getName());
+        String roomId = typeCookie.split("-")[1];
+        ClassRoom room = classServ.getRoomById(roomId);
+
+        if (room != null
+                && user != null
+                && !user.getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
+            //TODO Is inserted into the Group “UAegean-HPClass” of the Azure AD 
+            ActiveCode ac = new ActiveCode();
+            ac.setContent(UtilGenerators.generateRandomPIN(4));
+            ac.setGrantedAt(LocalDateTime.now());
+            ActiveCodePK key = new ActiveCodePK(user, room);
+            ac.setId(key);
+            activeServ.save(ac);
+            model.addAttribute("pin", ac.getContent());
+            String qrImgPath;
+            try {
+                qrImgPath = QRGenerator.generateQR(roomId, user.geteIDAS_id(), ac.getContent());
+                model.addAttribute("qrPath", qrImgPath);
+            } catch (IOException ex) {
+                log.info("Error " + ex.getMessage());
+            }
+        }
+
+        return "physicalView";
     }
-    
+
     /**
      * private admin view. Can only be accessed by admin users and allows to
      * edit users

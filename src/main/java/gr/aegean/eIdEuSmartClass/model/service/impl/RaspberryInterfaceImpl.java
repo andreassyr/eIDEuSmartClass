@@ -30,8 +30,8 @@ public class RaspberryInterfaceImpl implements RaspberryInterface {
 
     @Override
     public boolean requestCloseRoom(String roomName) throws MalformedURLException, ProtocolException, IOException {
-        String url = propServ.getPropByName("RASBERRY_URL");
-        String endpoint = propServ.getPropByName("RASBERRY_CLOSE_ROOM");
+        String url = propServ.getPropByName("RASPBERRY_URL");
+        String endpoint = propServ.getPropByName("RASPBERRY_CLOSE_ROOM");
 
         URL obj;
         obj = new URL(url + "/" + endpoint +"?roomName="+roomName);

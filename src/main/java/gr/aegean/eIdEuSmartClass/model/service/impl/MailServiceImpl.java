@@ -6,14 +6,13 @@
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
+import gr.aegean.eIdEuSmartClass.utils.builder.MailContentBuilder;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.context.annotation.Bean;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +29,6 @@ public class MailServiceImpl implements MailService {
     private static Logger log = LoggerFactory.getLogger(MailService.class);
 
     @Autowired
-    private MailContentBuilder mailContentBuilder;
-
-    @Autowired
     private JavaMailSender mailSender;
 
     @Override
@@ -46,8 +42,51 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject(subject);
 
-            String content = mailContentBuilder.build(userName);
+            String content = MailContentBuilder.buildWelcome(userName);
 
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+            return "OK";
+        } catch (Exception e) {
+            log.error("Error sending mail", e.getMessage());
+            log.error(e.getMessage());
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendTeamCredentials(String recipient, String teamUserName, String teamPassword, String name) {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        try {
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
+            String content = MailContentBuilder.buildTeamRegistration(teamUserName, teamPassword, name);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+            return "OK";
+        } catch (Exception e) {
+            log.error("Error sending mail", e.getMessage());
+            log.error(e.getMessage());
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendSkypeLink(String recipient, String name, String url) {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        try {
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
+            String content = MailContentBuilder.buildSkypeForBusinessContent(name, url);
             helper.setText(content, true);
 
             mailSender.send(message);

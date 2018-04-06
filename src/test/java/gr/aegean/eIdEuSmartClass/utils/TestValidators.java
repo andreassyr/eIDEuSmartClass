@@ -7,6 +7,10 @@ package gr.aegean.eIdEuSmartClass.utils;
 
 import gr.aegean.eIdEuSmartClass.EIdEuSmartClassApplication;
 import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCode;
+import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCodePK;
+import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
+import gr.aegean.eIdEuSmartClass.model.dmo.Role;
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
@@ -14,10 +18,15 @@ import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.security.TokenAuthenticationFilter;
 import gr.aegean.eIdEuSmartClass.security.WebSecurityConfig;
 import gr.aegean.eIdEuSmartClass.utils.TestValidators.mockConfig;
+import gr.aegean.eIdEuSmartClass.utils.enums.GenderEnum;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.DateWrappers;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -69,10 +78,12 @@ public class TestValidators {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain).build();
+        
+        LocalDateTime todayAt558 = LocalDate.now().atTime(5, 58);
         List<ActiveCode> codes = new ArrayList();
         ActiveCode testCode = new ActiveCode();
         testCode.setContent("1234");
-        testCode.setGrantedAt(LocalDateTime.now());
+        testCode.setGrantedAt(todayAt558);
         codes.add(testCode);
         
         List<ActiveCode> badCodes = new ArrayList();
@@ -82,19 +93,46 @@ public class TestValidators {
         badCodes.add(badTestCode);
         
         
-        Mockito.when(activeServ.getCodesByContent("1234")).thenReturn(codes);
+        LocalDateTime todayAt458 = LocalDate.now().atTime(5, 58);
+        List<ActiveCode> adminCodes = new ArrayList();
+        ActiveCode adminCode = new ActiveCode();
+        adminCode.setContent("4567");
+        adminCode.setGrantedAt(todayAt458);
+        adminCodes.add(adminCode);
+        Role adminRole = new Role(RolesEnum.ADMIN.role());
+        Gender gender = new Gender(GenderEnum.UNSPECIFIED.gender());
+        User user = new User(adminRole, "e", "n", "s", "e", "m", "a", "c", gender, LocalDate.now(), null);
+        ActiveCodePK key = new ActiveCodePK(user, null);
+        adminCode.setId(key);
+        
+        Mockito.when(activeServ.getCodesByContent("1234")).thenReturn(adminCodes);
         Mockito.when(activeServ.getCodesByContent("2345")).thenReturn(badCodes);
+        Mockito.when(activeServ.getCodesByContent("4567")).thenReturn(adminCodes);
     }
 
     @Test
     public void testValidateCode() {
-        assertEquals(ValidateRoomCode.isValidActiveCode("1234", activeServ),true);
+        LocalDateTime todayAt6 = LocalDate.now().atTime(6, 0);
+        assertEquals(ValidateRoomCode.validateCode("1234", activeServ,todayAt6),true);
     }
     
     @Test
     public void testInValidateCode() {
-        assertEquals(ValidateRoomCode.isValidActiveCode("2345", activeServ),false);
+        assertEquals(ValidateRoomCode.validateCode("2345", activeServ,LocalDateTime.now()),false);
     }
     
+    
+    @Test
+    public void testAdminCode() {
+         LocalDateTime todayAt21 = LocalDate.now().atTime(21, 0);
+        assertEquals(ValidateRoomCode.validateCode("4567", activeServ,todayAt21),true);
+    }
 
+    @Test
+    public void testAdminCodeAfter22() {
+         LocalDateTime todayAt2201 = LocalDate.now().atTime(22, 1);
+        assertEquals(ValidateRoomCode.validateCode("4567", activeServ,todayAt2201),false);
+    }
+    
+    
 }

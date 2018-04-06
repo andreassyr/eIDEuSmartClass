@@ -9,7 +9,7 @@ services:
             - 8090:8090
         environment:
             - KEY=secret
-            - RASBERRY_URL=http://test.com
-            - RASBERRY_CLOSE_ROOM=closeroom
+            - RASPBERRY_URL=http://test.com
+            - RASPBERRY_CLOSE_ROOM=closeroom
         volumes:
             

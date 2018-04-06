@@ -5,6 +5,7 @@ try running the schema.sql in src\test\resources once using a command line
 
 
 Required env variable:
-KEY=jwt secret
-RASBERRY_URL=url of rasberry api
-RASBERRY_CLOSE_ROOM= close room end point of rasberry
+- KEY=jwt secret
+- RASPBERRY_URL=url of raspberry api
+- RASPBERRY_CLOSE_ROOM= close room end point of raspberry
+- TEAM_URL = the url of the MS TEAM webpage that the user can redirect ot

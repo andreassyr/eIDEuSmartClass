@@ -15,6 +15,8 @@
                 <maven.surefire.debug>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address}</maven.surefire.debug>
                 <jpda.listen>true</jpda.listen>
                 <Env.KEY>secret</Env.KEY>
+                <Env.TEAM_URL>bar</Env.TEAM_URL>
+                
             </properties>
         </action>
         <action>
@@ -95,6 +97,8 @@
                 <exec.executable>java</exec.executable>
                 <skipTests>true</skipTests>
                 <Env.KEY>secret</Env.KEY>
+                <Env.TEAM_URL>bar</Env.TEAM_URL>
+                
             </properties>
         </action>
         <action>
@@ -112,6 +116,8 @@
                 <exec.classpathScope>${classPathScope}</exec.classpathScope>
                 <skipTests>true</skipTests>
                 <Env.KEY>secret</Env.KEY>
+                <Env.TEAM_URL>bar</Env.TEAM_URL>
+                
             </properties>
         </action>
         <action>
@@ -129,6 +135,8 @@
                 <jpda.listen>true</jpda.listen>
                 <skipTests>true</skipTests>
                 <Env.KEY>secret</Env.KEY>
+                <Env.TEAM_URL>bar</Env.TEAM_URL>
+                
             </properties>
         </action>
     </actions>

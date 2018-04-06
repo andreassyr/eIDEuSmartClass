@@ -5,15 +5,16 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
-import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCode;
+import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
 import java.util.List;
 
 /**
  *
  * @author nikos
  */
-public interface ActiveCodeService {
-    public  List<ActiveCode> getCodesByContent(String content);
-    public  void save(ActiveCode ac);
-
+public interface SkypeRoomService {
+    
+    public List<SkypeRoom> getAllRooms();
+    
+    public SkypeRoom getRoomFromId(String id);
 }

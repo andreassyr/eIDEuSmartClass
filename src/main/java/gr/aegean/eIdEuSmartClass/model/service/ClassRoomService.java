@@ -21,4 +21,6 @@ public interface ClassRoomService {
     public boolean setRoomStatusByStateName(String stateName, String name); 
    
     public ClassRoomState getRoomStatus(String roomName);
+    
+    public ClassRoom getRoomById(String id);
 }
