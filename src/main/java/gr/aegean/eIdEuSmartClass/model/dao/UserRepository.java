@@ -28,5 +28,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.lastLogin = :date where u.eIDAS_id = :eId")
     public void updateLastLoginByeIDASID(@Param("eId")String eId, @Param("date") Timestamp date);
-
+    
 }

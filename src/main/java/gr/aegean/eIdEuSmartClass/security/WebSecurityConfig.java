@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity webSecurity) {
-        webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/validateCode**","/getUsersByRole**").antMatchers("/tmp**");
 //        webSecurity.ignoring().antMatchers("/tmp**");
 //        webSecurity.
     }
