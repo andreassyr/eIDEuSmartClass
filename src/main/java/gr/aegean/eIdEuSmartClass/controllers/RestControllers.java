@@ -107,6 +107,7 @@ public class RestControllers {
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
+        //TODO send email
         List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
         ClassRoomState state = classroomServ.getRoomStatus(roomId);
         if ( state!=null &&!state.getName().equals(RoomStatesEnum.INACTIVE.state()) 
@@ -128,7 +129,7 @@ public class RestControllers {
      */
     @RequestMapping(value = "updateclass", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    BaseResponse sendCloseRoom(@RequestParam(value = "roomName", required = true) String roomName,
+    BaseResponse updateClassRoom(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "roomStatus", required = true) String status,
             Principal principal) {
         String userEid = principal.getName();
