@@ -50,7 +50,7 @@ public class ValidateRoomCode {
     }
 
     public static boolean isOwnedBySuperUser(ActiveCode matchingCode) {
-        return (matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.ADMIN.role())
+        return matchingCode.getId() != null && (matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.ADMIN.role())
                 || matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.COORDINATOR.role())
                 || matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.SUPERADMIN.role()));
     }

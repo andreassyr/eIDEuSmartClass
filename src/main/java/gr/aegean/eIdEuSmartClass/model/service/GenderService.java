@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
+import java.util.Optional;
 
 /**
  *
@@ -18,6 +19,6 @@ public interface GenderService {
      * @param genderName
      * @return 
      */
-    public Gender getGenderByName(String genderName);
+    public Optional<Gender> getGenderByName(String genderName);
     
 }

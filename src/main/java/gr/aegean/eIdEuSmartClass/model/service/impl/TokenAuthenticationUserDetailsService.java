@@ -13,6 +13,7 @@ import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,13 +59,13 @@ public class TokenAuthenticationUserDetailsService implements AuthenticationUser
 //                    .collect(Collectors.toList()));
 
             FormUser formUser = UserWrappers.wrapDecodedJwtEidasUser(token);
-            User user = this.userService.findByEid(formUser.getEid());
+            Optional<User> user = this.userService.findByEid(formUser.getEid());
 
-            if (user == null) {
-                user = UserWrappers.wrapFormUserToDBUser(formUser, roleServ, genServ);
+            if (!user.isPresent()) {
+                user = Optional.of(UserWrappers.wrapFormUserToDBUser(formUser, roleServ, genServ));
             }
 
-            List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole().getName());
+            List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.get().getRole().getName());
 
             PreAuthenticatedAuthenticationToken withAuthorities
                     = new PreAuthenticatedAuthenticationToken(token, token, authorities);

@@ -14,12 +14,10 @@ import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.DateWrappers;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,26 +65,31 @@ public class UserServiceImpl implements UserService {
             String email, String mobile, String affiliation, String country) {
         try {
             //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate birthDay =  DateWrappers.parseEidasDate(dateOfBirth);//LocalDate.parse(dateOfBirth, formatter);
+            LocalDate birthDay = DateWrappers.parseEidasDate(dateOfBirth);//LocalDate.parse(dateOfBirth, formatter);
 
-            User user = userRepo.findFirstByEIDASId(eIDASid);
-            Role role = roleRepo.findFirstByName(Role.UNREGISTERED);
-            Gender gender = genderRepo.findFirstByName(Gender.UNSPECIFIED);
-            if (user == null) {
-                user = new User(role, eIDASid, name, surname, email, mobile, affiliation, country, gender, birthDay, 
-                                Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                userRepo.save(user);
+            Optional<User> user = userRepo.findFirstByEIDASId(eIDASid);
+            Optional<Role> role = roleRepo.findFirstByName(Role.UNREGISTERED);
+            Optional<Gender> gender = genderRepo.findFirstByName(Gender.UNSPECIFIED);
+            if (!user.isPresent()) {
+                if (role.isPresent() && gender.isPresent()) {
+                    user = Optional.of(new User(role.get(), eIDASid, name, surname, email, mobile, affiliation, country, gender.get(), birthDay,
+                            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+                    userRepo.save(user.get());
+
+                } else {
+                    throw new NullPointerException("Role or Gender was not founde for unregeistered/undefined");
+                }
             } else {
-                user.setName(name);
-                user.setSurname(surname);
-                user.setLastLogin(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                user.setBirthday(birthDay);
-                userRepo.save(user);
+                user.get().setName(name);
+                user.get().setSurname(surname);
+                user.get().setLastLogin(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                user.get().setBirthday(birthDay);
+                userRepo.save(user.get());
             }
             return new BaseResponse(BaseResponse.SUCCESS);
 
         } catch (Error e) {
-            log.info("ERROR::"+ e);
+            log.info("ERROR::" + e);
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
@@ -94,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public BaseResponse updateLogin(String eIDasid) {
-        if (userRepo.findFirstByEIDASId(eIDasid) != null) {
+        if (userRepo.findFirstByEIDASId(eIDasid).isPresent()) {
             try {
 //                Timestamp time = Timestamp.valueOf(LocalDateTime.now());
                 userRepo.updateLastLoginByeIDASID(eIDasid, DateWrappers.getNowTimeStamp());
@@ -107,7 +110,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEid(String eID) {
+    public Optional<User> findByEid(String eID) {
         return userRepo.findFirstByEIDASId(eID);
     }
 

@@ -20,5 +20,5 @@ public interface GenderRepository extends JpaRepository<Gender, Long> {
     List<Gender> findAll();
 
     Optional<Gender> findByName(String name);
-    public Gender findFirstByName(String name);
+    public Optional<Gender> findFirstByName(String name);
 }

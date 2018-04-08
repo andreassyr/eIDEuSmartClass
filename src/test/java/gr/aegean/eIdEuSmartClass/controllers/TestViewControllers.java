@@ -57,9 +57,9 @@ public class TestViewControllers {
         Cookie[] cookies = new Cookie[2];
         cookies[0] = c;
         cookies[1] = c2;
-        mockMvc.perform(get("/eIdasSuccess")
+        mockMvc.perform(get("/eIDASSuccess")
                 .cookie(cookies))
-                .andExpect(status().isOk());
+                .andExpect(redirectedUrl("/register"));
     }
     
     @Test
@@ -69,7 +69,7 @@ public class TestViewControllers {
         Cookie[] cookies = new Cookie[2];
         cookies[0] = c;
         cookies[1] = c2;
-        mockMvc.perform(get("/eIdasSuccess")
+        mockMvc.perform(get("/eIDASSuccess")
                 .cookie(cookies))
                 .andExpect(redirectedUrl("http://localhost/landing"));
     }

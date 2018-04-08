@@ -80,7 +80,7 @@ public class DbIntegrationTests {
         User user = new User(r, "eidas-id4", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         System.out.println(user.toString());
         userRepository.save(user);
-        User user3 = userRepository.findFirstByEIDASId("eidas-id4");
+        User user3 = userRepository.findFirstByEIDASId("eidas-id4").get();
         assertEquals(user3.geteIDAS_id(), "eidas-id4");
 
     }
@@ -120,14 +120,14 @@ public class DbIntegrationTests {
     public void testActiveCode() {
 
         
-        Role r = roleRepository.findFirstByName(Role.UNREGISTERED);
-        Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED);
+        Role r = roleRepository.findFirstByName(Role.UNREGISTERED).get();
+        Gender g = genderRepository.findFirstByName(Gender.UNSPECIFIED).get();
         LocalDate birthday = LocalDate.now();
         User user = new User(r, "eidas-id3", "name2", "surname2", "email", "1234", "ntua", "gr", g, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
 
-        Role r2 =roleRepository.findFirstByName(Role.UNREGISTERED);
-        Gender g2 = genderRepository.findFirstByName(Gender.UNSPECIFIED);
+        Role r2 =roleRepository.findFirstByName(Role.UNREGISTERED).get();
+        Gender g2 = genderRepository.findFirstByName(Gender.UNSPECIFIED).get();
         User user2 = new User(r2, "eidas-id5", "name5", "surname5", "email2", "12344", "ntua", "gr", g2, birthday, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         userRepository.save(user);
         userRepository.save(user2);
@@ -202,7 +202,7 @@ public class DbIntegrationTests {
 
         classRoomRepository.save(room);
 
-        ClassRoom classRoom2 = classRoomRepository.findByName("testRoom");
+        ClassRoom classRoom2 = classRoomRepository.findByName("testRoom").get();
         assertEquals(classRoom2.getState().getName(), state.get().getName());
     }
 

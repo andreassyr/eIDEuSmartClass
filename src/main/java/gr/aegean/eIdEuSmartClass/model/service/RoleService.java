@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
+import java.util.Optional;
 
 /**
  *
@@ -13,6 +14,6 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Role;
  */
 public interface RoleService {
     
-    public Role getRoleByName(String roleName);
-    
+    public Optional<Role> getRoleByName(String roleName);
+    public boolean updateUserRole(String userEid, String roleName);
 }
