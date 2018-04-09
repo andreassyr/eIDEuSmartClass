@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -121,17 +122,23 @@ public class ViewControllers {
             @CookieValue(value = "type", required = true) String typeCookie,
             HttpServletRequest req, Principal principal, Model model, RedirectAttributes redirectAttrs) {
 
-        User user = userServ.findByEid(principal.getName());
-        if (user == null) {
+        Optional<User> user = userServ.findByEid(principal.getName());
+        if (!user.isPresent()) {
             try {
                 String decodedToken = tokenServ.decode(jwtCookie);
                 FormUser fuser = UserWrappers.wrapDecodedJwtEidasUser(decodedToken);
-                user = UserWrappers.wrapFormUserToDBUser(fuser, roleServ, genServ);
-                user.setEmail("n/a");
-                user.setGender(genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()));
-                userServ.saveUser(user);
-                redirectAttrs.addFlashAttribute("user", fuser);
+                user = Optional.of(UserWrappers.wrapFormUserToDBUser(fuser, roleServ, genServ));
+                if (user.isPresent()) {
+                    user.get().setEmail("n/a");
+                    if (genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).isPresent()) {
+                        user.get().setGender(genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).get());
+                    }
+                    userServ.saveUser(user.get());
+                    redirectAttrs.addFlashAttribute("user", fuser);
 
+                } else {
+                    log.info("Could not wrap user from eIDAS success");
+                }
                 return "redirect:/register";
             } catch (UnsupportedEncodingException ex) {
                 log.info("ERROR " + ex.getMessage());
@@ -139,8 +146,8 @@ public class ViewControllers {
                 log.info("ERROR " + ex.getMessage());
             }
         }
-        if (user.getRole().getName().equals(RolesEnum.UNIDENTIFIED.role())) {
-            redirectAttrs.addFlashAttribute("user", user);
+        if (user.isPresent() && user.get().getRole().getName().equals(RolesEnum.UNIDENTIFIED.role())) {
+            redirectAttrs.addFlashAttribute("user", user.get());
             return "redirect:/pending";
         }
 
@@ -166,25 +173,29 @@ public class ViewControllers {
 
     @RequestMapping(value = {"team"})
     public String team(Principal principal, Model model) {
-        User user = userServ.findByEid(principal.getName());
+        Optional<User> user = userServ.findByEid(principal.getName());
         //TODO  insert User into the Group “Teams” of the Azure AD
-        String teamName = user.getName();
-        String teamPass = UtilGenerators.generateRandomPass(10);
-        mailServ.prepareAndSendTeamCredentials(user.getEmail(), teamName, teamPass, user.getName() + " " + user.getSurname());
-        model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+        if (user.isPresent()) {
+            String teamName = user.get().getName();
+            String teamPass = UtilGenerators.generateRandomPass(10);
+            mailServ.prepareAndSendTeamCredentials(user.get().getEmail(), teamName, teamPass, user.get().getName() + " " + user.get().getSurname());
+            model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+        }
         return "teamView";
     }
 
     @RequestMapping(value = {"skype"})
     public String skype(Model model,
             Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
-        User user = userServ.findByEid(principal.getName());
+        Optional<User> user = userServ.findByEid(principal.getName());
         //TODO insert user to Group “SkypeForBusiness” of the Azure AD
-        String roomId = typeCookie.split("-")[1];
-        SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
-        if (room != null) {
-            model.addAttribute("room", room);
-            mailServ.prepareAndSendSkypeLink(user.getEmail(), user.getName() + user.getSurname(), room.getUrl());
+        if (user.isPresent()) {
+            String roomId = typeCookie.split("-")[1];
+            SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
+            if (room != null) {
+                model.addAttribute("room", room);
+                mailServ.prepareAndSendSkypeLink(user.get().getEmail(), user.get().getName() + user.get().getSurname(), room.getUrl());
+            }
         }
         return "skypeView";
     }
@@ -198,24 +209,24 @@ public class ViewControllers {
     public String physical(Model model,
             Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
 
-        User user = userServ.findByEid(principal.getName());
+        Optional<User> user = userServ.findByEid(principal.getName());
         String roomId = typeCookie.split("-")[1];
-        ClassRoom room = classServ.getRoomById(roomId);
+        Optional<ClassRoom> room = classServ.getRoomById(roomId);
 
-        if (room != null
-                && user != null
-                && !user.getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
+        if (room.isPresent()
+                && user.isPresent()
+                && !user.get().getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
             //TODO Is inserted into the Group “UAegean-HPClass” of the Azure AD 
             ActiveCode ac = new ActiveCode();
             ac.setContent(UtilGenerators.generateRandomPIN(4));
             ac.setGrantedAt(LocalDateTime.now());
-            ActiveCodePK key = new ActiveCodePK(user, room);
+            ActiveCodePK key = new ActiveCodePK(user.get(), room.get());
             ac.setId(key);
             activeServ.save(ac);
             model.addAttribute("pin", ac.getContent());
             String qrImgPath;
             try {
-                qrImgPath = QRGenerator.generateQR(roomId, user.geteIDAS_id(), ac.getContent());
+                qrImgPath = QRGenerator.generateQR(roomId, user.get().geteIDAS_id(), ac.getContent());
                 model.addAttribute("qrPath", qrImgPath);
             } catch (IOException ex) {
                 log.info("Error " + ex.getMessage());

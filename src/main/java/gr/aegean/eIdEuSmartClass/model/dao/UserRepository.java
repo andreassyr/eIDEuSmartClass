@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public List<User> findAll();
 
     @Query("from User U where U.eIDAS_id = :id")
-    public User findFirstByEIDASId(@Param("id")String eIDASid);
+    public Optional<User> findFirstByEIDASId(@Param("id")String eIDASid);
     
     @Modifying(clearAutomatically = true)
     @Query("update User u set u.lastLogin = :date where u.eIDAS_id = :eId")

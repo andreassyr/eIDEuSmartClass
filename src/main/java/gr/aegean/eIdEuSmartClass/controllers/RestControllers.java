@@ -30,10 +30,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
+import gr.aegean.eIdEuSmartClass.model.service.RoleService;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -51,7 +54,7 @@ public class RestControllers {
     private UserService userServ;
 
     @Autowired
-    private RoleRepository roleRepo;
+    private RoleService roleServ;
 
     @Autowired
     private ClassRoomService classroomServ;
@@ -114,10 +117,11 @@ public class RestControllers {
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
+        //TODO send email
         List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
 
-        ClassRoomState state = classroomServ.getRoomStatus(roomId);
-        if (!state.getName().equals(RoomStatesEnum.INACTIVE.state())
+        Optional<ClassRoomState> state = classroomServ.getRoomStatus(roomId);
+        if (state.isPresent() && !state.get().getName().equals(RoomStatesEnum.INACTIVE.state())
                 && roomCodes != null && roomCodes.contains(qrCode)
                 && ValidateRoomCode.validateCode(qrCode, activeServ, LocalDateTime.now())) {
             return new BaseResponse(BaseResponse.SUCCESS);
@@ -137,12 +141,12 @@ public class RestControllers {
      */
     @RequestMapping(value = "updateclass", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    BaseResponse sendCloseRoom(@RequestParam(value = "roomName", required = true) String roomName,
+    BaseResponse updateClassRoom(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "roomStatus", required = true) String status,
             Principal principal) {
         String userEid = principal.getName();
-        User user = userServ.findByEid(userEid);
-        if (user != null) {
+        Optional<User> user = userServ.findByEid(userEid);
+        if (user.isPresent()) {
             try {
                 if (status.equals(RoomStatesEnum.INACTIVE.state())) {
                     rasbServ.requestCloseRoom(roomName);
@@ -160,9 +164,18 @@ public class RestControllers {
     public @ResponseBody
     Set<User>
             getUsersByRole(@RequestParam(value = "role", required = true) String role) {
-        Role roleDb = roleRepo.findByName(role).get();
-        
-        return roleDb.getUsers();
+        Optional<Role> roleDb = roleServ.getRoleByName(role);
+        if (roleDb.isPresent()) {
+            return roleDb.get().getUsers();
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    @RequestMapping(value = "updateUserRole", method = {RequestMethod.POST, RequestMethod.PUT})
+    public @ResponseBody
+    BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRole) {
+        return roleServ.updateUserRole(userEid, newRole)?new BaseResponse(BaseResponse.SUCCESS): new BaseResponse(BaseResponse.FAILED);
     }
 
 }

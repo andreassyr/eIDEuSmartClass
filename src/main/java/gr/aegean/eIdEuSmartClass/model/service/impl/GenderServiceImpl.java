@@ -8,6 +8,7 @@ package gr.aegean.eIdEuSmartClass.model.service.impl;
 import gr.aegean.eIdEuSmartClass.model.dao.GenderRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.service.GenderService;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
@@ -23,7 +24,7 @@ public class GenderServiceImpl implements GenderService {
     GenderRepository genRepo;
 
     @Override
-    public Gender getGenderByName(String genderName) {
+    public Optional<Gender> getGenderByName(String genderName) {
         if (StringUtils.isEmpty(genderName)) {
             return genRepo.findFirstByName(genderName);
         }else{

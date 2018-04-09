@@ -50,10 +50,10 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Transactional
     public boolean setRoomStatusByStateName(String stateName, String roomName) {
         Optional<ClassRoomState> state = statesRepo.findByName(stateName);
-        ClassRoom room = classRoomRepo.findByName(roomName);
-        if(state.isPresent() && room != null){
-            room.setState(state.get());
-            classRoomRepo.save(room);
+        Optional<ClassRoom> room = classRoomRepo.findByName(roomName);
+        if(state.isPresent() && room.isPresent()){
+            room.get().setState(state.get());
+            classRoomRepo.save(room.get());
             return true;
         }
         return false;
@@ -61,16 +61,20 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     @Override
     @Transactional
-    public ClassRoomState getRoomStatus(String roomName) {
-        ClassRoom room = classRoomRepo.findByName(roomName);
-        return (room!=null)?room.getState():null;
+    public Optional<ClassRoomState> getRoomStatus(String roomName) {
+        Optional<ClassRoomState> result = Optional.empty();
+        Optional<ClassRoom> room = classRoomRepo.findByName(roomName);
+        if (room.isPresent()){
+            result = Optional.of(room.get().getState());
+        }
+        return result;
     }
 
     @Override
     @Transactional
-    public ClassRoom getRoomById(String id) {
+    public Optional<ClassRoom> getRoomById(String id) {
         Optional<ClassRoom> room =  classRoomRepo.findById(Long.parseLong(id));
-        return (room.isPresent())?room.get():null;
+        return (room.isPresent())?Optional.of(room.get()):Optional.empty();
     }
 
 }

@@ -6,9 +6,13 @@
 package gr.aegean.eIdEuSmartClass;
 
 import gr.aegean.eIdEuSmartClass.model.dao.ClassRoomRepository;
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
+import gr.aegean.eIdEuSmartClass.model.service.RoleService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -27,12 +31,16 @@ public class IntegrationServiceTests {
 
     @Autowired
     private UserService userServ;
-    
+
     @Autowired
     private ClassRoomRepository classRoomRepo;
 
     @Autowired
     private ClassRoomService roomServ;
+    
+    @Autowired
+    private RoleService roleServ;
+    
 
     @Test
     public void testSaveNew() {
@@ -61,4 +69,24 @@ public class IntegrationServiceTests {
 //        assertEquals(classRepo.findByName("testName").getState().getName(), "Inactive");
 
     }
+
+    @Test
+    @Transactional
+    public void updateUserRole() {
+        userServ.saveUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", "GR");
+        roleServ.updateUserRole("updateUser", RolesEnum.ADMIN.role());
+        Optional<User> user = userServ.findByEid("updateUser");
+        assertEquals(user.get().getRole().getName(),RolesEnum.ADMIN.role());
+    }
+    
+    
+    @Test
+    @Transactional
+    public void updateUserRoleRoleNOTFOUND() {
+        userServ.saveUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", "GR");
+        roleServ.updateUserRole("updateUser", "foobar");
+        Optional<User> user = userServ.findByEid("updateUser");
+        assertEquals(user.get().getRole().getName(),RolesEnum.UNREGISTERED.role());
+    }
+    
 }
