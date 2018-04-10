@@ -5,7 +5,6 @@
  */
 package gr.aegean.eIdEuSmartClass.controllers;
 
-import gr.aegean.eIdEuSmartClass.model.dao.RoleRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
@@ -37,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -80,8 +80,10 @@ public class RestControllers {
 
     /**
      * Adds a new user to the database and to the Active Directory by making an
-     * appropriate API call ***TODO desired role!!!!!
-     *
+     * appropriate API call ***TODO desired role!!!!! sendInvite AD 
+     *  ***ROLE not specified in AD so not valid so ignore the part about user role here in the API call***
+     * 
+     * add at smartclass db field AD-USER-ID response from API call
      ****
      * @return
      */
@@ -113,6 +115,7 @@ public class RestControllers {
      * @param qrCode
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
@@ -160,6 +163,30 @@ public class RestControllers {
         return new BaseResponse(BaseResponse.FAILED);
     }
 
+    /**
+     * Updates the classRoomStatus
+     * Can only be called from raspberry
+     * @param roomName
+     * @param principal
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "updateclassRasp", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse updateClassRoomRasp(@RequestParam(value = "roomName", required = true) String roomName,
+            @RequestParam(value = "roomStatus", required = true) String status) {
+        try {
+            if (status.equals(RoomStatesEnum.INACTIVE.state())) {
+                rasbServ.requestCloseRoom(roomName);
+            }
+            classroomServ.setRoomStatusByStateName(status, roomName);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: " + err.getMessage());
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+
     @RequestMapping(value = "getUsersByRole", method = {RequestMethod.GET})
     public @ResponseBody
     Set<User>
@@ -175,7 +202,7 @@ public class RestControllers {
     @RequestMapping(value = "updateUserRole", method = {RequestMethod.POST, RequestMethod.PUT})
     public @ResponseBody
     BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRole) {
-        return roleServ.updateUserRole(userEid, newRole)?new BaseResponse(BaseResponse.SUCCESS): new BaseResponse(BaseResponse.FAILED);
+        return roleServ.updateUserRole(userEid, newRole) ? new BaseResponse(BaseResponse.SUCCESS) : new BaseResponse(BaseResponse.FAILED);
     }
 
 }

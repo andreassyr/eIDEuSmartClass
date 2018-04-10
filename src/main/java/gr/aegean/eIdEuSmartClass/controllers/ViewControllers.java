@@ -93,6 +93,20 @@ public class ViewControllers {
      * @param model
      * @return
      */
+    @RequestMapping(value = {"landingTest"})
+    public String landingTest(Model model) {
+        model.addAttribute("classRooms", classServ.findAll());
+        model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
+        return "landingViewTest";
+    }
+
+    /**
+     * Returns the landing view containing options to register, gain physical
+     * access, skype room, team
+     *
+     * @param model
+     * @return
+     */
     @RequestMapping(value = {"landing", "/", ""})
     public String landing(Model model) {
         model.addAttribute("classRooms", classServ.findAll());
@@ -163,7 +177,7 @@ public class ViewControllers {
             return "redirect:/roomaccess";
         }
 
-        return "loggedInView";
+        return "errorPage";
     }
 
     @RequestMapping(value = {"pending"})
@@ -171,10 +185,25 @@ public class ViewControllers {
         return "pendingView";
     }
 
-    @RequestMapping(value = {"team"})
-    public String team(Principal principal, Model model) {
+    @RequestMapping(value = {"profile", "edit"})
+    public String editProfile(Principal principal, Model model) {
         Optional<User> user = userServ.findByEid(principal.getName());
-        //TODO  insert User into the Group “Teams” of the Azure AD
+        if (!user.isPresent()) {
+            try {
+                model.addAttribute("user", UserWrappers.wrapDBUsertoFormUser(user.get()));
+                return "profile";
+            } catch (Error e) {
+                log.info("ERROR " + e.getMessage());
+            }
+        }
+
+        return "error";
+    }
+
+    @RequestMapping(value = {"team"})
+    public String team(Principal principal, Model model    ) {
+        Optional<User> user = userServ.findByEid(principal.getName());
+        //TODO  insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
         if (user.isPresent()) {
             String teamName = user.get().getName();
             String teamPass = UtilGenerators.generateRandomPass(10);
@@ -186,7 +215,9 @@ public class ViewControllers {
 
     @RequestMapping(value = {"skype"})
     public String skype(Model model,
-            Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
+            Principal principal,
+            @CookieValue(value = "type", required = true) String typeCookie
+    ) {
         Optional<User> user = userServ.findByEid(principal.getName());
         //TODO insert user to Group “SkypeForBusiness” of the Azure AD
         if (user.isPresent()) {
@@ -201,13 +232,16 @@ public class ViewControllers {
     }
 
     @RequestMapping(value = {"register"})
-    public String register(Principal principal) {
+    public String register(Principal principal
+    ) {
         return "registerView";
     }
 
     @RequestMapping(value = {"roomaccess"})
     public String physical(Model model,
-            Principal principal, @CookieValue(value = "type", required = true) String typeCookie) {
+            Principal principal,
+            @CookieValue(value = "type", required = true) String typeCookie
+    ) {
 
         Optional<User> user = userServ.findByEid(principal.getName());
         String roomId = typeCookie.split("-")[1];

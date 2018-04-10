@@ -1,8 +1,8 @@
 version: '2'
 services:
-    loginWebApp:
-        container_name: loginWebApp
-        image: endimion13/eidas-gr-smartclass:0.1
+    smartClassApp:
+        container_name: smartClassApp
+        image: endimion13/eidas-gr-smartclass:0.2
         expose:
             - 8090
         ports:

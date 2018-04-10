@@ -45,8 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity webSecurity) {
         webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/updateclassRasp**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/landingTest**").antMatchers("/tmp**");
 //        webSecurity.ignoring().antMatchers("/tmp**");
-//        webSecurity.
+//        
     }
 
     @Override
@@ -56,34 +58,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/updateclass").access("hasAuthority('" + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" + RolesEnum.COORDINATOR.role() + "')")
                 .anyRequest().authenticated()
-                //                .antMatcher("/loggedIn")
-                //                .antMatchers("/register")
-                //                .antMatchers("/requestCloseRoom")
-                //                .antMatchers("/createUser")
-                //                .authorizeRequests()
-                //                .anyRequest().anonymous()
-
                 .antMatchers("/team").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
                 .antMatchers("/getUsersByRole**").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
                 .antMatchers("/updateUserRole**").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()

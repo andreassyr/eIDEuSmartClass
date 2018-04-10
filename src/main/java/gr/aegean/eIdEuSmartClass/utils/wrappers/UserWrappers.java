@@ -17,8 +17,12 @@ import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import javax.swing.text.DateFormatter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
@@ -54,6 +58,26 @@ public class UserWrappers {
             }
         }
         return null;
+    }
+    
+    public static FormUser wrapDBUsertoFormUser(User user){
+        
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
+        FormUser res = new FormUser();
+        res.setAffiliation(user.getAffiliation());
+        res.setCountry(user.getCountry());
+        res.setCurrentFamilyName(user.getSurname());
+        res.setCurrentGivenName(user.getName());
+        res.setDateOfBirth(df.format( user.getBirthday()));
+        res.setEid(user.geteIDAS_id());
+        res.setEmail(user.getEmail());
+        res.setGender(user.getGender().getName());
+        res.setMobile(user.getMobile());
+        res.setPersonIdentifier(user.geteIDAS_id());
+        //res.setProfileName(user.get);
+    
+        return res;
     }
 
 }

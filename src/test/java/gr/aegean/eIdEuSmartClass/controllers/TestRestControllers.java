@@ -112,7 +112,7 @@ public class TestRestControllers {
         User guestUser = new User(new Role(RolesEnum.UNIDENTIFIED.role()), "guestId", "adminName",
                 "adminSurname", "adminEmail", "adminMobile", "adminAffiliation", "admionCountry",
                 testGen, DateWrappers.parseEidasDate("1983-10-05"), DateWrappers.getNowTimeStamp());
-        
+
 //        Mockito.when(roleServ.getRoleByName(any(String.class))).thenReturn(adminRole);
         Mockito.when(userServ.findByEid("GR/GR/ERMIS-11076669")).thenReturn(Optional.of(adminUser));
         Mockito.when(userServ.findByEid("GR/GR/ERMIS-11076669")).thenReturn(Optional.of(adminUser));
@@ -142,9 +142,30 @@ public class TestRestControllers {
                 .andExpect(status().is(302));
     }
 
+     
+    
+    
+    public void testUpdateClassRaspNoJWT() throws Exception {
+        mockMvc.perform(post("/updateclassRasp").param("roomName", "room1").param("roomStatus", "inActive")
+//                 post("/option("/updateclassRasp")")
+//                .header("Access-Control-Request-Method", "GET")
+//                .header("Origin", "http://www.someurl.com")
+        )
+                .andExpect(status().isOk());
+    }
+    
+    
     @Test
     public void testValidateCodess() throws Exception {
         mockMvc.perform(get("/validateCode").param("roomId", "room1").param("qrCode", "123"))
+                .andExpect(status().isOk());
+    }
+
+    public void testValidateCodesCORS() throws Exception {
+        mockMvc.perform(options("/validateCode").param("roomId", "room1").param("qrCode", "123")
+                .header("Access-Control-Request-Method", "GET")
+                .header("Origin", "http://www.someurl.com")
+        )
                 .andExpect(status().isOk());
     }
 
@@ -155,7 +176,7 @@ public class TestRestControllers {
                 .andExpect(status().is(200));
 
     }
-    
+
     @Test
     public void testGetUsersByRoleNOTAdmin() throws Exception {
         Cookie invalidJWT = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O481");
@@ -163,22 +184,21 @@ public class TestRestControllers {
                 .andExpect(status().is(302));
 
     }
-    
+
     @Test
     public void testUpdateUsersRoleAdmin() throws Exception {
         Cookie jwt = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48");
-        mockMvc.perform(post("/updateUserRole").param("eID", "guestId").param("role",RolesEnum.ADMIN.role()).cookie(jwt))
+        mockMvc.perform(post("/updateUserRole").param("eID", "guestId").param("role", RolesEnum.ADMIN.role()).cookie(jwt))
                 .andExpect(status().is(200));
 
     }
 
-    
     @Test
     public void testUpdateUsersRoleNotAdmin() throws Exception {
         Cookie invalidJWT = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O481");
-        mockMvc.perform(post("/updateUserRole").param("eID", "guestId").param("role",RolesEnum.ADMIN.role()).cookie(invalidJWT))
+        mockMvc.perform(post("/updateUserRole").param("eID", "guestId").param("role", RolesEnum.ADMIN.role()).cookie(invalidJWT))
                 .andExpect(status().is(302));
 
     }
-    
+
 }

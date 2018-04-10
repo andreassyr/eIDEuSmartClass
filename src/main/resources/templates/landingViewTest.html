@@ -15,9 +15,11 @@ and open the template in the editor.
 
         <!--        <button id="login" onclick="login()">Login</button>
                 <button id="register" onclick="register()">Register</button>-->
-        <!--        <button id="test" onclick="test()">Set Dummy JWT cookie</button>-->
-        <div>        
-            <button id="test" onclick="physical()">Gain Physical Access</button>
+        <button id="test" onclick="test()">Set Dummy JWT cookie</button>
+        <button id="test" onclick="physical()">Gain Physical Access</button>
+
+
+        <div>
             <select id="roomSelect">
                 Select class room:
                 <option value=""> -- </option>
@@ -34,7 +36,6 @@ and open the template in the editor.
 
 
         <div>
-            <button id="test" onclick="skype()">Join Skype</button>
             Select skype conference:
             <select id="skypeSelect">
                 <option value=""> -- </option>
@@ -43,10 +44,10 @@ and open the template in the editor.
                         th:utext="${room.name}"/>
             </select>
         </div>
-
+        <button id="test" onclick="skype()">Join Skype</button>
 
         <script>
-            function setCookieAndRedirect(name, value, days) {
+            function setCookie(name, value, days) {
                 var expires = "";
                 if (days) {
                     var date = new Date();
@@ -54,47 +55,34 @@ and open the template in the editor.
                     expires = "; expires=" + date.toUTCString();
                 }
                 document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                let typeCookie = getCookie("type");
-                let authCookie = getCookie("access_token");
-                if (typeCookie == "" || authCookie == "") {
-                    window.location.replace("http://195.251.134.160:9091/login");
-                } else {
-                    window.location.href = "/eIDASSuccess";
-                }
             }
 
-
+//            function login(){
+//                setCookie("flow","login",1);
+//            }
+//            
+//            function register(){
+//                setCookie("flow","register",1);
+//            }
 
             function physical() {
                 var e = document.getElementById("roomSelect");
                 var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "physical-" + roomId, 1);
+                setCookie("type", "physical-"+roomId, 1);
             }
 
             function skype() {
                 var e = document.getElementById("skypeSelect");
                 var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "skype-" + roomId, 1);
+                setCookie("type", "skype-" + roomId, 1);
             }
 
             function team() {
-                setCookieAndRedirect("type", "team", 1);
+                setCookie("type", "team", 1);
             }
 
-            function getCookie(cname) {
-                var name = cname + "=";
-                var decodedCookie = decodeURIComponent(document.cookie);
-                var ca = decodedCookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                    }
-                }
-                return "";
+            function test() {
+                setCookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O48", 1);
             }
 
         </script>
