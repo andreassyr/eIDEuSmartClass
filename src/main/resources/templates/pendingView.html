@@ -13,7 +13,7 @@ and open the template in the editor.
     <body>
         <div>Activation of your account is pending. You can however update your attributes</div>
 
-        <form action="#" th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user">
+        <form action="#" th:action="@{/updateUser}" th:object="${user}" method="post"  commandName="user">
             <p>Name: <input type="text" name="currentGivenName"  th:value="${user.name}" th:readonly="true"/></p>
             <p>Surname: <input type="text"  name="currentFamilyName" th:value="${user.surname}" th:readonly="true"/></p>
             <p>Date of Birth: <input type="text" name="dateOfBirth" th:value="${user.birthday}" th:readonly="true" /></p>

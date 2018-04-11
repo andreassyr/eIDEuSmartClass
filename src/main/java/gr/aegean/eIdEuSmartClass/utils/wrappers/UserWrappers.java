@@ -19,10 +19,8 @@ import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import javax.swing.text.DateFormatter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
@@ -62,7 +60,7 @@ public class UserWrappers {
     
     public static FormUser wrapDBUsertoFormUser(User user){
         
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         FormUser res = new FormUser();
         res.setAffiliation(user.getAffiliation());

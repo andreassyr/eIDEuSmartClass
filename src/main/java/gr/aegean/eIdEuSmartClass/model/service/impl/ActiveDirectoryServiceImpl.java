@@ -5,13 +5,25 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service.impl;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
+import gr.aegean.eIdEuSmartClass.model.service.ConfigPropertiesServices;
+import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,9 +35,13 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
 
     private final String USER_AGENT = "Mozilla/5.0";
 
-    @Override
-    public boolean registerUser(String userEmail) throws MalformedURLException, IOException {
-        String url = "http://localhost:8000/register?email="+userEmail;
+    private final static Logger log = LoggerFactory.getLogger(ActiveDirectoryServiceImpl.class);
+
+    @Autowired
+    private ConfigPropertiesServices propServ;
+
+    public boolean createUser(String userEmail) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/register?email=" + userEmail; //"http://localhost:8000/register?email="+userEmail;
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         // optional default is GET
@@ -36,8 +52,8 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
 
         int responseCode = con.getResponseCode();
 
-        System.out.println("\nSending 'GET' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
+        log.info("\nSending 'GET' request to URL : " + url);
+        log.info("Response Code : " + responseCode);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -47,9 +63,89 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         }
         in.close();
         //print result
-        System.out.println(response.toString());
+        log.info(response.toString());
 
         return false;
+    }
+
+    @Override
+    public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname, String userPrincipalName, String password) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/createUser";
+        URL obj = new URL(url);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("displayName", displayName);
+        params.put("mailNickname", mailNickname);
+        params.put("givenName", givenName);
+        params.put("surname", surname);
+        params.put("userPrincipalName", userPrincipalName);
+        params.put("password", password);
+
+        StringBuilder postData = new StringBuilder();
+        params.forEach((key, value) -> {
+            try {
+                if (postData.length() != 0) {
+                    postData.append('&');
+                }
+                postData.append(URLEncoder.encode(key, "UTF-8"));
+                postData.append('=');
+                postData.append(URLEncoder.encode(String.valueOf(value), "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                log.info("ERROR" + ex.getMessage());
+            }
+        });
+            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        //add request header
+        con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        con.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+        con.setDoOutput(true);
+        con.getOutputStream().write(postDataBytes);
+        
+        int responseCode = con.getResponseCode();
+
+        log.info("\nSending 'POST' request to URL : " + url);
+        log.info("Response Code : " + responseCode);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        log.info(response.toString());
+        
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    @Override
+    public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean createTeam(String groupId) throws MalformedURLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean sendInvite(String userEmai, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

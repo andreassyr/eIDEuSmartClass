@@ -14,10 +14,10 @@ and open the template in the editor.
         <div>Profile Page View</div>
 
         <form action="#" th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user">
-            <p>Name: <input type="text" name="currentGivenName"  th:value="${user.name}" th:readonly="true"/></p>
-            <p>Surname: <input type="text"  name="currentFamilyName" th:value="${user.surname}" th:readonly="true"/></p>
-            <p>Date of Birth: <input type="text" name="dateOfBirth" th:value="${user.birthday}" th:readonly="true" /></p>
-            <input type="text" name="eid" th:value="${user.eIDAS_id}" th:readonly="true" th:hidden="true"/> 
+            <p>Name: <input type="text" name="currentGivenName"  th:value="${user.currentGivenName}" th:readonly="true"/></p>
+            <p>Surname: <input type="text"  name="currentFamilyName" th:value="${user.currentFamilyName}" th:readonly="true"/></p>
+            <p>Date of Birth: <input type="text" name="dateOfBirth" th:value="${user.dateOfBirth}" th:readonly="true" /></p>
+            <input type="text" name="eid" th:value="${user.eid}" th:readonly="true" th:hidden="true"/> 
            
             <p>email: <input type="text" th:field="*{email}" /></p>
             <p>mobile: <input type="text" th:field="*{mobile}" /></p>

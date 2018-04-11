@@ -19,6 +19,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 /**
  *
@@ -38,8 +41,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationManager customAuthenticationManager() throws Exception {
+    public AuthenticationManager customAuthenticatiotnManager() throws Exception {
         return authenticationManager();
+    }
+
+    @Bean
+    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);
+        firewall.setAllowSemicolon(true);
+        return firewall;
     }
 
     @Override
@@ -47,6 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/updateclassRasp**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/landingTest**").antMatchers("/tmp**");
+        
+        webSecurity.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 //        webSecurity.ignoring().antMatchers("/tmp**");
 //        
     }

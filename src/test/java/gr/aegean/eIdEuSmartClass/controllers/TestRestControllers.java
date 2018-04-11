@@ -143,6 +143,9 @@ public class TestRestControllers {
     }
 
      
+    //eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6nzqHOmc6jzqTOmc6dzpEsIENIUklTVElOQVwiLFwiZWlkXCI6XCJHUi9HUi9FUk1JUy01ODMzMzk0N1wiLFwiZmFtaWx5TmFtZVwiOlwizqDOkc6bzpnOn86azqnOo86kzpEsIFBBTElPS09TVEFcIixcInBlcnNvbklkZW50aWZpZXJcIjpcIkdSL0dSL0VSTUlTLTU4MzMzOTQ3XCIsXCJkYXRlT2ZCaXJ0aFwiOlwiMTk4MC0wMS0wMVwifSJ9.LSODk5diBNmbIwuVN3C-22PpFckaYgih4S7ZS0wpbKM
+    
+    
     
     
     public void testUpdateClassRaspNoJWT() throws Exception {
@@ -157,12 +160,12 @@ public class TestRestControllers {
     
     @Test
     public void testValidateCodess() throws Exception {
-        mockMvc.perform(get("/validateCode").param("roomId", "room1").param("qrCode", "123"))
+        mockMvc.perform(get("/validateCode").param("roomName", "room1").param("qrCode", "123"))
                 .andExpect(status().isOk());
     }
 
     public void testValidateCodesCORS() throws Exception {
-        mockMvc.perform(options("/validateCode").param("roomId", "room1").param("qrCode", "123")
+        mockMvc.perform(options("/validateCode").param("roomName", "room1").param("qrCode", "123")
                 .header("Access-Control-Request-Method", "GET")
                 .header("Origin", "http://www.someurl.com")
         )

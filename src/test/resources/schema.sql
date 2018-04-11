@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Users` (
    `mobile` VARCHAR(45),
    `affiliation` VARCHAR(45),
    `country` VARCHAR(45),
+   `ad_id` VARCHAR(45),
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_Users_Roles1`
     FOREIGN KEY (`role_id`)

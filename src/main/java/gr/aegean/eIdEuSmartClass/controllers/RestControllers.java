@@ -9,13 +9,10 @@ import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
-import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,8 +55,7 @@ public class RestControllers {
     @Autowired
     private ClassRoomService classroomServ;
 
-    @Autowired
-    private ActiveDirectoryService adServ;
+   
 
     @Autowired
     private RaspberryInterface rasbServ;
@@ -78,30 +73,7 @@ public class RestControllers {
         this.SUPER_USERS.add("superadmin");
     }
 
-    /**
-     * Adds a new user to the database and to the Active Directory by making an
-     * appropriate API call ***TODO desired role!!!!! sendInvite AD 
-     *  ***ROLE not specified in AD so not valid so ignore the part about user role here in the API call***
-     * 
-     * add at smartclass db field AD-USER-ID response from API call
-     ****
-     * @return
-     */
-    @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public @ResponseBody
-    BaseResponse createUser(@ModelAttribute("user") FormUser user) {
-        try {
-            adServ.registerUser("smartclassguest1@outlook.com");
-        } catch (IOException ex) {
-            log.error("ERROR", ex);
-        }
-        BaseResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
-                "Unspecified", user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry());
-        if (resp.getStatus().equals("OK")) {
-            mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
-        }
-        return resp;
-    }
+  
 
     /**
      * checks taht the give qr code/pin was belongs to the codes issued for the
@@ -109,21 +81,21 @@ public class RestControllers {
      * last 4 hours. and that it is not past 22:00
      *
      * Also, if the key is not used within 5 mins of creation it is made
-     * inactive!!! the admin keys codes do not expire!!!
+     * inactive!!! the admin keys codes do not expire!!!Ο
      *
-     * @param roomId
+     * @param roomName
      * @param qrCode
      * @return
      */
     @CrossOrigin
     @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
+    BaseResponse doorCodeValidity(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
         //TODO send email
-        List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
+        List<String> roomCodes = classroomServ.getValidCodeByName(roomName);
 
-        Optional<ClassRoomState> state = classroomServ.getRoomStatus(roomId);
+        Optional<ClassRoomState> state = classroomServ.getRoomStatus(roomName);
         if (state.isPresent() && !state.get().getName().equals(RoomStatesEnum.INACTIVE.state())
                 && roomCodes != null && roomCodes.contains(qrCode)
                 && ValidateRoomCode.validateCode(qrCode, activeServ, LocalDateTime.now())) {

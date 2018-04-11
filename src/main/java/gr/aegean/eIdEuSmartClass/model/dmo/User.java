@@ -45,7 +45,9 @@ public class User {
     private String mobile;
     private String affiliation;
     private String country;
-
+    @Column(name = "ad_id")
+    private String adId;
+    
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gender_id")
     private Gender gender;
@@ -219,4 +221,13 @@ public class User {
         this.country = country;
     }
 
+    public String getAdId() {
+        return adId;
+    }
+
+    public void setAdId(String adId) {
+        this.adId = adId;
+    }
+
+    
 }

@@ -17,8 +17,8 @@ public interface UserService {
     
     public BaseResponse saveUser(User user);
     
-    public BaseResponse saveUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
-            String mobile, String affiliation, String country);
+    public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
+            String mobile, String affiliation, String country, String adId);
     
     public BaseResponse updateLogin(String eIDasid);
     

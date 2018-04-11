@@ -33,6 +33,7 @@
                 <jpda.listen>true</jpda.listen>
                 <Env.KEY>secret</Env.KEY>
                 <Env.FOO>bar</Env.FOO>
+                <Env.AD_MICROSERV>http://localhost:8000</Env.AD_MICROSERV>
                 
                 
             </properties>
@@ -94,6 +95,7 @@
             </goals>
             <properties>
                 <Env.KEY>secret</Env.KEY>
+                
             </properties>
         </action>
         <action>
@@ -112,6 +114,19 @@
                 <jpda.listen>true</jpda.listen>
                 <Env.KEY>secret</Env.KEY>
                 
+            </properties>
+        </action>
+        <action>
+            <actionName>build-with-dependencies</actionName>
+            <reactor>also-make</reactor>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
             </properties>
         </action>
     </actions>

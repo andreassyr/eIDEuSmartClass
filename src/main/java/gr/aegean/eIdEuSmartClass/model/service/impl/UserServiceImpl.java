@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -57,12 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     /*
-        date format dd/MM/yyyy
+     Saves or Updates the fields on the user
      */
     @Override
     @Transactional
-    public BaseResponse saveUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
-            String email, String mobile, String affiliation, String country) {
+    public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
+            String email, String mobile, String affiliation, String country, String adId) {
         try {
             //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate birthDay = DateWrappers.parseEidasDate(dateOfBirth);//LocalDate.parse(dateOfBirth, formatter);
@@ -80,10 +81,19 @@ public class UserServiceImpl implements UserService {
                     throw new NullPointerException("Role or Gender was not founde for unregeistered/undefined");
                 }
             } else {
-                user.get().setName(name);
-                user.get().setSurname(surname);
+//                user.get().setName(name);
+//                user.get().setSurname(surname);
                 user.get().setLastLogin(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                user.get().setBirthday(birthDay);
+//                user.get().setBirthday(birthDay);
+                user.get().setAffiliation(affiliation);
+                user.get().setCountry(country);
+                user.get().setEmail(email);
+                if (gender.isPresent()) {
+                    user.get().setGender(gender.get());
+                }
+                if (!StringUtils.isEmpty(adId)) {
+                    user.get().setAdId(adId);
+                }
                 userRepo.save(user.get());
             }
             return new BaseResponse(BaseResponse.SUCCESS);
