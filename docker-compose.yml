@@ -2,14 +2,44 @@ version: '2'
 services:
     smartClassApp:
         container_name: smartClassApp
-        image: endimion13/eidas-gr-smartclass:0.2
+        image: endimion13/eidas-gr-smartclass:0.4.7
+        network_mode: "host"
         expose:
-            - 8090
+            - 9090
         ports:
-            - 8090:8090
+            - 9090:9090
         environment:
             - KEY=secret
             - RASPBERRY_URL=http://test.com
             - RASPBERRY_CLOSE_ROOM=closeroom
-        volumes:
-            
+            - AD_MICROSERV= http://localhost:8000
+
+    loginWebApp2:
+       container_name: loginWebApp
+       image: endimion13/eidas-gr-loginwebapp:3.5
+       ports:
+         - 9091:8090
+       environment:
+         - EIDAS_PROPERTIES=CurrentFamilyName,CurrentGivenName,DateOfBirth,PersonIdentifier
+         - SP_FAIL_PAGE=http://195.251.134.160:9090/eIDASSuccess
+         - SP_SUCCESS_PAGE=http://195.251.134.160:9090/eIDASSuccess
+         - SP_METADATA_URL=http://195.251.134.160:9091/metadata
+         - SP_RETURN_URL=http://195.251.134.160:9091/eidasResponse
+         - SP_LOGO=http://trc.aiest.org/wp-content/uploads/2013/04/university-of-the-aegean.png
+         - SP_CONFIG_REPOSITORY=/configEidas/
+         - SP_SECRET=secret
+         - AUTH_DURATION=1800
+       volumes:
+         - /configEidas:/configEidas
+         
+    adMicroServ:
+        container_name: adMicroServ
+        image: endimion13/ad-micro-service:0.0.2
+        network_mode: "host"
+        expose:
+            - 8000
+        ports:
+            - 8000:8000
+        environment:
+            - KEY=secret
+

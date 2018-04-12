@@ -32,7 +32,7 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
-    public String prepareAndSend(String recipient, String subject, String userName) {
+    public String prepareAndSendAccountCreated(String recipient, String subject, String userName, String adPrincipal, String adPass) {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
@@ -42,7 +42,7 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject(subject);
 
-            String content = MailContentBuilder.buildWelcome(userName);
+            String content = MailContentBuilder.buildWelcome(userName, adPrincipal, adPass);
 
             helper.setText(content, true);
 

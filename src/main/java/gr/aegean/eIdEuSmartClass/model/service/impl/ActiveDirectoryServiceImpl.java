@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
@@ -71,7 +72,6 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
     @Override
     public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname, String userPrincipalName, String password) throws MalformedURLException, IOException {
         String url = propServ.getPropByName("AD_MICROSERV") + "/createUser";
-        URL obj = new URL(url);
 
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("displayName", displayName);
@@ -80,7 +80,83 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         params.put("surname", surname);
         params.put("userPrincipalName", userPrincipalName);
         params.put("password", password);
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
 
+    @Override
+    public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/createGroup";
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("displayName", displayName);
+        params.put("mailNickname", mailNickname);
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    @Override
+    public ADResponse createTeam(String groupId) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/createTeam";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("groupId", groupId);
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    @Override
+    public ADResponse sendInvite(String userEmail, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/sendInvite";
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("userEmail", userEmail);
+        params.put("redirectURL", redirectURL);
+        params.put("invitedUserDisplayName", invitedUserDisplayName);
+
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    @Override
+    public ADResponse add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/add2Group";
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("userId", userId);
+        params.put("groupName", groupName);
+        params.put("isOwner", isOwner);
+
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    @Override
+    public ADResponse updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException {
+        String url = propServ.getPropByName("AD_MICROSERV") + "/updateUser";
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("userId", userId);
+        params.put("attributeName", attributeName);
+        params.put("attributeValue", attributeValue);
+
+        String response = writeParamsAndSendPost(params, url);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper.readValue(response.toString(), ADResponse.class);
+    }
+
+    /**
+     * Writes the provides map of parameters as post parameters in the
+     * connection body sends the POST request to the url and returns the response
+     *
+     * @param params
+     * @param con
+     */
+    private String writeParamsAndSendPost(Map<String, Object> params, String url) throws UnsupportedEncodingException,
+            ProtocolException, IOException {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         StringBuilder postData = new StringBuilder();
         params.forEach((key, value) -> {
             try {
@@ -94,9 +170,7 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
                 log.info("ERROR" + ex.getMessage());
             }
         });
-            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        byte[] postDataBytes = postData.toString().getBytes("UTF-8");
         con.setRequestMethod("POST");
         //add request header
         con.setRequestProperty("User-Agent", USER_AGENT);
@@ -104,7 +178,7 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         con.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
         con.setDoOutput(true);
         con.getOutputStream().write(postDataBytes);
-        
+
         int responseCode = con.getResponseCode();
 
         log.info("\nSending 'POST' request to URL : " + url);
@@ -118,34 +192,7 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         }
         in.close();
         log.info(response.toString());
-        
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response.toString(), ADResponse.class);
-    }
-
-    @Override
-    public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean createTeam(String groupId) throws MalformedURLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean sendInvite(String userEmai, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return response.toString();
     }
 
 }

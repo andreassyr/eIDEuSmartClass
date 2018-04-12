@@ -20,12 +20,12 @@ public interface ActiveDirectoryService {
 
     public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException;
 
-    public boolean createTeam(String groupId) throws MalformedURLException, IOException;
+    public ADResponse createTeam(String groupId) throws MalformedURLException, IOException;
     
-    public boolean sendInvite(String userEmai, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException;
+    public ADResponse sendInvite(String userEmail, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException;
     
-    public boolean add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException;
+    public ADResponse add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException;
     
-    public boolean updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException;
+    public ADResponse updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException;
     
 }

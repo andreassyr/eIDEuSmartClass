@@ -9,7 +9,6 @@ package gr.aegean.eIdEuSmartClass.utils.builder;
  *
  * @author nikos
  */
- 
 public class MailContentBuilder {
 
     private final static String header = "<!DOCTYPE html>\n"
@@ -25,6 +24,13 @@ public class MailContentBuilder {
             + "        <p>\n"
             + "            Welcome the UAegean Smar Class. Your account has been created. \n"
             + "            However it is inactive until it is authorized by an administrator. \n"
+            + "        </p>\n"
+            + "        <p>\n"
+            + "           Once activated you can use MS Team and Skype for Business with\n"
+            + "           UserName: %2$s \n"
+            + "           PrincipalName: %3$s \n"
+            + "           Password: %4$s \n"
+            + "           Please remember to change your password as soon as possible \n"
             + "        </p>\n"
             + "\n";
 
@@ -42,8 +48,7 @@ public class MailContentBuilder {
             + "           Please remeber to change these information as soon as possible"
             + "        </p>\n"
             + "\n";
-    
-    
+
     private final static String skypeAccessBody = "    <body>\n"
             + "\n"
             + "        <span th:text=\"${name}\">%2$s</span> "
@@ -74,14 +79,14 @@ public class MailContentBuilder {
             + "    </body>\n"
             + "</html>";
 
-    public  static String buildWelcome(String userName) {
-        return String.format(header + registrationBody + footer, "Registration Email", userName);
+    public static String buildWelcome(String userName, String adPrincipal, String adPass) {
+        return String.format(header + registrationBody + footer, "Registration Email", userName,adPrincipal,adPass);
     }
-    
+
     public static String buildTeamRegistration(String userName, String password, String name) {
-        return String.format(header + teamCredentialsBody + footer, "MS Teams Details", name,userName,password);
+        return String.format(header + teamCredentialsBody + footer, "MS Teams Details", name, userName, password);
     }
-    
+
     public static String buildSkypeForBusinessContent(String name, String link) {
         return String.format(header + skypeAccessBody + footer, "Skype for Business link", name, link);
     }

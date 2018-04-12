@@ -22,6 +22,7 @@ import gr.aegean.eIdEuSmartClass.model.service.TokenService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.enums.GenderEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
+import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.generators.QRGenerator;
 import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
 import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
@@ -34,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +120,8 @@ public class ViewControllers {
     }
 
     /**
+     * 
+     *  TODO handle empty JWT!!!
      * Gets the user from the JWT token, if user is not found the he/she is
      * added with role unidentified and user is presented with a page stating
      * that activation is pending (emails are sent)
@@ -211,11 +215,16 @@ public class ViewControllers {
     @RequestMapping(value = {"team"})
     public String team(Principal principal, Model model) {
         Optional<User> user = userServ.findByEid(principal.getName());
-        //TODO  insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
+        //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
         if (user.isPresent()) {
             String teamName = user.get().getName();
             String teamPass = UtilGenerators.generateRandomPass(10);
             mailServ.prepareAndSendTeamCredentials(user.get().getEmail(), teamName, teamPass, user.get().getName() + " " + user.get().getSurname());
+            try {
+                adServ.add2Group(user.get().getAdId(), "Teams", false);
+            } catch (IOException ex) {
+                log.info("Error: " + ex.getMessage());
+            }
             model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
         }
         return "teamView";
@@ -227,18 +236,24 @@ public class ViewControllers {
             @CookieValue(value = "type", required = true) String typeCookie
     ) {
         Optional<User> user = userServ.findByEid(principal.getName());
-        //TODO insert user to Group “SkypeForBusiness” of the Azure AD
+        // insert user to Group “SkypeForBusiness” of the Azure AD
         if (user.isPresent()) {
             String roomId = typeCookie.split("-")[1];
             SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
             if (room != null) {
                 model.addAttribute("room", room);
                 mailServ.prepareAndSendSkypeLink(user.get().getEmail(), user.get().getName() + user.get().getSurname(), room.getUrl());
+                try {
+                    adServ.add2Group(user.get().getAdId(), "SkypeForBusiness", false);
+                } catch (IOException ex) {
+                    log.info("Error: " + ex.getMessage());
+                }
             }
         }
         return "skypeView";
     }
 
+    // //User Is inserted into the Group “UAegean-HPClass” of the Azure AD 
     @RequestMapping(value = {"roomaccess"})
     public String physical(Model model,
             Principal principal,
@@ -249,9 +264,11 @@ public class ViewControllers {
         Optional<ClassRoom> room = classServ.getRoomById(roomId);
 
         if (room.isPresent()
+                && !(room.get().getState().equals(RoomStatesEnum.INACTIVE.state())
+                || room.get().getState().equals(RoomStatesEnum.RESTRICTED.state()))
                 && user.isPresent()
                 && !user.get().getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
-            //TODO Is inserted into the Group “UAegean-HPClass” of the Azure AD 
+
             ActiveCode ac = new ActiveCode();
             ac.setContent(UtilGenerators.generateRandomPIN(4));
             ac.setGrantedAt(LocalDateTime.now());
@@ -263,36 +280,41 @@ public class ViewControllers {
             try {
                 qrImgPath = QRGenerator.generateQR(roomId, user.get().geteIDAS_id(), ac.getContent());
                 model.addAttribute("qrPath", qrImgPath);
+                //add user to AD “UAegean-HPClass”
+                adServ.add2Group(user.get().getAdId(), "UAegean-HPClass", false);
             } catch (IOException ex) {
                 log.info("Error " + ex.getMessage());
             }
+        } else {
+            if (!user.get().getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
+                model.addAttribute("error", "Room is not available at this time. Please contact the classroom administrator");
+            }
         }
-
         return "physicalView";
     }
 
     /**
      * Adds a new user to the database and to the Active Directory by making an
-     * appropriate API call ***TODO desired role!!!!! sendInvite AD ***ROLE not
-     * specified in AD so not valid so ignore the part about user role here in
-     * the API call***
-     *
-     * add at smartclass db field AD-USER-ID response from API call *** @return
+     * appropriate API call ***TODO desired role!!!!! createUser AD API ***ROLE
+     * not specified in AD so not valid so ignore the part about user role here
+     * in the API call***
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public String createUser(@ModelAttribute("user") FormUser user) {
         try {
             String safeEid = DigestUtils.md5DigestAsHex(user.getEid().getBytes(StandardCharsets.UTF_8));
-            String engGiveName = user.getCurrentGivenName().split(",").length>1?user.getCurrentGivenName().split(",")[1]:user.getCurrentGivenName();
-            String engFamilyName = user.getCurrentFamilyName().split(",").length>1?user.getCurrentFamilyName().split(",")[1]:user.getCurrentFamilyName();
-            ADResponse adResp = adServ.createUser(engGiveName + engFamilyName,
-                    safeEid, engGiveName, engFamilyName, safeEid, "test1234###");
+            String engGiveName = user.getCurrentGivenName().split(",").length > 1 ? user.getCurrentGivenName().split(",")[1] : user.getCurrentGivenName();
+            String engFamilyName = user.getCurrentFamilyName().split(",").length > 1 ? user.getCurrentFamilyName().split(",")[1] : user.getCurrentFamilyName();
+            String randomPass = UtilGenerators.generateRandomADPass(8);
+            String userName = engGiveName + engFamilyName;
+            ADResponse adResp = adServ.createUser(userName,
+                    safeEid, engGiveName, engFamilyName, safeEid, randomPass);
 
             BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
                     GenderEnum.UNSPECIFIED.gender(), user.getDateOfBirth(), user.getEmail(),
                     user.getMobile(), user.getAffiliation(), user.getCountry(), adResp.getId());
             if (resp.getStatus().equals("OK")) {
-                mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
+                mailServ.prepareAndSendAccountCreated(user.getEmail(), "test", userName, safeEid, randomPass);
                 return "updateSuccessView";
             }
         } catch (IOException ex) {
@@ -302,8 +324,8 @@ public class ViewControllers {
     }
 
     /**
-     * updates the attributes of the user and makes the corresponding API call
-     * to add the user to the active directory
+     * TODO updates the attributes of the user and makes the corresponding API
+     * call to add the user to the active directory
      */
     @RequestMapping(value = "updateUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public String updateUser(@ModelAttribute("user") FormUser user) {
