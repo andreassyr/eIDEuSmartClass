@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
-import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
@@ -29,6 +28,7 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
  */
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private TokenAuthenticationUserDetailsService userDetailsService;
@@ -58,7 +58,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/updateclassRasp**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/landingTest**").antMatchers("/tmp**");
-        
         webSecurity.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 //        webSecurity.ignoring().antMatchers("/tmp**");
 //        
@@ -70,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/updateclass").access("hasAuthority('" + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" + RolesEnum.COORDINATOR.role() + "')")
-                .anyRequest().authenticated()
+                //                .anyRequest().authenticated()
                 .antMatchers("/team").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
@@ -89,7 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                .anyRequest().authenticated()
+                //                .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()
@@ -97,7 +96,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .exceptionHandling()
+                .accessDeniedPage("/error")
+                .and()
                 .csrf().disable();
+
+        http.authorizeRequests()
+                .antMatchers("/admin**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                //                .anyRequest().authenticated()
+                .and().formLogin()
+                .loginPage("/adminLogin").permitAll()
+                .and()
+                .addFilterBefore(authFilter(), RequestHeaderAuthenticationFilter.class)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .accessDeniedPage("/adminLogin")
+                .and()
+                .csrf().disable();
+
     }
 
     @Bean

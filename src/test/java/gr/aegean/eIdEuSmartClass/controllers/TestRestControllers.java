@@ -184,7 +184,7 @@ public class TestRestControllers {
     public void testGetUsersByRoleNOTAdmin() throws Exception {
         Cookie invalidJWT = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O481");
         mockMvc.perform(get("/getUsersByRole").param("role", "testRole").cookie(invalidJWT))
-                .andExpect(status().is(302));
+                .andExpect(status().is(403));
 
     }
 
@@ -200,7 +200,7 @@ public class TestRestControllers {
     public void testUpdateUsersRoleNotAdmin() throws Exception {
         Cookie invalidJWT = new Cookie("access_token", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJmaXJzdE5hbWVcIjpcIs6Rzp3OlM6hzpXOkc6jLCBBTkRSRUFTXCIsXCJlaWRcIjpcIkdSL0dSL0VSTUlTLTExMDc2NjY5XCIsXCJmYW1pbHlOYW1lXCI6XCLOoM6VzqTOoc6fzqUsIFBFVFJPVVwiLFwicGVyc29uSWRlbnRpZmllclwiOlwiR1IvR1IvRVJNSVMtMTEwNzY2NjlcIixcImRhdGVPZkJpcnRoXCI6XCIxOTgwLTAxLTAxXCJ9In0.QjyOqUi8kzU7Srn1FgekuQyn-REWwOWLKKmQAz92O481");
         mockMvc.perform(post("/updateUserRole").param("eID", "guestId").param("role", RolesEnum.ADMIN.role()).cookie(invalidJWT))
-                .andExpect(status().is(302));
+                .andExpect(status().is(403));
 
     }
 

@@ -34,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
@@ -120,11 +121,10 @@ public class ViewControllers {
     }
 
     /**
-     * 
-     *  TODO handle empty JWT!!!
-     * Gets the user from the JWT token, if user is not found the he/she is
-     * added with role unidentified and user is presented with a page stating
-     * that activation is pending (emails are sent)
+     *
+     * TODO handle empty JWT!!! Gets the user from the JWT token, if user is not
+     * found the he/she is added with role unidentified and user is presented
+     * with a page stating that activation is pending (emails are sent)
      *
      * If the user is found then the cookie type is used to check the type of
      * the login physical (QR), skype, or team and the browser is redirected to
@@ -350,13 +350,27 @@ public class ViewControllers {
     }
 
     /**
-     * private admin view. Can only be accessed by admin users and allows to
-     * edit users
-     *
+     * private admin view. Can only be accessed by admin users and allows to a)
+     * change user roles b) change classRoomStatus c) edit skype for business
+     * rooms d) edit physical rooms
      *
      * @return
      */
-    public String admin() {
-        return null;
+    @RequestMapping(value = "admin", method = {RequestMethod.GET})
+    public String admin(Model model) {
+        List<SkypeRoom> skRooms = skypeRoomServ.getAllRooms();
+        List<User>  unIdentified = userServ.findAllUIdentified();
+        List<ClassRoom> rooms =  classServ.findAll();
+        
+        model.addAttribute("skypeRooms",skRooms);
+        model.addAttribute("unidentifiedUsers", unIdentified);
+        model.addAttribute("rooms", rooms);
+        return "adminView";
     }
+    
+    @RequestMapping(value = "adminLogin", method = {RequestMethod.GET})
+    public String adminLoginView(Model model) {
+        return "adminLoginView";
+    }
+    
 }

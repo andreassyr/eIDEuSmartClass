@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>This is the admin page</div>
+
+
+        <div>
+            First You must Register:
+            <button id="roomBtn" onclick="skype()">Edit Room Status</button>
+
+        </div>
+
+
+        <script>
+
+
+            function physical() {
+                var e = document.getElementById("roomSelect");
+                var roomId = e.options[e.selectedIndex].value;
+                setCookieAndRedirect("type", "physical-" + roomId, 1);
+            }
+        </script>
+    </body>
+</html>

@@ -12,12 +12,15 @@ import gr.aegean.eIdEuSmartClass.model.dmo.Gender;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.DateWrappers;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,8 +123,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Optional<User> findByEid(String eID) {
         return userRepo.findFirstByEIDASId(eID);
+    }
+
+    @Override
+    @Transactional
+    public List<User> findAllUIdentified() {
+        return userRepo.findAll().stream().filter( user -> {
+            return user.getRole().equals(RolesEnum.UNIDENTIFIED.role());
+        }).collect(Collectors.toList());
+                
     }
 
 }

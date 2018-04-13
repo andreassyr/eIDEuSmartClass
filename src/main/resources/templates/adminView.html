@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>This is the admin page</div>
+
+
+        <div>
+            <button id="roomBtn" onclick="skype()">Edit Room Status</button>
+            Select skype conference:
+            <select id="roomSelect">
+                <option value=""> -- </option>
+                <option th:each="room : ${rooms}"
+                        th:value="${room.id}"
+                        th:utext="${room.name + '--'+ room.state.name}"/>
+            </select>
+        </div>
+
+
+
+
+        <div>
+            Select skype conference:
+            <select id="skypeSelect">
+                <option value=""> -- </option>
+                <option th:each="skRoom : ${skypeRooms}"
+                        th:value="${skRoom.id}"
+                        th:utext="${skRoom.name}"/>
+            </select>
+        </div>
+        <button id="skButton" onclick="skype()">Add new Skype Room</button>
+
+
+
+        <div>
+            <button id="test" onclick="skype()">Change User Role</button>
+           Unidentified users:
+            <select id="userSelect">
+                <option value=""> -- </option>
+                <option th:each="usr : ${unidentifiedUsers}"
+                        th:value="${usr.id}"
+                        th:utext="${usr.name  usr.surname  + ','+ usr.email}"/>
+            </select>
+        </div>
+
+
+        <script>
+
+
+            function physical() {
+                var e = document.getElementById("roomSelect");
+                var roomId = e.options[e.selectedIndex].value;
+                setCookieAndRedirect("type", "physical-" + roomId, 1);
+            }
+        </script>
+    </body>
+</html>

@@ -7,6 +7,7 @@ package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,4 +24,6 @@ public interface UserService {
     public BaseResponse updateLogin(String eIDasid);
     
     public Optional<User> findByEid(String eID);
+    
+    public List<User> findAllUIdentified();
 }
