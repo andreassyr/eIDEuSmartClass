@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
+    @Modifying
     public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
             String email, String mobile, String affiliation, String country, String adId) {
         try {
@@ -109,6 +111,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @Modifying
     public BaseResponse updateLogin(String eIDasid) {
         if (userRepo.findFirstByEIDASId(eIDasid).isPresent()) {
             try {
@@ -131,10 +134,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public List<User> findAllUIdentified() {
-        return userRepo.findAll().stream().filter( user -> {
-            return user.getRole().equals(RolesEnum.UNIDENTIFIED.role());
+        return userRepo.findAll().stream().filter(user -> {
+            return user.getRole().getName().equals(RolesEnum.UNIDENTIFIED.role());
         }).collect(Collectors.toList());
-                
+
+    }
+
+    @Override
+    @Transactional
+    public Optional<User> findById(Long id) {
+        return userRepo.findById(id);
     }
 
 }

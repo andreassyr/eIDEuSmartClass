@@ -15,15 +15,17 @@ import java.util.Optional;
  * @author nikos
  */
 public interface UserService {
-    
+
     public BaseResponse saveUser(User user);
-    
+
     public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
             String mobile, String affiliation, String country, String adId);
-    
+
     public BaseResponse updateLogin(String eIDasid);
-    
+
     public Optional<User> findByEid(String eID);
-    
+
+    public Optional<User> findById(Long id);
+
     public List<User> findAllUIdentified();
 }

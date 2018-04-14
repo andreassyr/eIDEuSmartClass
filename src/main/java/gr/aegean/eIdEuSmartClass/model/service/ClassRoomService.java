@@ -24,4 +24,6 @@ public interface ClassRoomService {
     public Optional<ClassRoomState> getRoomStatus(String roomName);
     
     public Optional<ClassRoom> getRoomById(String id);
+    
+    public List<ClassRoomState> getAllRoomStates();
 }

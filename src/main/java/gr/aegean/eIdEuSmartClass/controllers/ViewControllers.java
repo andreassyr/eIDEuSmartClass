@@ -8,6 +8,8 @@ package gr.aegean.eIdEuSmartClass.controllers;
 import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCode;
 import gr.aegean.eIdEuSmartClass.model.dmo.ActiveCodePK;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
+import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
+import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
@@ -36,8 +38,8 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +49,9 @@ import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -139,52 +141,57 @@ public class ViewControllers {
      * @return
      */
     @RequestMapping(value = {"eIDASSuccess"})
-    public String login(@CookieValue(value = TOKEN_NAME, required = true) String jwtCookie,
-            @CookieValue(value = "type", required = true) String typeCookie,
+    public String login(@CookieValue(value = TOKEN_NAME, required = false) String jwtCookie,
+            @CookieValue(value = "type", required = false) String typeCookie,
             HttpServletRequest req, Principal principal, Model model, RedirectAttributes redirectAttrs) {
 
-        Optional<User> user = userServ.findByEid(principal.getName());
-        if (!user.isPresent()) {
-            try {
-                String decodedToken = tokenServ.decode(jwtCookie);
-                FormUser fuser = UserWrappers.wrapDecodedJwtEidasUser(decodedToken);
-                user = Optional.of(UserWrappers.wrapFormUserToDBUser(fuser, roleServ, genServ));
-                if (user.isPresent()) {
-                    user.get().setEmail("n/a");
-                    if (genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).isPresent()) {
-                        user.get().setGender(genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).get());
-                    }
-                    userServ.saveUser(user.get());
-                    redirectAttrs.addFlashAttribute("user", fuser);
+        if (principal != null) {
+            Optional<User> user = userServ.findByEid(principal.getName());
+            if (!user.isPresent()) {
+                try {
+                    String decodedToken = tokenServ.decode(jwtCookie);
+                    FormUser fuser = UserWrappers.wrapDecodedJwtEidasUser(decodedToken);
+                    user = Optional.of(UserWrappers.wrapFormUserToDBUser(fuser, roleServ, genServ));
+                    if (user.isPresent()) {
+                        user.get().setEmail("n/a");
+                        if (genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).isPresent()) {
+                            user.get().setGender(genServ.getGenderByName(GenderEnum.UNSPECIFIED.gender()).get());
+                        }
+                        userServ.saveUser(user.get());
+                        redirectAttrs.addFlashAttribute("user", fuser);
 
-                } else {
-                    log.info("Could not wrap user from eIDAS success");
+                    } else {
+                        log.info("Could not wrap user from eIDAS success");
+                    }
+                    return "redirect:/register";
+                } catch (UnsupportedEncodingException ex) {
+                    log.info("ERROR ", ex);
+                } catch (IOException ex) {
+                    log.info("ERROR ", ex);
                 }
-                return "redirect:/register";
-            } catch (UnsupportedEncodingException ex) {
-                log.info("ERROR " + ex.getMessage());
-            } catch (IOException ex) {
-                log.info("ERROR " + ex.getMessage());
+            }
+            if (user.isPresent() && user.get().getRole().getName().equals(RolesEnum.UNIDENTIFIED.role())) {
+                redirectAttrs.addFlashAttribute("user", user.get());
+                return "redirect:/pending";
+            }
+
+            if (typeCookie.contains("team")) {
+                return "redirect:/team";
+            }
+
+            if (typeCookie.contains("skype")) {
+                return "redirect:/skype";
+            }
+
+            if (typeCookie.contains("physical")) {
+                return "redirect:/roomaccess";
+            }
+
+            if (typeCookie.contains("admin")) {
+                return "redirect:/admin";
             }
         }
-        if (user.isPresent() && user.get().getRole().getName().equals(RolesEnum.UNIDENTIFIED.role())) {
-            redirectAttrs.addFlashAttribute("user", user.get());
-            return "redirect:/pending";
-        }
-
-        if (typeCookie.contains("team")) {
-            return "redirect:/team";
-        }
-
-        if (typeCookie.contains("skype")) {
-            return "redirect:/skype";
-        }
-
-        if (typeCookie.contains("physical")) {
-            return "redirect:/roomaccess";
-        }
-
-        return "errorPage";
+        return "redirect:/error";
     }
 
     @RequestMapping(value = {"pending"})
@@ -205,7 +212,7 @@ public class ViewControllers {
                 model.addAttribute("user", UserWrappers.wrapDBUsertoFormUser(user.get()));
                 return "profile";
             } catch (Error e) {
-                log.info("ERROR " + e.getMessage());
+                log.info("ERROR ", e);
             }
         }
 
@@ -217,13 +224,11 @@ public class ViewControllers {
         Optional<User> user = userServ.findByEid(principal.getName());
         //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
         if (user.isPresent()) {
-            String teamName = user.get().getName();
-            String teamPass = UtilGenerators.generateRandomPass(10);
-            mailServ.prepareAndSendTeamCredentials(user.get().getEmail(), teamName, teamPass, user.get().getName() + " " + user.get().getSurname());
+            mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(), "Teams");
             try {
                 adServ.add2Group(user.get().getAdId(), "Teams", false);
             } catch (IOException ex) {
-                log.info("Error: " + ex.getMessage());
+                log.info("Error: ", ex);
             }
             model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
         }
@@ -246,7 +251,7 @@ public class ViewControllers {
                 try {
                     adServ.add2Group(user.get().getAdId(), "SkypeForBusiness", false);
                 } catch (IOException ex) {
-                    log.info("Error: " + ex.getMessage());
+                    log.info("Error: ", ex);
                 }
             }
         }
@@ -283,7 +288,7 @@ public class ViewControllers {
                 //add user to AD “UAegean-HPClass”
                 adServ.add2Group(user.get().getAdId(), "UAegean-HPClass", false);
             } catch (IOException ex) {
-                log.info("Error " + ex.getMessage());
+                log.info("Error ", ex);
             }
         } else {
             if (!user.get().getRole().getName().equals(RolesEnum.BLACKLISTED.role())) {
@@ -314,7 +319,8 @@ public class ViewControllers {
                     GenderEnum.UNSPECIFIED.gender(), user.getDateOfBirth(), user.getEmail(),
                     user.getMobile(), user.getAffiliation(), user.getCountry(), adResp.getId());
             if (resp.getStatus().equals("OK")) {
-                mailServ.prepareAndSendAccountCreated(user.getEmail(), "test", userName, safeEid, randomPass);
+                String principalFullName = safeEid + "@i4mlabUAegean.onmicrosoft.com";
+                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName, principalFullName, randomPass);
                 return "updateSuccessView";
             }
         } catch (IOException ex) {
@@ -359,18 +365,43 @@ public class ViewControllers {
     @RequestMapping(value = "admin", method = {RequestMethod.GET})
     public String admin(Model model) {
         List<SkypeRoom> skRooms = skypeRoomServ.getAllRooms();
-        List<User>  unIdentified = userServ.findAllUIdentified();
-        List<ClassRoom> rooms =  classServ.findAll();
-        
-        model.addAttribute("skypeRooms",skRooms);
+        List<User> unIdentified = userServ.findAllUIdentified();
+        List<ClassRoom> rooms = classServ.findAll();
+        List<ClassRoomState> roomStates = classServ.getAllRoomStates();
+
+        model.addAttribute("skypeRooms", skRooms);
         model.addAttribute("unidentifiedUsers", unIdentified);
         model.addAttribute("rooms", rooms);
+        model.addAttribute("roomStates", roomStates);
         return "adminView";
     }
-    
+
     @RequestMapping(value = "adminLogin", method = {RequestMethod.GET})
     public String adminLoginView(Model model) {
         return "adminLoginView";
     }
-    
+
+    @RequestMapping(value = "admin/edit/{urId}", method = {RequestMethod.GET})
+    public String adminEditUserView(Model model, @PathVariable("urId") String id) {
+        Optional<User> user = userServ.findById(Long.parseLong(id));
+        List<Role> roles = roleServ.findAllRoles();
+        if (user.isPresent()) {
+            FormUser fuser = UserWrappers.wrapDBUsertoFormUser(user.get());
+            model.addAttribute("user", fuser);
+            model.addAttribute("role", user.get().getRole().getName());
+            model.addAttribute("roles", roles);
+        } else {
+            model.addAttribute("error", "user not found!");
+        }
+        return "adminEditUserView";
+
+    }
+
+    @RequestMapping(value = "admin/addSkypeRoom", method = {RequestMethod.GET})
+    public String adminAddSkypeRoom(Model model) {
+
+        return "addSkypeRoomView";
+
+    }
+
 }

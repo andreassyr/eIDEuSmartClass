@@ -87,8 +87,9 @@ public class TestViewControllers {
         cookies[1] = c2;
         mockMvc.perform(get("/eIDASSuccess")
                 .cookie(cookies))
-                //                .andExpect(redirectedUrl("http://localhost/landing"));
-                .andExpect(status().is(409));
+                .andExpect(status().is(302))
+                .andExpect(redirectedUrl("/error"));
+
     }
 
     @Test
@@ -98,7 +99,7 @@ public class TestViewControllers {
         cookies[0] = c;
         mockMvc.perform(get("/admin")
                 .cookie(c))
-//                .andExpect(redirectedUrl("/adminLogin"));
+                //                .andExpect(redirectedUrl("/adminLogin"));
                 .andExpect(status().is(403));
     }
 

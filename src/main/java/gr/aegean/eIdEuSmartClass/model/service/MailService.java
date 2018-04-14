@@ -16,8 +16,11 @@ public interface MailService {
      
     public String prepareAndSendAccountCreated(String recipient, String subject, String userName, String adPrincipal, String adPass);
     
-    public String prepareAndSendTeamCredentials(String recipient, String teamUserName, String teamPassword, String name);
+    public String prepareAndSendTeamMessage(String recipient, String name, String teamName);
     
     public String prepareAndSendSkypeLink(String recipient, String name, String url);
+    
+    public String prepareAndSendAccountActivated(String recipient, String name);
+   
    
 }

@@ -107,6 +107,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "')")
                 //                .anyRequest().authenticated()
+                .antMatchers("/admin/edit**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                .antMatchers("/addSkypeRoom**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                .antMatchers("/deleteSkypeRoom**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
                 .and().formLogin()
                 .loginPage("/adminLogin").permitAll()
                 .and()

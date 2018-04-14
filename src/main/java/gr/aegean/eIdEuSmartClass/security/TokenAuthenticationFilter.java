@@ -55,7 +55,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
                 String tokenDecoded = this.tokenService.decode(token.get());
 
-                if (!tokenDecoded.equals("")) {
+                if (!tokenDecoded.equals("{}") && !StringUtils.isEmpty(tokenDecoded)) {
                     PreAuthenticatedAuthenticationToken authtoken = new PreAuthenticatedAuthenticationToken(tokenDecoded, tokenDecoded);
                     UserDetails userDetails = this.tokenAuthUserDetailsService.loadUserDetails(authtoken);
                     SecurityContextHolder.getContext().setAuthentication(new TokenBasedAuthentication(userDetails));

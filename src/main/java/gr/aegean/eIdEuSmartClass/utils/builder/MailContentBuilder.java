@@ -19,7 +19,7 @@ public class MailContentBuilder {
 
     private final static String registrationBody = "    <body>\n"
             + "\n"
-            + "        <span th:text=\"${userName}\">%2$s</span> "
+            + "        <span th:text=\"${userName}\">%2$s,</span> "
             + "\n"
             + "        <p>\n"
             + "            Welcome the UAegean Smar Class. Your account has been created. \n"
@@ -36,22 +36,25 @@ public class MailContentBuilder {
 
     private final static String teamCredentialsBody = "    <body>\n"
             + "\n"
-            + "        <span th:text=\"${name}\">%2$s</span> "
+            + "        <span th:text=\"${name}\">%1$s,</span> "
             + "\n"
             + "        <p>\n"
-            + "            Your user name to enter MS TEAMS is: \n"
-            + "                     %3$s \n"
-            + "            Your password is: "
-            + "                     %4$s \n"
+            + "            You have been added to the Team : %2$s!!\n"
             + "        </p>\n"
+            + "\n";
+
+    private final static String accountActivated = "    <body>\n"
+            + "\n"
+            + "        <span th:text=\"${name}\">%1$s,</span> "
+            + "\n"
             + "        <p>\n"
-            + "           Please remeber to change these information as soon as possible"
+            + "            You  UAegean SmartClass Account is now Active!!\n"
             + "        </p>\n"
             + "\n";
 
     private final static String skypeAccessBody = "    <body>\n"
             + "\n"
-            + "        <span th:text=\"${name}\">%2$s</span> "
+            + "        <span th:text=\"${name}\">%2$s,</span> "
             + "\n"
             + "        <p>\n"
             + "            You can enter your conference from the followin link: \n"
@@ -80,15 +83,19 @@ public class MailContentBuilder {
             + "</html>";
 
     public static String buildWelcome(String userName, String adPrincipal, String adPass) {
-        return String.format(header + registrationBody + footer, "Registration Email", userName,adPrincipal,adPass);
+        return String.format(header + registrationBody + footer, "Registration Email", userName, adPrincipal, adPass);
     }
 
-    public static String buildTeamRegistration(String userName, String password, String name) {
-        return String.format(header + teamCredentialsBody + footer, "MS Teams Details", name, userName, password);
+    public static String buildTeamRegistration(String name, String teamName) {
+        return String.format(header + teamCredentialsBody + footer, "MS Teams Details", name, teamName);
     }
 
     public static String buildSkypeForBusinessContent(String name, String link) {
         return String.format(header + skypeAccessBody + footer, "Skype for Business link", name, link);
+    }
+    
+    public static String buildAccountActivated(String name){
+        return String.format(header+accountActivated+footer,name);
     }
 
 }

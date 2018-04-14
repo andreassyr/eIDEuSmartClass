@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -20,7 +21,7 @@ public class DateWrappers {
 
     public static LocalDate parseEidasDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(date, formatter);
+        return !StringUtils.isEmpty(date)? LocalDate.parse(date, formatter):null;
     }
     
     public static Timestamp getNowTimeStamp(){
@@ -30,7 +31,7 @@ public class DateWrappers {
     
     public static LocalDateTime parseDateTime(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(date, formatter);
+        return !StringUtils.isEmpty(date)?LocalDateTime.parse(date, formatter):null;
     }
 
     

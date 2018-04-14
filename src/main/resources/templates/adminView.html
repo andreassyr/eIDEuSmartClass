@@ -15,14 +15,21 @@ and open the template in the editor.
 
 
         <div>
-            <button id="roomBtn" onclick="skype()">Edit Room Status</button>
-            Select skype conference:
+            Edit Room Status:
             <select id="roomSelect">
                 <option value=""> -- </option>
                 <option th:each="room : ${rooms}"
-                        th:value="${room.id}"
+                        th:value="${room.name}"
                         th:utext="${room.name + '--'+ room.state.name}"/>
             </select>
+            <select id="roomState">
+                <option value=""> -- </option>
+                <option th:each="state : ${roomStates}"
+                        th:value="${state.statusId}"
+                        th:utext="${state.name }"/>
+            </select>           
+
+            <button id="updateRoomBtn" onclick="update()">Update Status</button>
         </div>
 
 
@@ -36,31 +43,81 @@ and open the template in the editor.
                         th:value="${skRoom.id}"
                         th:utext="${skRoom.name}"/>
             </select>
+            <button id="delSkButton" onclick="delSkype()">Delete Skype Room</button>
         </div>
         <button id="skButton" onclick="skype()">Add new Skype Room</button>
 
 
 
         <div>
-            <button id="test" onclick="skype()">Change User Role</button>
-           Unidentified users:
+            Unidentified users:
             <select id="userSelect">
                 <option value=""> -- </option>
                 <option th:each="usr : ${unidentifiedUsers}"
                         th:value="${usr.id}"
-                        th:utext="${usr.name  usr.surname  + ','+ usr.email}"/>
+                        th:utext="${usr.name  + ','+  usr.surname  + ','+ usr.email}"/>
             </select>
+            <button id="editUserBtn" onclick="edit()">Edit User</button>
         </div>
 
 
         <script>
-
-
-            function physical() {
-                var e = document.getElementById("roomSelect");
-                var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "physical-" + roomId, 1);
+            function edit() {
+                var e = document.getElementById("userSelect");
+                var usrId = e.options[e.selectedIndex].value;
+                window.location.href = "/admin/edit/" + usrId;
             }
+
+            function skype() {
+                window.location = "/admin/addSkypeRoom";
+            }
+
+            function delSkype() {
+                let e = document.getElementById("skypeSelect");
+                let roomId = e.options[e.selectedIndex].value;
+
+                var http = new XMLHttpRequest();
+                var url = "../deleteSkypeRoom";
+                var params = "roomId=" + roomId;
+                http.open("POST", url, true);
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        alert(JSON.parse(http.responseText).status);
+                        if (JSON.parse(http.responseText).status === "OK") {
+                            window.location = "/admin";
+                        }
+                    }
+                }
+                http.send(params);
+            }
+
+
+            function update() {
+                let e = document.getElementById("roomSelect");
+                let roomName = e.options[e.selectedIndex].value;
+                let e2 = document.getElementById("roomState");
+                let roomStatus = e2.options[e2.selectedIndex].value;
+
+                var http = new XMLHttpRequest();
+                var url = "../updateclass";
+                var params = "roomName=" + roomName +"&roomStatus="+roomStatus;
+                http.open("POST", url, true);
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        alert(JSON.parse(http.responseText).status);
+                        if (JSON.parse(http.responseText).status === "OK") {
+                            window.location = "/admin";
+                        }
+                    }
+                }
+                http.send(params);
+            }
+
+
         </script>
     </body>
 </html>

@@ -15,19 +15,48 @@ and open the template in the editor.
 
 
         <div>
-            First You must Register:
-            <button id="roomBtn" onclick="skype()">Edit Room Status</button>
+            You must login to access this page:
+            <button id="roomBtn" onclick="login()">Login with eIDAS</button>
 
         </div>
 
 
         <script>
+            function login() {
+                setCookieAndRedirect("type", "admin", 1);
+            }
+
+            function setCookieAndRedirect(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                let typeCookie = getCookie("type");
+                if (typeCookie !== "admin") {
+                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                    window.location.replace("http://195.251.134.160:9091/login");
+                } else {
+                    window.location.href = "/admin";
+                }
+            }
 
 
-            function physical() {
-                var e = document.getElementById("roomSelect");
-                var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "physical-" + roomId, 1);
+            function getCookie(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
             }
         </script>
     </body>

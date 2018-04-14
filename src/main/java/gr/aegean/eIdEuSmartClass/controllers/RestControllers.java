@@ -7,6 +7,7 @@ package gr.aegean.eIdEuSmartClass.controllers;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
+import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
@@ -26,9 +27,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,8 +59,6 @@ public class RestControllers {
     @Autowired
     private ClassRoomService classroomServ;
 
-   
-
     @Autowired
     private RaspberryInterface rasbServ;
 
@@ -66,14 +68,15 @@ public class RestControllers {
     @Autowired
     private ActiveCodeService activeServ;
 
+    @Autowired
+    private SkypeRoomService skypeServ;
+
     public RestControllers() {
         SUPER_USERS = new HashSet<String>();
         this.SUPER_USERS.add("coordinator");
         this.SUPER_USERS.add("admin");
         this.SUPER_USERS.add("superadmin");
     }
-
-  
 
     /**
      * checks taht the give qr code/pin was belongs to the codes issued for the
@@ -136,8 +139,8 @@ public class RestControllers {
     }
 
     /**
-     * Updates the classRoomStatus
-     * Can only be called from raspberry
+     * Updates the classRoomStatus Can only be called from raspberry
+     *
      * @param roomName
      * @param principal
      * @return
@@ -173,8 +176,47 @@ public class RestControllers {
 
     @RequestMapping(value = "updateUserRole", method = {RequestMethod.POST, RequestMethod.PUT})
     public @ResponseBody
-    BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRole) {
-        return roleServ.updateUserRole(userEid, newRole) ? new BaseResponse(BaseResponse.SUCCESS) : new BaseResponse(BaseResponse.FAILED);
+    BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRoleName) {
+        if (roleServ.updateUserRole(userEid, newRoleName)) {
+            Optional<User> user = userServ.findByEid(userEid);
+            List<String> activatedRoles = Arrays.asList(RolesEnum.VIRTUALPARTICIPANT.role(),
+                    RolesEnum.ADMIN.role(), RolesEnum.COORDINATOR.role(),
+                    RolesEnum.SUPERADMIN.role(), RolesEnum.VISITOR.role());
+            if (user.isPresent() && activatedRoles.contains(newRoleName)) {
+                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getName() + user.get().getSurname());
+            }
+            return new BaseResponse(BaseResponse.SUCCESS);
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "addSkypeRoom", method = {RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse addSkypeRoom(@RequestParam(value = "roomName", required = true) String roomName,
+            @RequestParam(value = "roomUrl", required = true) String roomUrl) {
+        try {
+            SkypeRoom room = new SkypeRoom();
+            room.setName(roomName);
+            room.setUrl(roomUrl);
+            skypeServ.save(room);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: " + err.getMessage());
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+
+    @RequestMapping(value = "deleteSkypeRoom", method = {RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse delSkypeRoom(@RequestParam(value = "roomId", required = true) String roomId) {
+        try {
+            skypeServ.delete(roomId);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: ", err);
+        }
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
 }
