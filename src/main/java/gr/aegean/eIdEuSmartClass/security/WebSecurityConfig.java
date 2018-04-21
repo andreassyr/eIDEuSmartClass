@@ -58,6 +58,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/updateclassRasp**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/landingTest**").antMatchers("/tmp**");
+//         webSecurity.ignoring().antMatchers("/adminLogin**");
+        webSecurity.ignoring().antMatchers("/checkclassRasp**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/css**");
+        webSecurity.ignoring().antMatchers("/js**");
         webSecurity.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 //        webSecurity.ignoring().antMatchers("/tmp**");
 //        
@@ -88,7 +92,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                //                .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()
@@ -98,6 +101,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling()
                 .accessDeniedPage("/error")
+                .and()
+                .logout()
+                    .logoutUrl("/logout")
+                    .deleteCookies("access_token")
+                    .logoutSuccessUrl("/")  //logoutSuccessUrl("/login?logout")
                 .and()
                 .csrf().disable();
 
@@ -127,10 +135,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .exceptionHandling()
-                .accessDeniedPage("/adminLogin")
+                .accessDeniedPage("/error")
                 .and()
                 .csrf().disable();
 
+     
     }
 
     @Bean

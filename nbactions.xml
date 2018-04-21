@@ -33,7 +33,7 @@
                 <jpda.listen>true</jpda.listen>
                 <Env.KEY>secret</Env.KEY>
                 <Env.FOO>bar</Env.FOO>
-                <Env.AD_MICROSERV>http://localhost:8000</Env.AD_MICROSERV>
+                <Env.AD_MICROSERV>http://communities-i4mlab.aegean.gr/ad/</Env.AD_MICROSERV>
                 
                 
             </properties>

@@ -5,8 +5,6 @@
  */
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,28 +17,23 @@ import javax.persistence.Table;
  * @author nikos
  */
 @Entity
-@Table(name = "Skyperooms")
-public class SkypeRoom {
+@Table(name = "Teams")
+public class Teams {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "skyperoom_id")
+    @Column(name = "team_id")
     private long id;
 
-    private String url;
     private String name;
+    private String url;
 
-    private LocalDateTime start;
-    private LocalDateTime end;
-
-    public SkypeRoom() {
+    public Teams() {
     }
 
-    public SkypeRoom(String url, String name, LocalDateTime start, LocalDateTime end) {
-        this.url = url;
+    public Teams(String name, String url) {
         this.name = name;
-        this.start = start;
-        this.end = end;
+        this.url = url;
     }
 
     public long getId() {
@@ -51,14 +44,6 @@ public class SkypeRoom {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getName() {
         return name;
     }
@@ -67,20 +52,12 @@ public class SkypeRoom {
         this.name = name;
     }
 
-    public LocalDateTime getStart() {
-        return start;
+    public String getUrl() {
+        return url;
     }
 
-    public void setStart(LocalDateTime start) {
-        this.start = start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
-    }
-
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

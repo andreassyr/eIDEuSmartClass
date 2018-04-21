@@ -13,9 +13,8 @@ and open the template in the editor.
     <body>
         <div>This is the landing page</div>
 
-        <!--        <button id="login" onclick="login()">Login</button>
-                <button id="register" onclick="register()">Register</button>-->
-        <!--        <button id="test" onclick="test()">Set Dummy JWT cookie</button>-->
+       <button id="register" onclick="register()">Register to the Service</button>
+
         <div>        
             <button id="test" onclick="physical()">Gain Physical Access</button>
             <select id="roomSelect">
@@ -29,9 +28,17 @@ and open the template in the editor.
 
 
 
-
+       <div>
         <button id="test" onclick="team()">Join Team </button>
-
+        <select id="teamSelect">
+                Select class room:
+                <option value=""> -- </option>
+                <option th:each="team : ${teams}"
+                        th:value="${team.id}"
+                        th:utext="${team.name}"/>
+            </select>
+       </div>
+        
 
         <div>
             <button id="test" onclick="skype()">Join Skype</button>
@@ -43,6 +50,9 @@ and open the template in the editor.
                         th:utext="${room.name}"/>
             </select>
         </div>
+        
+        
+        <a id="logout" href="/logout">Logout</a>
 
 
         <script>
@@ -70,6 +80,12 @@ and open the template in the editor.
                 var roomId = e.options[e.selectedIndex].value;
                 setCookieAndRedirect("type", "physical-" + roomId, 1);
             }
+            
+            
+             function register() {
+                setCookieAndRedirect("type", "register", 1);
+            }
+            
 
             function skype() {
                 var e = document.getElementById("skypeSelect");
@@ -78,7 +94,9 @@ and open the template in the editor.
             }
 
             function team() {
-                setCookieAndRedirect("type", "team", 1);
+                var e = document.getElementById("teamSelect");
+                var teamId = e.options[e.selectedIndex].value;
+                setCookieAndRedirect("type", "team-"+teamId, 1);
             }
 
             function getCookie(cname) {

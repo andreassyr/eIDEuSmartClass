@@ -66,9 +66,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    @Modifying
+    @Modifying 
     public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
-            String email, String mobile, String affiliation, String country, String adId) {
+            String email, String mobile, String affiliation, String country, String adId, String userPrincipal, String engName, String engSurname) {
         try {
             //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate birthDay = DateWrappers.parseEidasDate(dateOfBirth);//LocalDate.parse(dateOfBirth, formatter);
@@ -78,8 +78,9 @@ public class UserServiceImpl implements UserService {
             Optional<Gender> gender = genderRepo.findFirstByName(Gender.UNSPECIFIED);
             if (!user.isPresent()) {
                 if (role.isPresent() && gender.isPresent()) {
-                    user = Optional.of(new User(role.get(), eIDASid, name, surname, email, mobile, affiliation, country, gender.get(), birthDay,
-                            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+                    user = Optional.of(new User(role.get(), eIDASid, name, surname, email, mobile, affiliation, 
+                            country, gender.get(), birthDay,
+                            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),engName,engSurname) );
                     userRepo.save(user.get());
 
                 } else {
@@ -99,6 +100,7 @@ public class UserServiceImpl implements UserService {
                 if (!StringUtils.isEmpty(adId)) {
                     user.get().setAdId(adId);
                 }
+                user.get().setPrincipal(userPrincipal);
                 userRepo.save(user.get());
             }
             return new BaseResponse(BaseResponse.SUCCESS);

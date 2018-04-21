@@ -13,9 +13,13 @@ and open the template in the editor.
     <body>
         <div>Register User</div>
 
+        <div th:text="${message}">test message</div>
+        
         <form action="#" th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user">
             <p>Name: <input type="text" name="currentGivenName"  th:value="${user.currentGivenName}" th:readonly="true"/></p>
+             <input type="text" name="engName"  th:value="${user.engName}" th:readonly="true" hidden/>
             <p>Surname: <input type="text"  name="currentFamilyName" th:value="${user.currentFamilyName}" th:readonly="true"/></p>
+            <input type="text" name="engSurname"  th:value="${user.engSurname}" th:readonly="true" hidden/>
             <p>Date of Birth: <input type="text" name="dateOfBirth" th:value="${user.dateOfBirth}" th:readonly="true" /></p>
             <p>eIDAS id: <input type="text" name="personIdentifier" th:value="${user.personIdentifier}" th:readonly="true" /></p>
               <input type="text" name="eid" th:value="${user.eid}" th:readonly="true" th:hidden="true"/> 

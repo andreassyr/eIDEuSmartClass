@@ -14,11 +14,14 @@ import java.util.List;
  */
 public interface MailService {
      
-    public String prepareAndSendAccountCreated(String recipient, String subject, String userName, String adPrincipal, String adPass);
+    public String prepareAndSendAccountCreated(String recipient, String subject, String userName);
     
-    public String prepareAndSendTeamMessage(String recipient, String name, String teamName);
+    public String prepareAndSendTeamMessage(String recipient, String name, String teamName, String principalName,String password);
+    public String prepareAndSendSkypeLink(String recipient, String name, String url,String principalName,String password);
     
-    public String prepareAndSendSkypeLink(String recipient, String name, String url);
+    public String prepareAndSendTeamMessageExisting(String recipient, String name, String teamName,String principal);
+    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String url,String principal);
+    
     
     public String prepareAndSendAccountActivated(String recipient, String name);
    

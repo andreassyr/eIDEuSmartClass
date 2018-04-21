@@ -5,10 +5,12 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  *
@@ -27,5 +29,8 @@ public interface ActiveDirectoryService {
     public ADResponse add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException;
     
     public ADResponse updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException;
+    
+    public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ);
+    
     
 }

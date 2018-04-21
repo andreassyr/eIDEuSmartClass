@@ -63,11 +63,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
                 }
 
-            } else {
-                // if JWT is empty
-                //prevent show login form again... but instead we provide an unAunticated user here with no authorities
-                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
-            }
+            } 
+//            else {
+//                // if JWT is empty
+//                //prevent show login form again... but instead we provide an unAunticated user here with no authorities
+//                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
+//            }
 
         }
         chain.doFilter(request, response);

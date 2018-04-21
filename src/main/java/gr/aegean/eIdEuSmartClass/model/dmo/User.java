@@ -47,7 +47,15 @@ public class User {
     private String country;
     @Column(name = "ad_id")
     private String adId;
-    
+
+    @Column(name = "principal_name")
+    private String principal;
+
+    @Column(name = "eng_name")
+    private String engName;
+    @Column(name = "eng_surname")
+    private String engSurname;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gender_id")
     private Gender gender;
@@ -61,7 +69,9 @@ public class User {
     protected User() {
     }
 
-    public User(Role role, String eIDAS_id, String name, String surname, String email, String mobile, String affiliation, String country, Gender gender, LocalDate birthday, Date lastLogin) {
+    public User(Role role, String eIDAS_id, String name, String surname, String email, String mobile,
+            String affiliation, String country, Gender gender, LocalDate birthday, Date lastLogin, 
+            String engName, String engSurname) {
 
         this.role = role;
         this.eIDAS_id = eIDAS_id;
@@ -74,6 +84,8 @@ public class User {
         this.gender = gender;
         this.birthday = birthday;
         this.lastLogin = lastLogin;
+        this.engName = engName;
+        this.engSurname = engSurname;
     }
 
     /**
@@ -229,5 +241,28 @@ public class User {
         this.adId = adId;
     }
 
-    
+    public String getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(String principal) {
+        this.principal = principal;
+    }
+
+    public String getEngName() {
+        return engName;
+    }
+
+    public void setEngName(String engName) {
+        this.engName = engName;
+    }
+
+    public String getEngSurname() {
+        return engSurname;
+    }
+
+    public void setEngSurname(String engSurname) {
+        this.engSurname = engSurname;
+    }
+
 }

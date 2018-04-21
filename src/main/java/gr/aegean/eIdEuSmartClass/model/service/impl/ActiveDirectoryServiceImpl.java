@@ -7,9 +7,14 @@ package gr.aegean.eIdEuSmartClass.model.service.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ConfigPropertiesServices;
+import gr.aegean.eIdEuSmartClass.model.service.UserService;
+import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
 import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
+import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
+import gr.aegean.eIdEuSmartClass.utils.generators.Translator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,13 +24,17 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 /**
  *
@@ -82,7 +91,9 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         params.put("password", password);
         String response = writeParamsAndSendPost(params, url);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response.toString(), ADResponse.class);
+        ADResponse resp = mapper.readValue(response.toString(), ADResponse.class);
+        log.info(resp.getStatus() + " id : " + resp.getId());
+        return resp;
     }
 
     @Override
@@ -148,7 +159,8 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
 
     /**
      * Writes the provides map of parameters as post parameters in the
-     * connection body sends the POST request to the url and returns the response
+     * connection body sends the POST request to the url and returns the
+     * response
      *
      * @param params
      * @param con
@@ -193,6 +205,30 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         in.close();
         log.info(response.toString());
         return response.toString();
+    }
+
+    @Override
+    public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ) {
+        try {
+            String safeEid = DigestUtils.md5DigestAsHex(user.get().geteIDAS_id().getBytes(StandardCharsets.UTF_8));
+            String randomPass = UtilGenerators.generateRandomADPass(8);
+            String userName = user.get().getEngName() + "." + user.get().getEngSurname();
+            String userPrincipal = userName + safeEid.substring(0, 2);
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            ADResponse adResp = createUser(userName,
+                    safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal, randomPass);
+            String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
+            if (!StringUtils.isEmpty(adResp.getId())) {
+                userServ.saveOrUpdateUser(user.get().geteIDAS_id(), user.get().getName(), user.get().getSurname(),
+                        user.get().getGender().getName(), df.format(user.get().getBirthday()), user.get().getEmail(),
+                        user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
+                        principalFullName, user.get().getEngName(), user.get().getEngSurname());
+                return randomPass;
+            }
+        } catch (Exception e) {
+            log.info("Error form AD", e);
+        }
+        return "NOK";
     }
 
 }

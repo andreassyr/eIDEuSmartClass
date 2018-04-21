@@ -25,7 +25,7 @@ and open the template in the editor.
             <select id="roomState">
                 <option value=""> -- </option>
                 <option th:each="state : ${roomStates}"
-                        th:value="${state.statusId}"
+                        th:value="${state.name}"
                         th:utext="${state.name }"/>
             </select>           
 
@@ -41,7 +41,7 @@ and open the template in the editor.
                 <option value=""> -- </option>
                 <option th:each="skRoom : ${skypeRooms}"
                         th:value="${skRoom.id}"
-                        th:utext="${skRoom.name}"/>
+                        th:utext="${skRoom.name +' starts:' + skRoom.start + ' ends' + skRoom.end }"/>
             </select>
             <button id="delSkButton" onclick="delSkype()">Delete Skype Room</button>
         </div>

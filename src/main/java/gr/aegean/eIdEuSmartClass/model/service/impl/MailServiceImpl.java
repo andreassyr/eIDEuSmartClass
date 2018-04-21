@@ -31,7 +31,7 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
-    public String prepareAndSendAccountCreated(String recipient, String subject, String userName, String adPrincipal, String adPass) {
+    public String prepareAndSendAccountCreated(String recipient, String subject, String userName) {
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -41,7 +41,7 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject(subject);
 
-            String content = MailContentBuilder.buildWelcome(userName, adPrincipal, adPass);
+            String content = MailContentBuilder.buildWelcome(userName);
 
             helper.setText(content, true);
 
@@ -49,20 +49,20 @@ public class MailServiceImpl implements MailService {
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e);
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
 
     @Override
-    public String prepareAndSendTeamMessage(String recipient, String name, String teamName) {
+    public String prepareAndSendTeamMessage(String recipient, String name, String teamName, String principalName, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject("You have been added to the MS TEAMS from UAegean SMART CLASS");
-            String content = MailContentBuilder.buildTeamRegistration(name, teamName);
+            String content = MailContentBuilder.buildTeamRegistration(name, teamName, principalName, password);
 
             helper.setText(content, true);
 
@@ -70,28 +70,28 @@ public class MailServiceImpl implements MailService {
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e);
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
 
     @Override
-    public String prepareAndSendSkypeLink(String recipient, String name, String url) {
+    public String prepareAndSendSkypeLink(String recipient, String name, String url, String principalName, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
-            String content = MailContentBuilder.buildSkypeForBusinessContent(name, url);
+            helper.setSubject("Your Skype for Business link");
+            String content = MailContentBuilder.buildSkypeForBusinessContent(name, url, principalName, password);
             helper.setText(content, true);
 
             mailSender.send(message);
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e);
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
@@ -109,7 +109,45 @@ public class MailServiceImpl implements MailService {
             mailSender.send(message);
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e);
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendTeamMessageExisting(String recipient, String name, String teamName, String principal) {
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("You have been added to the MS TEAMS from UAegean SMART CLASS");
+            String content = MailContentBuilder.buildTeamRegistrationExisting(name, teamName, principal);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending email", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String url, String principal) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Your Skype for Business link");
+
+            String content = MailContentBuilder.buildSkypeForBusinessContenExisting(name, url, principal);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending email", e);
             return "ERROR";
         }
     }

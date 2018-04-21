@@ -54,8 +54,8 @@ DROP TABLE IF EXISTS `eidSmartClass`.`Users` ;
 CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Users` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT,
   `eIDAS_id` VARCHAR(64) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
-  `surname` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `surname` VARCHAR(100) NOT NULL,
   `date_of_birth` DATE NOT NULL,
   `gender_id` INT NOT NULL DEFAULT 0,
   `role_id` INT NOT NULL DEFAULT 0,
@@ -65,6 +65,9 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Users` (
    `affiliation` VARCHAR(45),
    `country` VARCHAR(45),
    `ad_id` VARCHAR(45),
+   `principal_name` VARCHAR(100),
+    `eng_name` VARCHAR(100),
+    `eng_surname` VARCHAR(100),
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_Users_Roles1`
     FOREIGN KEY (`role_id`)
@@ -162,6 +165,8 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Skyperooms` (
   `skyperoom_id` BIGINT NOT NULL AUTO_INCREMENT,
   `url` VARCHAR(45) NOT NULL,
    `name` VARCHAR(45) NOT NULL,
+    `start` DATETIME NOT NULL,
+    `end` DATETIME NOT NULL,
  PRIMARY KEY (`skyperoom_id`))
 ENGINE = InnoDB;
 
@@ -170,6 +175,21 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+
+-- -----------------------------------------------------
+-- Table `eidSmartClass`.`Skyperooms`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `eidSmartClass`.`Teams` ;
+
+CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Teams` (
+  `team_id` BIGINT NOT NULL AUTO_INCREMENT,
+   `name` VARCHAR(45) NOT NULL,
+    `url` VARCHAR(45) NOT NULL,
+ PRIMARY KEY (`team_id`))
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Data for table `eidSmartClass`.`Roles`
@@ -222,8 +242,13 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `eidSmartClass`;
-INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`) VALUES (DEFAULT, 'dummyurl1','room1');
-INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`) VALUES (DEFAULT, 'dummyurl2','room2');
-
+INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`,`start`,`end`) VALUES (DEFAULT, 'dummyurl1','room1','2018-10-20 16:15:01','2018-10-20 16:15:01');
+INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`,`start`,`end`) VALUES (DEFAULT, 'dummyurl2','room2','2018-10-20 16:15:01','2018-10-20 16:15:01');
+-- 
 COMMIT;
 
+START TRANSACTION;
+USE `eidSmartClass`;
+INSERT INTO `eidSmartClass`.`users` (`eIDAS_id`, `name`,`surname`,`role_id`,`date_of_birth`,`email`,`gender_id`) VALUES ("GR/GR/ERMIS-11076669","name","surname",6,"1980-01-01","test",1);
+-- 
+COMMIT;

@@ -11,6 +11,7 @@ import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
+import gr.aegean.eIdEuSmartClass.model.dmo.Teams;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
@@ -20,6 +21,7 @@ import gr.aegean.eIdEuSmartClass.model.service.GenderService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
 import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
+import gr.aegean.eIdEuSmartClass.model.service.TeamsService;
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.enums.GenderEnum;
@@ -36,10 +38,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
+
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -91,6 +95,9 @@ public class ViewControllers {
     @Autowired
     private ActiveDirectoryService adServ;
 
+    @Autowired
+    private TeamsService teamServ;
+
     public final static String TOKEN_NAME = "access_token";
     private final static Logger log = LoggerFactory.getLogger(ViewControllers.class);
 
@@ -105,6 +112,7 @@ public class ViewControllers {
     public String landingTest(Model model) {
         model.addAttribute("classRooms", classServ.findAll());
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
+        model.addAttribute("teams", teamServ.findAll());
         return "landingViewTest";
     }
 
@@ -119,6 +127,7 @@ public class ViewControllers {
     public String landing(Model model) {
         model.addAttribute("classRooms", classServ.findAll());
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
+        model.addAttribute("teams", teamServ.findAll());
         return "landingView";
     }
 
@@ -163,6 +172,13 @@ public class ViewControllers {
                     } else {
                         log.info("Could not wrap user from eIDAS success");
                     }
+
+                    if (typeCookie.contains("register")) {
+                        redirectAttrs.addFlashAttribute("message", "Thank you for registering with the service, please complete it by filling in the following info");
+                    } else {
+                        redirectAttrs.addFlashAttribute("message", "In order to use the service you first need to register. Please fill in the following form");
+                    }
+
                     return "redirect:/register";
                 } catch (UnsupportedEncodingException ex) {
                     log.info("ERROR ", ex);
@@ -220,19 +236,34 @@ public class ViewControllers {
     }
 
     @RequestMapping(value = {"team"})
-    public String team(Principal principal, Model model) {
+    public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model) {
         Optional<User> user = userServ.findByEid(principal.getName());
         //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
-        if (user.isPresent()) {
-            mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(), "Teams");
+        String teamId = typeCookie.split("-")[1];
+        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
+        if (user.isPresent() && team.isPresent()) {
+            if (StringUtils.isEmpty(user.get().getPrincipal())) {
+                String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+                mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(),
+                        team.get().getName(), user.get().getPrincipal(), password);
+            } else {
+                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(),
+                        team.get().getName(), user.get().getPrincipal());
+            }
+
             try {
                 adServ.add2Group(user.get().getAdId(), "Teams", false);
             } catch (IOException ex) {
                 log.info("Error: ", ex);
             }
-            model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+//            model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+            if (team.isPresent()) {
+                model.addAttribute("TeamName", team.get().getName());
+                model.addAttribute("TeamURL", team.get().getUrl());
+            }
+            return "teamView";
         }
-        return "teamView";
+        return "error";
     }
 
     @RequestMapping(value = {"skype"})
@@ -241,13 +272,21 @@ public class ViewControllers {
             @CookieValue(value = "type", required = true) String typeCookie
     ) {
         Optional<User> user = userServ.findByEid(principal.getName());
+
         // insert user to Group “SkypeForBusiness” of the Azure AD
         if (user.isPresent()) {
             String roomId = typeCookie.split("-")[1];
             SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
             if (room != null) {
                 model.addAttribute("room", room);
-                mailServ.prepareAndSendSkypeLink(user.get().getEmail(), user.get().getName() + user.get().getSurname(), room.getUrl());
+                if (StringUtils.isEmpty(user.get().getPrincipal())) {
+                    String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+                    mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
+                            user.get().getName() + user.get().getSurname(), room.getUrl(), user.get().getPrincipal(), password);
+                } else {
+                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), user.get().getName() + user.get().getSurname(), room.getUrl(),
+                            user.get().getPrincipal());
+                }
                 try {
                     adServ.add2Group(user.get().getAdId(), "SkypeForBusiness", false);
                 } catch (IOException ex) {
@@ -305,26 +344,20 @@ public class ViewControllers {
      * in the API call***
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public String createUser(@ModelAttribute("user") FormUser user) {
-        try {
-            String safeEid = DigestUtils.md5DigestAsHex(user.getEid().getBytes(StandardCharsets.UTF_8));
-            String engGiveName = user.getCurrentGivenName().split(",").length > 1 ? user.getCurrentGivenName().split(",")[1] : user.getCurrentGivenName();
-            String engFamilyName = user.getCurrentFamilyName().split(",").length > 1 ? user.getCurrentFamilyName().split(",")[1] : user.getCurrentFamilyName();
-            String randomPass = UtilGenerators.generateRandomADPass(8);
-            String userName = engGiveName + engFamilyName;
-            ADResponse adResp = adServ.createUser(userName,
-                    safeEid, engGiveName, engFamilyName, safeEid, randomPass);
+    public String createUser(@ModelAttribute("user") FormUser user, Model model) {
 
+        String userName;
+        if (user.getEngName() != null && user.getEngSurname() != null) {
+            userName = user.getEngName() + "." + user.getEngSurname();
             BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
                     GenderEnum.UNSPECIFIED.gender(), user.getDateOfBirth(), user.getEmail(),
-                    user.getMobile(), user.getAffiliation(), user.getCountry(), adResp.getId());
+                    user.getMobile(), user.getAffiliation(), user.getCountry(), null, null, user.getEngName(), user.getEngSurname());
             if (resp.getStatus().equals("OK")) {
-                String principalFullName = safeEid + "@i4mlabUAegean.onmicrosoft.com";
-                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName, principalFullName, randomPass);
+                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName);
                 return "updateSuccessView";
             }
-        } catch (IOException ex) {
-            log.info("ERROR", ex);
+        } else {
+            model.addAttribute("error", "no english user name found!! Cannot create user");
         }
         return "error";
     }
@@ -335,22 +368,17 @@ public class ViewControllers {
      */
     @RequestMapping(value = "updateUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public String updateUser(@ModelAttribute("user") FormUser user) {
-//        try {
-//            adServ.createUser("smartclassguest1@outlook.com");
-//        } catch (IOException ex) {
-//            log.info("ERROR", ex);
-//        }
         Optional<User> oldUser = userServ.findByEid(user.getEid());
         String gender = GenderEnum.UNSPECIFIED.gender();
 
         if (oldUser.isPresent()) {
             gender = oldUser.get().getGender().getName();
-        }
-
-        BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
-                gender, user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry(), "");
-        if (resp.getStatus().equals("OK")) {
-            return "updateSuccessView";
+            BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
+                    gender, user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry(),
+                    oldUser.get().getAdId(), oldUser.get().getPrincipal(), oldUser.get().getEngName(),oldUser.get().getEngSurname());
+            if (resp.getStatus().equals("OK")) {
+                return "updateSuccessView";
+            }
         }
         return "error";
     }

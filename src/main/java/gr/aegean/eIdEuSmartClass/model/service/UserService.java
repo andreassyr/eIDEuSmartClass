@@ -19,7 +19,7 @@ public interface UserService {
     public BaseResponse saveUser(User user);
 
     public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
-            String mobile, String affiliation, String country, String adId);
+            String mobile, String affiliation, String country, String adId, String userPrincipal,String engName,String engSurname);
 
     public BaseResponse updateLogin(String eIDasid);
 

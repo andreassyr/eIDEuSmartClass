@@ -9,34 +9,48 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link  href="/css/picker.css" rel="stylesheet">
+
     </head>
     <body>
         <div>This is the Add Skype Room view</div>
- 
+
         <form action="#"  th:object="${user}" method="post"  commandName="user">
             Skype Room URL: <input type="text" id= "roomUrl" name="roomUrl"  /> 
             Skype Room Name: <input type="text" id= "roomName" name="roomName"  /> 
+            Start Time: <input type="text" class="form-control js-full-picker" name="start" id="start">
+            End Time: <input type="text" class="form-control js-full-picker" name="end" id="end">
         </form>
         <p><button id="submit" onclick="save()"> Save</button> </p>
 
-
+        <script src="/js/picker.js"></script>
         <script>
 
+            (function () {
+                new Picker(document.querySelector('.js-full-picker'), {
+                    format: 'YYYY-MM-DD HH:mm',
+                });
+                
+                new Picker(document.querySelector('#end'), {
+                    format: 'YYYY-MM-DD HH:mm',
+                });
+            })();
 
             function save() {
                 let roomUrl = document.getElementById("roomUrl").value;
                 let roomName = document.getElementById("roomName").value;
                 var http = new XMLHttpRequest();
                 var url = "../../addSkypeRoom";
-                var params = "roomUrl="+roomUrl+"&roomName="+roomName;
+                var params = "roomUrl=" + roomUrl + "&roomName=" + roomName;
                 http.open("POST", url, true);
                 //Send the proper header information along with the request
                 http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 http.onreadystatechange = function () {//Call a function when the state changes.
                     if (http.readyState == 4 && http.status == 200) {
                         alert(JSON.parse(http.responseText).status);
-                        if(JSON.parse(http.responseText).status === "OK"){
-                            window.location="/admin";
+                        if (JSON.parse(http.responseText).status === "OK") {
+                            window.location = "/admin";
                         }
                     }
                 }

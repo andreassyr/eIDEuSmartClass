@@ -31,7 +31,9 @@ import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
 import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +119,7 @@ public class RestControllers {
      * @param principal
      * @return
      */
-    @RequestMapping(value = "updateclass", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value = "updateclass", method = {RequestMethod.POST} )
     public @ResponseBody
     BaseResponse updateClassRoom(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "roomStatus", required = true) String status,
@@ -126,9 +128,9 @@ public class RestControllers {
         Optional<User> user = userServ.findByEid(userEid);
         if (user.isPresent()) {
             try {
-                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
-                    rasbServ.requestCloseRoom(roomName);
-                }
+//                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
+//                    rasbServ.requestCloseRoom(roomName);
+//                }
                 classroomServ.setRoomStatusByStateName(status, roomName);
                 return new BaseResponse(BaseResponse.SUCCESS);
             } catch (Exception err) {
@@ -161,6 +163,17 @@ public class RestControllers {
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
+    
+    
+    @RequestMapping(value = "checkclassRasp", method = {RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody BaseResponse checkclassRasp(@RequestParam(value="roomName") String roomName){
+        Optional<ClassRoomState> room = classroomServ.getRoomStatus(roomName);
+        if(room.isPresent()){
+            return new BaseResponse(room.get().getName());
+        }
+        return new BaseResponse("N/A");
+    }
+    
 
     @RequestMapping(value = "getUsersByRole", method = {RequestMethod.GET})
     public @ResponseBody
@@ -183,7 +196,7 @@ public class RestControllers {
                     RolesEnum.ADMIN.role(), RolesEnum.COORDINATOR.role(),
                     RolesEnum.SUPERADMIN.role(), RolesEnum.VISITOR.role());
             if (user.isPresent() && activatedRoles.contains(newRoleName)) {
-                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getName() + user.get().getSurname());
+                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getName() +" "+user.get().getSurname());
             }
             return new BaseResponse(BaseResponse.SUCCESS);
         }
@@ -194,9 +207,13 @@ public class RestControllers {
     @RequestMapping(value = "addSkypeRoom", method = {RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
     BaseResponse addSkypeRoom(@RequestParam(value = "roomName", required = true) String roomName,
-            @RequestParam(value = "roomUrl", required = true) String roomUrl) {
+            @RequestParam(value = "roomUrl", required = true) String roomUrl, @RequestParam(value="start") String start, 
+            @RequestParam(value= "end") String end){
         try {
             SkypeRoom room = new SkypeRoom();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDate startDate = LocalDate.parse(start,formatter);
+            LocalDate endDate = LocalDate.parse(end,formatter);
             room.setName(roomName);
             room.setUrl(roomUrl);
             skypeServ.save(room);

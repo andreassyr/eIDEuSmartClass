@@ -72,21 +72,25 @@ public class TestValidators {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
                 .addFilter(springSecurityFilterChain).build();
-        
+
         LocalDateTime todayAt558 = LocalDate.now().atTime(5, 58);
         List<ActiveCode> codes = new ArrayList();
         ActiveCode testCode = new ActiveCode();
         testCode.setContent("1234");
         testCode.setGrantedAt(todayAt558);
         codes.add(testCode);
-        
+
         List<ActiveCode> badCodes = new ArrayList();
         ActiveCode badTestCode = new ActiveCode();
         badTestCode.setContent("2345");
         badTestCode.setGrantedAt(DateWrappers.parseDateTime("2018-04-04 22:01"));
         badCodes.add(badTestCode);
-        
-        
+        Role badRole = new Role(RolesEnum.VISITOR.role());
+        Gender badGender = new Gender(GenderEnum.UNSPECIFIED.gender());
+        User badUser = new User(badRole, "e", "n", "s", "e", "m", "a", "c", badGender, LocalDate.now(), null,"engName","engSurname");
+        ActiveCodePK badKey = new ActiveCodePK(badUser, null);
+        badTestCode.setId(badKey);
+
         LocalDateTime todayAt458 = LocalDate.now().atTime(5, 58);
         List<ActiveCode> adminCodes = new ArrayList();
         ActiveCode adminCode = new ActiveCode();
@@ -95,38 +99,53 @@ public class TestValidators {
         adminCodes.add(adminCode);
         Role adminRole = new Role(RolesEnum.ADMIN.role());
         Gender gender = new Gender(GenderEnum.UNSPECIFIED.gender());
-        User user = new User(adminRole, "e", "n", "s", "e", "m", "a", "c", gender, LocalDate.now(), null);
+        User user = new User(adminRole, "e", "n", "s", "e", "m", "a", "c", gender, LocalDate.now(), null,"engName","engSurname");
         ActiveCodePK key = new ActiveCodePK(user, null);
         adminCode.setId(key);
-        
+
+        List<ActiveCode> superAdminCodes = new ArrayList();
+        ActiveCode superAdminCode = new ActiveCode();
+        superAdminCode.setContent("1111");
+        superAdminCode.setGrantedAt(todayAt458);
+        superAdminCodes.add(superAdminCode);
+        Role supeAadminRole = new Role(RolesEnum.SUPERADMIN.role());
+        User suser = new User(supeAadminRole, "e", "n", "s", "e", "m", "a", "c", gender, LocalDate.now(), null,"engName","engSurname");
+        ActiveCodePK skey = new ActiveCodePK(suser, null);
+        superAdminCode.setId(skey);
+
         Mockito.when(activeServ.getCodesByContent("1234")).thenReturn(adminCodes);
         Mockito.when(activeServ.getCodesByContent("2345")).thenReturn(badCodes);
         Mockito.when(activeServ.getCodesByContent("4567")).thenReturn(adminCodes);
+        Mockito.when(activeServ.getCodesByContent("1111")).thenReturn(superAdminCodes);
     }
 
     @Test
     public void testValidateCode() {
         LocalDateTime todayAt6 = LocalDate.now().atTime(6, 0);
-        assertEquals(ValidateRoomCode.validateCode("1234", activeServ,todayAt6),true);
+        assertEquals(ValidateRoomCode.validateCode("1234", activeServ, todayAt6), true);
     }
-    
+
     @Test
     public void testInValidateCode() {
-        assertEquals(ValidateRoomCode.validateCode("2345", activeServ,LocalDateTime.now()),false);
+        assertEquals(ValidateRoomCode.validateCode("2345", activeServ, LocalDateTime.now()), false);
     }
-    
-    
+
     @Test
     public void testAdminCode() {
-         LocalDateTime todayAt21 = LocalDate.now().atTime(21, 0);
-        assertEquals(ValidateRoomCode.validateCode("4567", activeServ,todayAt21),true);
+        LocalDateTime todayAt21 = LocalDate.now().atTime(21, 0);
+        assertEquals(ValidateRoomCode.validateCode("4567", activeServ, todayAt21), true);
     }
 
     @Test
     public void testAdminCodeAfter22() {
-         LocalDateTime todayAt2201 = LocalDate.now().atTime(22, 1);
-        assertEquals(ValidateRoomCode.validateCode("4567", activeServ,todayAt2201),false);
+        LocalDateTime todayAt2201 = LocalDate.now().atTime(22, 1);
+        assertEquals(ValidateRoomCode.validateCode("4567", activeServ, todayAt2201), false);
     }
-    
-    
+
+    @Test
+    public void testSuperAdminCodeAfter22() {
+        LocalDateTime todayAt2201 = LocalDate.now().atTime(23, 1);
+        assertEquals(ValidateRoomCode.validateCode("1111", activeServ, todayAt2201), true);
+    }
+
 }
