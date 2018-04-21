@@ -13,8 +13,6 @@ import gr.aegean.eIdEuSmartClass.model.service.ConfigPropertiesServices;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
 import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
 import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
-import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
-import gr.aegean.eIdEuSmartClass.utils.generators.Translator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -79,7 +77,9 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
     }
 
     @Override
-    public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname, String userPrincipalName, String password) throws MalformedURLException, IOException {
+    public ADResponse createUser(String displayName, String mailNickname, String givenName,
+            String surname, String userPrincipalName,
+            String password, String eId) throws MalformedURLException, IOException {
         String url = propServ.getPropByName("AD_MICROSERV") + "/createUser";
 
         Map<String, Object> params = new LinkedHashMap<>();
@@ -89,6 +89,7 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         params.put("surname", surname);
         params.put("userPrincipalName", userPrincipalName);
         params.put("password", password);
+        params.put("eId", eId);
         String response = writeParamsAndSendPost(params, url);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         ADResponse resp = mapper.readValue(response.toString(), ADResponse.class);
@@ -157,6 +158,31 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         return mapper.readValue(response.toString(), ADResponse.class);
     }
 
+    @Override
+    public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ) {
+        try {
+            String safeEid = DigestUtils.md5DigestAsHex(user.get().geteIDAS_id().getBytes(StandardCharsets.UTF_8));
+            String randomPass = UtilGenerators.generateRandomADPass(8);
+            String userName = user.get().getEngName() + "." + user.get().getEngSurname();
+            String userPrincipal = userName + safeEid.substring(0, 2);
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            ADResponse adResp = createUser(userName,
+                    safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal,
+                    randomPass, user.get().geteIDAS_id());
+            String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
+            if (!StringUtils.isEmpty(adResp.getId())) {
+                userServ.saveOrUpdateUser(user.get().geteIDAS_id(), user.get().getName(), user.get().getSurname(),
+                        user.get().getGender().getName(), df.format(user.get().getBirthday()), user.get().getEmail(),
+                        user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
+                        principalFullName, user.get().getEngName(), user.get().getEngSurname());
+                return randomPass;
+            }
+        } catch (Exception e) {
+            log.info("Error form AD", e);
+        }
+        return "NOK";
+    }
+
     /**
      * Writes the provides map of parameters as post parameters in the
      * connection body sends the POST request to the url and returns the
@@ -205,30 +231,6 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         in.close();
         log.info(response.toString());
         return response.toString();
-    }
-
-    @Override
-    public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ) {
-        try {
-            String safeEid = DigestUtils.md5DigestAsHex(user.get().geteIDAS_id().getBytes(StandardCharsets.UTF_8));
-            String randomPass = UtilGenerators.generateRandomADPass(8);
-            String userName = user.get().getEngName() + "." + user.get().getEngSurname();
-            String userPrincipal = userName + safeEid.substring(0, 2);
-            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            ADResponse adResp = createUser(userName,
-                    safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal, randomPass);
-            String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
-            if (!StringUtils.isEmpty(adResp.getId())) {
-                userServ.saveOrUpdateUser(user.get().geteIDAS_id(), user.get().getName(), user.get().getSurname(),
-                        user.get().getGender().getName(), df.format(user.get().getBirthday()), user.get().getEmail(),
-                        user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
-                        principalFullName, user.get().getEngName(), user.get().getEngSurname());
-                return randomPass;
-            }
-        } catch (Exception e) {
-            log.info("Error form AD", e);
-        }
-        return "NOK";
     }
 
 }

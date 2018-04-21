@@ -18,7 +18,8 @@ import java.util.Optional;
  */
 public interface ActiveDirectoryService {
 
-    public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname, String userPrincipalName, String password) throws MalformedURLException, IOException;
+    public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname,
+            String userPrincipalName, String password, String eId) throws MalformedURLException, IOException;
 
     public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException;
 
