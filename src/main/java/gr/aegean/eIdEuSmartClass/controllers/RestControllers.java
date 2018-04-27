@@ -196,7 +196,7 @@ public class RestControllers {
                     RolesEnum.ADMIN.role(), RolesEnum.COORDINATOR.role(),
                     RolesEnum.SUPERADMIN.role(), RolesEnum.VISITOR.role());
             if (user.isPresent() && activatedRoles.contains(newRoleName)) {
-                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getName() +" "+user.get().getSurname());
+                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getCurrentGivenName() +" "+user.get().getCurrentFamilyName());
             }
             return new BaseResponse(BaseResponse.SUCCESS);
         }

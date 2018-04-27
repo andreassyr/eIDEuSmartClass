@@ -29,16 +29,13 @@ import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.generators.QRGenerator;
 import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
-import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.DigestUtils;
 
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -124,10 +120,12 @@ public class ViewControllers {
      * @return
      */
     @RequestMapping(value = {"landing", "/", ""})
-    public String landing(Model model) {
+    public String landing(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         model.addAttribute("classRooms", classServ.findAll());
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
         model.addAttribute("teams", teamServ.findAll());
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+                
         return "landingView";
     }
 
@@ -195,6 +193,10 @@ public class ViewControllers {
                 return "redirect:/team";
             }
 
+            if (typeCookie.contains("skypeJoin")) {
+                return "redirect:/selectConf";
+            }
+
             if (typeCookie.contains("skype")) {
                 return "redirect:/skype";
             }
@@ -239,15 +241,17 @@ public class ViewControllers {
     public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model) {
         Optional<User> user = userServ.findByEid(principal.getName());
         //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
-        String teamId = typeCookie.split("-")[1];
-        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
+//        String teamId = typeCookie.split("-")[1];
+//        String teamId = String.valueOf(teamServ.findFirst().get().getId());
+//        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
+        Optional<Teams> team =teamServ.findFirst();
         if (user.isPresent() && team.isPresent()) {
             if (StringUtils.isEmpty(user.get().getPrincipal())) {
                 String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(),
+                mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
                         team.get().getName(), user.get().getPrincipal(), password);
             } else {
-                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getName() + " " + user.get().getSurname(),
+                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
                         team.get().getName(), user.get().getPrincipal());
             }
 
@@ -266,6 +270,13 @@ public class ViewControllers {
         return "error";
     }
 
+    @RequestMapping(value = {"selectConf"})
+    public String teamSelect(Model model) {
+        List<SkypeRoom> rooms = skypeRoomServ.getAllRooms();
+        model.addAttribute("rooms", rooms);
+        return "selectConf";
+    }
+
     @RequestMapping(value = {"skype"})
     public String skype(Model model,
             Principal principal,
@@ -282,9 +293,9 @@ public class ViewControllers {
                 if (StringUtils.isEmpty(user.get().getPrincipal())) {
                     String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
                     mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
-                            user.get().getName() + user.get().getSurname(), room.getUrl(), user.get().getPrincipal(), password);
+                            user.get().getCurrentGivenName() + user.get().getCurrentFamilyName(), room.getUrl(), user.get().getPrincipal(), password);
                 } else {
-                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), user.get().getName() + user.get().getSurname(), room.getUrl(),
+                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), user.get().getCurrentGivenName() + user.get().getCurrentFamilyName(), room.getUrl(),
                             user.get().getPrincipal());
                 }
                 try {
@@ -322,7 +333,7 @@ public class ViewControllers {
             model.addAttribute("pin", ac.getContent());
             String qrImgPath;
             try {
-                qrImgPath = QRGenerator.generateQR(roomId, user.get().geteIDAS_id(), ac.getContent());
+                qrImgPath = QRGenerator.generateQR(roomId, user.get().getEid(), ac.getContent());
                 model.addAttribute("qrPath", qrImgPath);
                 //add user to AD “UAegean-HPClass”
                 adServ.add2Group(user.get().getAdId(), "UAegean-HPClass", false);
@@ -375,7 +386,7 @@ public class ViewControllers {
             gender = oldUser.get().getGender().getName();
             BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
                     gender, user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry(),
-                    oldUser.get().getAdId(), oldUser.get().getPrincipal(), oldUser.get().getEngName(),oldUser.get().getEngSurname());
+                    oldUser.get().getAdId(), oldUser.get().getPrincipal(), oldUser.get().getEngName(), oldUser.get().getEngSurname());
             if (resp.getStatus().equals("OK")) {
                 return "updateSuccessView";
             }

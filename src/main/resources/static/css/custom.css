@@ -1,0 +1,230 @@
+/* ----------------------------------------------------------------
+	Custom CSS
+
+	Add all your Custom Styled CSS here for New Styles or
+	Overwriting Default Theme Styles for Better Hanlding Updates
+-----------------------------------------------------------------*/
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Lato', 'Raleway', sans-serif;
+}
+h6 {
+  color: #444;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 30px 0;
+  font-family: 'Lato', 'Raleway', sans-serif;
+}
+
+.slider-caption h2 {
+  font-size: 4rem;
+  letter-spacing: 2px;
+  text-transform: capitalize;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0;
+}
+
+#header.transparent-header.full-header #header-wrap {
+  border-bottom: none;
+}
+
+#header.full-header #primary-menu > ul {
+ border-right: none;
+}
+
+#header.full-header #logo {
+  border-right: none;
+}
+
+.button.button-border.button-light {
+  background-color: #0a57bb;
+}
+
+.slider-caption h2 {
+  font-size: 3rem;
+  letter-spacing: 2px;
+  text-transform: capitalize;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 0;
+}
+.slider-caption h3 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  text-transform: capitalize;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 0;
+}
+
+.slider-caption p {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#courses .section:first-child {
+  padding: 0;
+}
+/*
+#courses .section:first-child {
+  background-color: #071e4f;
+  padding: 0;
+}
+
+#courses .section:first-child h3 {
+  color: #ffffff;
+}
+#TwoCourses {
+  background-color: #ffffff;
+  display: block;
+}
+
+*/
+
+#courses .col_one_third {
+  margin-right: 2%;
+}
+
+#courses .col_one_third a.button {
+  margin-top: 15%;
+}
+
+#IoT {
+  color: #ffffff;
+  background-color: #071e4f;
+  padding: 1.5%;
+}
+#IoT h4, #IoT p {
+  color: #ffffff;
+}
+
+#IoT .fbox-icon .icon-vcard {
+  color: #ffffff;
+}
+
+#SmartClass, #VideoClass {
+  padding: 1.5%;
+}
+
+
+#SmartClass {
+  border-right: solid 1px #b7b7b7;
+}
+
+#courses .topmargin-lg {
+  margin-top: 0!important;
+}
+
+#courses .bottommargin-lg {
+    margin-bottom: 0 !important;
+}
+
+#courses .promo.promo-border {
+  border: none;
+}
+
+#courses .promo h4 {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+#courses h3 {
+  font-size: 3em;
+  font-weight: 100;
+  text-align: center;
+  text-transform: capitalize;;
+}
+
+#courses p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.lesspadding {
+  padding: 0;
+}
+
+#courses a.MoreCourses {
+  color: #0a57bb;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: center;
+  display: block;
+}
+
+#courses a.MoreCourses:hover {
+  color: #000000;
+}
+
+/* #courses a.MoreCourses span {
+  content: "\203A";
+  font-size: 2rem;
+} */
+
+#courses a.MoreCourses i {
+  border: solid #0a57bb;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+#courses a.MoreCourses i:hover {
+  border: solid #000000;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+#courses a.MoreCourses .right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+
+#courses .line {
+  margin: 10px 0;
+}
+
+.heading-block:after {
+  border-top: none;
+}
+
+#footer .col_last {
+  text-align: right;
+}
+
+#footer {
+  background-color: #ffffff;
+}
+
+.footer-logo {
+  margin-bottom: 20px;
+}
+
+.col_last .footer-logo{
+  float: right;
+}
+
+.col_last p {
+  float: right;
+}
+
+
+/* Registration page */
+
+.col_three_fifth {
+  width: 38.4%;
+}
+
+.col_two_fifth {
+  width: 57.6%
+}
+
+.button-myBlue {
+    background-color: #0a57bb;
+}
+
+.line {
+   margin: 30px 0;
+}

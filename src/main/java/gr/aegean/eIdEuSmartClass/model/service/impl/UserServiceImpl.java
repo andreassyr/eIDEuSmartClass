@@ -35,18 +35,18 @@ import org.springframework.util.StringUtils;
  */
 @Service
 public class UserServiceImpl implements UserService {
-
+    
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
+    
     @Autowired
     private UserRepository userRepo;
-
+    
     @Autowired
     private RoleRepository roleRepo;
-
+    
     @Autowired
     private GenderRepository genderRepo;
-
+    
     @Override
     @Transactional
     public BaseResponse saveUser(User user) {
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             log.info("ERROR Saving user " + user.toString());
             log.error("ERROR", e);
         }
-
+        
         return new BaseResponse(BaseResponse.FAILED);
     }
 
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    @Modifying 
+    @Modifying    
     public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gend, String dateOfBirth,
             String email, String mobile, String affiliation, String country, String adId, String userPrincipal, String engName, String engSurname) {
         try {
@@ -78,11 +78,11 @@ public class UserServiceImpl implements UserService {
             Optional<Gender> gender = genderRepo.findFirstByName(Gender.UNSPECIFIED);
             if (!user.isPresent()) {
                 if (role.isPresent() && gender.isPresent()) {
-                    user = Optional.of(new User(role.get(), eIDASid, name, surname, email, mobile, affiliation, 
+                    user = Optional.of(new User(role.get(), eIDASid, name, surname, email, mobile, affiliation,
                             country, gender.get(), birthDay,
-                            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),engName,engSurname) );
+                            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), engName, engSurname));
                     userRepo.save(user.get());
-
+                    
                 } else {
                     throw new NullPointerException("Role or Gender was not founde for unregeistered/undefined");
                 }
@@ -94,6 +94,7 @@ public class UserServiceImpl implements UserService {
                 user.get().setAffiliation(affiliation);
                 user.get().setCountry(country);
                 user.get().setEmail(email);
+                user.get().setMobile(mobile);
                 if (gender.isPresent()) {
                     user.get().setGender(gender.get());
                 }
@@ -104,13 +105,13 @@ public class UserServiceImpl implements UserService {
                 userRepo.save(user.get());
             }
             return new BaseResponse(BaseResponse.SUCCESS);
-
+            
         } catch (Error e) {
             log.info("ERROR::" + e);
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
-
+    
     @Override
     @Transactional
     @Modifying
@@ -126,26 +127,26 @@ public class UserServiceImpl implements UserService {
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
-
+    
     @Override
     @Transactional
     public Optional<User> findByEid(String eID) {
         return userRepo.findFirstByEIDASId(eID);
     }
-
+    
     @Override
     @Transactional
     public List<User> findAllUIdentified() {
         return userRepo.findAll().stream().filter(user -> {
             return user.getRole().getName().equals(RolesEnum.UNIDENTIFIED.role());
         }).collect(Collectors.toList());
-
+        
     }
-
+    
     @Override
     @Transactional
     public Optional<User> findById(Long id) {
         return userRepo.findById(id);
     }
-
+    
 }

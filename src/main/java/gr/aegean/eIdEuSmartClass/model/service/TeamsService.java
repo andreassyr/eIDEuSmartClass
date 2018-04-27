@@ -17,4 +17,5 @@ public interface TeamsService {
     
     public List<Teams> findAll();
     public Optional<Teams> findById(Long id);
+    public Optional<Teams> findFirst();
 }

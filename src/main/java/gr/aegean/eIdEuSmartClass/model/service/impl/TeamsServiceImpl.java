@@ -34,5 +34,10 @@ public class TeamsServiceImpl implements TeamsService{
     public Optional<Teams> findById(Long id) {
         return teamsRepo.findById(id);
     }
+
+    @Override
+    public Optional<Teams> findFirst() {
+        return teamsRepo.findAll().isEmpty()?Optional.empty():Optional.of(teamsRepo.findAll().get(0));
+    }
     
 }

@@ -167,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `eidSmartClass`.`Skyperooms` (
    `name` VARCHAR(45) NOT NULL,
     `start` DATETIME NOT NULL,
     `end` DATETIME NOT NULL,
+    `description`  VARCHAR(200),
  PRIMARY KEY (`skyperoom_id`))
 ENGINE = InnoDB;
 
@@ -242,13 +243,19 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `eidSmartClass`;
-INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`,`start`,`end`) VALUES (DEFAULT, 'dummyurl1','room1','2018-10-20 16:15:01','2018-10-20 16:15:01');
+INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`,`start`,`end`,`description`) VALUES (DEFAULT, 'dummyurl1','room1','2018-10-20 16:15:01','2018-10-20 16:15:01',"this is a test");
 INSERT INTO `eidSmartClass`.`Skyperooms` (`skyperoom_id`, `url`,`name`,`start`,`end`) VALUES (DEFAULT, 'dummyurl2','room2','2018-10-20 16:15:01','2018-10-20 16:15:01');
 -- 
 COMMIT;
 
+-- START TRANSACTION;
+-- USE `eidSmartClass`;
+-- INSERT INTO `eidSmartClass`.`users` (`eIDAS_id`, `name`,`surname`,`role_id`,`date_of_birth`,`email`,`gender_id`) VALUES ("GR/GR/ERMIS-11076669","name","surname",6,"1980-01-01","test",1);
+-- -- 
+-- COMMIT;
+
 START TRANSACTION;
 USE `eidSmartClass`;
-INSERT INTO `eidSmartClass`.`users` (`eIDAS_id`, `name`,`surname`,`role_id`,`date_of_birth`,`email`,`gender_id`) VALUES ("GR/GR/ERMIS-11076669","name","surname",6,"1980-01-01","test",1);
+INSERT INTO `eidSmartClass`.`teams` (`team_id`, `url`,`name`) VALUES (DEFAULT, 'dummyurl1','team1');
 -- 
 COMMIT;

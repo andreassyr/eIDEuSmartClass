@@ -32,15 +32,17 @@ public class SkypeRoom {
 
     private LocalDateTime start;
     private LocalDateTime end;
+    private String description;
 
     public SkypeRoom() {
     }
 
-    public SkypeRoom(String url, String name, LocalDateTime start, LocalDateTime end) {
+    public SkypeRoom(String url, String name, LocalDateTime start, LocalDateTime end, String description) {
         this.url = url;
         this.name = name;
         this.start = start;
         this.end = end;
+        this.description = description;
     }
 
     public long getId() {
@@ -81,6 +83,14 @@ public class SkypeRoom {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

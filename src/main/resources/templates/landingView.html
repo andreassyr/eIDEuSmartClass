@@ -1,120 +1,329 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
+<html dir="ltr" lang="en-US">
     <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="author" content="SemiColonWeb" />
+
+        <!-- Stylesheets
+        ============================================= -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <link rel="stylesheet" href="css/dark.css" type="text/css" />
+        <link rel="stylesheet" href="css/font-icons.css" type="text/css" />
+        <link rel="stylesheet" href="css/animate.css" type="text/css" />
+        <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+
+        <link rel="stylesheet" href="css/responsive.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link rel="stylesheet" href="css/colors.css" type="text/css" />
+        <link rel="stylesheet" href="css/custom.css" type="text/css" />
+
+        <!-- Document Title
+        ============================================= -->
+        <title>Smart Class Portal | University of the Aegean</title>
+
     </head>
-    <body>
-        <div>This is the landing page</div>
 
-       <button id="register" onclick="register()">Register to the Service</button>
+    <body class="stretched">
 
-        <div>        
-            <button id="test" onclick="physical()">Gain Physical Access</button>
-            <select id="roomSelect">
-                Select class room:
-                <option value=""> -- </option>
-                <option th:each="room : ${classRooms}"
-                        th:value="${room.id}"
-                        th:utext="${room.name}"/>
-            </select>
-        </div>
+        <!-- Document Wrapper
+        ============================================= -->
+        <div id="wrapper" class="clearfix">
+
+            <!-- Header
+            ============================================= -->
+            <header id="header" class="transparent-header dark full-header" data-sticky-class="not-dark">
+
+                <div id="header-wrap">
+
+                    <div class="container clearfix" th:switch="${loggedIn == true}">
+
+                        <div id="primary-menu-trigger"><i class="icon-reorder"></i></div>
+
+                        <!-- Logo
+                        ============================================= -->
+                        <div id="logo">
+                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m.png"><img src="images/logo-i4m.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>
+                        </div>
+
+                        <!-- #logo end -->
+
+                        <!-- Primary Navigation
+                        ============================================= -->
+
+                        <nav id="primary-menu"  th:case="${false}">
+
+                            <ul>
+                                <li><a href="/"><div>Home</div></a></li>
+                                <li><a href="#"><div>Services</div></a></li>
+                                <li><a href="#"><div>eID_EU: What is it?</div></a></li>
+                                <li><a href="#"><div>About</div></a></li>
+                                <li><a href="#"><div>Contact</div></a></li>
+                            </ul>
+                            <a onclick="register()"  class="btn btn-primary d-none d-md-inline-block">Register</a>
+                            <a onclick="register()"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                            </p>
+
+                        </nav>
+
+                        <nav id="primary-menu"  th:case="${true}">
+                            <ul>
+                                <li><a href="/"><div>Home</div></a></li>
+                                <li><a href="#"><div>Services</div></a></li>
+                                <li><a href="#"><div>eID_EU: What is it?</div></a></li>
+                                <li><a href="#"><div>About</div></a></li>
+                                <li><a href="#"><div>Contact</div></a></li>
+                                <li><a href="/profile"><div>Profile</div></a></li>
+                            </ul>
+
+                            <a href="/logout"  class="btn btn-primary d-none d-md-inline-block">Logout</a>
+                            <a href="/logout"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                            </p>
+
+                        </nav>
 
 
+                        <!-- #primary-menu end -->
 
-       <div>
-        <button id="test" onclick="team()">Join Team </button>
-        <select id="teamSelect">
-                Select class room:
-                <option value=""> -- </option>
-                <option th:each="team : ${teams}"
-                        th:value="${team.id}"
-                        th:utext="${team.name}"/>
-            </select>
-       </div>
-        
+                    </div>
 
-        <div>
-            <button id="test" onclick="skype()">Join Skype</button>
-            Select skype conference:
-            <select id="skypeSelect">
-                <option value=""> -- </option>
-                <option th:each="room : ${skypeRooms}"
-                        th:value="${room.id}"
-                        th:utext="${room.name}"/>
-            </select>
-        </div>
-        
-        
-        <a id="logout" href="/logout">Logout</a>
+                </div>
 
+            </header><!-- #header end -->
+
+            <section id="slider" class="slider-element slider-parallax" style="background: url('images/header.png') no-repeat; background-size: cover" data-height-xl="400" data-height-lg="300" data-height-md="200" data-height-sm="100" data-height-xs="50">
+                <div class="slider-parallax-inner">
+
+                    <div class="container clearfix">
+                        <div class="slider-caption slider-caption-center">
+                            <h2 data-animate="fadeInDown">Smart Class Portal</h2>
+                            <h3 data-animate="fadeInDown">University of the Aegean</h3>
+                            <p class="d-none d-sm-block" data-animate="fadeInUp" data-delay="400">University of the Aegean Smart Class is lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <a data-animate="fadeInUp" data-delay="600" href="#" class="button button-border button-light button-rounded button-large noleftmargin nobottommargin d-none d-md-inline-block" style="margin-top: 30px;">More</a>
+                            <!--<a data-animate="fadeInUp" data-delay="800" href="#" class="button button-3d button-teal button-large nobottommargin d-none d-md-inline-block" style="margin: 30px 0 0 10px;">Buy Now</a>-->
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Content
+            ============================================= -->
+            <section id="content">
+
+                <div class="content-wrap lesspadding" id="courses">
+
+                    <div class="section notopmargin noborder nobottommargin">
+                        <div class="promo topmargin-lg promo-border bottommargin-lg promo-full">
+                            <div class="container clearfix">
+                                <h3>Get Started! Join one of the classrooms.</h3>
+                            </div>
+                        </div>
+
+                        <div class="container clearfix">
+
+                            <div class="col_one_third" id="SmartClass">
+                                <div class="feature-box fbox-border fbox-effect">
+                                    <div class="fbox-icon">
+                                        <a href="#"><i class="icon-group i-alt blue"></i></a>
+                                    </div>
+                                    <h4>Join one of the Smart Class Online Activities</h4>
+                                    <p>FIND AN ONLINE CLASS and </p>
+                                    <a onclick="team()" style="color:white;" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span>GO</span></a>
+                                </div>
+                            </div>
+
+                            <div class="col_one_third" id="VideoClass">
+                                <div class="feature-box fbox-border fbox-effect">
+                                    <div class="fbox-icon">
+                                        <a href="#"><i class="icon-video i-alt"></i></a>
+                                    </div>
+                                    <h4>Join instantly a Video-Conference Session</h4>
+                                    <p>SELECT FROM A LIST and</p>
+                                    <a onclick="skypeJoin()" style="color:white;" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span> GO</span></a>
+                                </div>
+                            </div>
+
+
+                            <div class="col_one_third col_last" id="IoT">
+                                <div class="feature-box fbox-border fbox-effect">
+                                    <div class="fbox-icon">
+                                        <a href="#"><i class="icon-vcard i-alt"></i></a>
+                                    </div>
+                                    <h4>Access to Smart Class facilities via IoT </h4>
+                                    <p> UAegean-HP Smart Class at <a href="googlemaps.com">MariaTsakos Goundation</a>
+                                        Enter the room | Use the classroom equipment |Get Wi-Fi access and access to local network, PCs and presentation hardware. LOGIN NOW
+
+                                        to get a digital passport (QR code and PIN)</p>
+                                    <a onclick="physical()" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span>Go</span></a>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                    <div class="container clearfix">
+                        <div class="clear"></div>
+
+                        <div class="promo topmargin-lg promo-border bottommargin-lg promo-full">
+                            <div class="container clearfix">
+                                <h3>University of the Aegean Smart Class</h3>
+                                <h4>Benefit from multi-channel collaboration</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                                <a href="#" class="MoreCourses">more <i class="right"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="clear"></div>
+
+
+                    </div>
+
+
+                    <div class="section notopmargin noborder nobottommargin" >
+                        <div class="container clearfix">
+                            <div class="heading-block center nobottommargin">
+                                <h3>Smart Class Terms of Use</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                                <a href="#" class="MoreCourses">more <i class="right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section><!-- #content end -->
+
+            <!-- Footer
+            ============================================= -->
+            <footer id="footer">
+
+                <div class="container">
+
+                    <!-- Footer Widgets
+                    ============================================= -->
+                    <div class="footer-widgets-wrap clearfix">
+
+                        <div class="col_one_third">
+                            <div class="widget clearfix">
+                                <img src="images/cef-logo.png" alt="" class="footer-logo">
+                                <p>Co-financed by the European Union Connecting Europe Facility</p>
+                            </div>
+                        </div>
+
+                        <div class="col_one_third">
+                            <div class="widget clearfix">
+                                <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
+                            </div>
+                        </div>
+
+                        <div class="col_one_third col_last">
+                            <img src="images/open-source-initiative.png" alt="" class="footer-logo">
+                            <p>Developed with Open Source Software (OSS)</p>
+
+                        </div>
+
+                    </div>
+
+                    <!-- .footer-widgets-wrap end -->
+
+                </div>
+
+                <!-- Copyrights
+                ============================================= -->
+                <!-- #copyrights end -->
+
+            </footer>
+
+            <!-- #footer end -->
+
+        </div><!-- #wrapper end -->
+
+        <!-- Go To Top
+        ============================================= -->
+        <div id="gotoTop" class="icon-angle-up"></div>
+
+        <!-- External JavaScripts
+        ============================================= -->
+        <script src="js/jquery.js"></script>
+        <script src="js/plugins.js"></script>
+
+        <!-- Footer Scripts
+        ============================================= -->
+        <script src="js/functions.js"></script>
 
         <script>
-            function setCookieAndRedirect(name, value, days) {
-                var expires = "";
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                let typeCookie = getCookie("type");
-                let authCookie = getCookie("access_token");
-                if (typeCookie == "" || authCookie == "") {
-                    window.location.replace("http://195.251.134.160:9091/login");
-                } else {
-                    window.location.href = "/eIDASSuccess";
-                }
-            }
+                                        $(function () {
+                                            $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
+                                        });
+
+
+                                        // smart class stuff
+                                        function setCookieAndRedirect(name, value, days) {
+                                            var expires = "";
+                                            if (days) {
+                                                var date = new Date();
+                                                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                                                expires = "; expires=" + date.toUTCString();
+                                            }
+                                            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                                            let typeCookie = getCookie("type");
+                                            let authCookie = getCookie("access_token");
+                                            if (typeCookie == "" || authCookie == "") {
+                                                window.location.replace("http://195.251.134.160:9091/login");
+                                            } else {
+                                                window.location.href = "/eIDASSuccess";
+                                            }
+                                        }
 
 
 
-            function physical() {
-                var e = document.getElementById("roomSelect");
-                var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "physical-" + roomId, 1);
-            }
-            
-            
-             function register() {
-                setCookieAndRedirect("type", "register", 1);
-            }
-            
+                                        function physical() {
+                                            var e = document.getElementById("roomSelect");
+                                            var roomId = !e ? 1 : e.options[e.selectedIndex].value;
+                                            setCookieAndRedirect("type", "physical-" + roomId, 1);
+                                        }
 
-            function skype() {
-                var e = document.getElementById("skypeSelect");
-                var roomId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "skype-" + roomId, 1);
-            }
 
-            function team() {
-                var e = document.getElementById("teamSelect");
-                var teamId = e.options[e.selectedIndex].value;
-                setCookieAndRedirect("type", "team-"+teamId, 1);
-            }
+                                        function register() {
+                                            setCookieAndRedirect("type", "register", 1);
+                                        }
 
-            function getCookie(cname) {
-                var name = cname + "=";
-                var decodedCookie = decodeURIComponent(document.cookie);
-                var ca = decodedCookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                    }
-                }
-                return "";
-            }
+
+                                        function skypeJoin() {
+                                            setCookieAndRedirect("type", "skypeJoin", 1);
+                                        }
+
+                                        function team() {
+//                                                        var e = document.getElementById("teamSelect");
+//                                                        var teamId = e.options[e.selectedIndex].value;
+                                            setCookieAndRedirect("type", "team-1", 1);
+                                        }
+
+                                        function getCookie(cname) {
+                                            var name = cname + "=";
+                                            var decodedCookie = decodeURIComponent(document.cookie);
+                                            var ca = decodedCookie.split(';');
+                                            for (var i = 0; i < ca.length; i++) {
+                                                var c = ca[i];
+                                                while (c.charAt(0) == ' ') {
+                                                    c = c.substring(1);
+                                                }
+                                                if (c.indexOf(name) == 0) {
+                                                    return c.substring(name.length, c.length);
+                                                }
+                                            }
+                                            return "";
+                                        }
+
+
+
 
         </script>
+
     </body>
 </html>

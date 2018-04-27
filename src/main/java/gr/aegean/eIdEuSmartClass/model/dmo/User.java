@@ -33,10 +33,12 @@ public class User {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
     private Role role;
-
-    private String eIDAS_id;
-    private String name;
-    private String surname;
+    @Column(name = "eIDAS_id")
+    private String eid;
+    @Column(name = "name")
+    private String currentGivenName;
+    @Column(name = "surname")
+    private String currentFamilyName;
 
     /**
      * new columns!!
@@ -61,7 +63,7 @@ public class User {
     private Gender gender;
 
     @Column(name = "date_of_birth")
-    private LocalDate birthday;
+    private LocalDate dateOfBirth;
 
     @Column(name = "last_login")
     private Date lastLogin;
@@ -70,19 +72,19 @@ public class User {
     }
 
     public User(Role role, String eIDAS_id, String name, String surname, String email, String mobile,
-            String affiliation, String country, Gender gender, LocalDate birthday, Date lastLogin, 
+            String affiliation, String country, Gender gender, LocalDate birthday, Date lastLogin,
             String engName, String engSurname) {
 
         this.role = role;
-        this.eIDAS_id = eIDAS_id;
-        this.name = name;
-        this.surname = surname;
+        this.eid = eIDAS_id;
+        this.currentGivenName = name;
+        this.currentFamilyName = surname;
         this.email = email;
         this.mobile = mobile;
         this.affiliation = affiliation;
         this.country = country;
         this.gender = gender;
-        this.birthday = birthday;
+        this.dateOfBirth = birthday;
         this.lastLogin = lastLogin;
         this.engName = engName;
         this.engSurname = engSurname;
@@ -105,57 +107,57 @@ public class User {
     /**
      * @return the eIDAS_id
      */
-    public String geteIDAS_id() {
-        return eIDAS_id;
+    public String getEid() {
+        return eid;
     }
 
     /**
-     * @param eIDAS_id the eIDAS_id to set
+     * @param eid the eIDAS_id to set
      */
-    public void seteIDAS_id(String eIDAS_id) {
-        this.eIDAS_id = eIDAS_id;
+    public void setEid(String eid) {
+        this.eid = eid;
     }
 
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
+    public String getCurrentGivenName() {
+        return currentGivenName;
     }
 
     /**
      * @param name the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setCurrentGivenName(String name) {
+        this.currentGivenName = name;
     }
 
     /**
      * @return the surname
      */
-    public String getSurname() {
-        return surname;
+    public String getCurrentFamilyName() {
+        return currentFamilyName;
     }
 
     /**
      * @param surname the surname to set
      */
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setCurrentFamilyName(String surname) {
+        this.currentFamilyName = surname;
     }
 
     /**
      * @return the birthday
      */
-    public LocalDate getBirthday() {
-        return birthday;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
     /**
-     * @param birthday the birthday to set
+     * @param dateOfBirth the birthday to set
      */
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     /**
@@ -180,7 +182,7 @@ public class User {
                         + " eIDASId='%s', "
                         + " birthday='%s', "
                         + " lastLogin='%s']",
-                        this.id, this.name, this.eIDAS_id, this.birthday.toString(), this.lastLogin.toString());
+                        this.id, this.currentGivenName, this.eid, this.dateOfBirth.toString(), this.lastLogin.toString());
 
         return result;
     }

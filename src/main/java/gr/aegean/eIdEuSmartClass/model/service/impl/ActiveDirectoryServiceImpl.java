@@ -161,18 +161,18 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
     @Override
     public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ) {
         try {
-            String safeEid = DigestUtils.md5DigestAsHex(user.get().geteIDAS_id().getBytes(StandardCharsets.UTF_8));
+            String safeEid = DigestUtils.md5DigestAsHex(user.get().getEid().getBytes(StandardCharsets.UTF_8));
             String randomPass = UtilGenerators.generateRandomADPass(8);
             String userName = user.get().getEngName() + "." + user.get().getEngSurname();
             String userPrincipal = userName + safeEid.substring(0, 2);
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             ADResponse adResp = createUser(userName,
                     safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal,
-                    randomPass, user.get().geteIDAS_id());
+                    randomPass, user.get().getEid());
             String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
             if (!StringUtils.isEmpty(adResp.getId())) {
-                userServ.saveOrUpdateUser(user.get().geteIDAS_id(), user.get().getName(), user.get().getSurname(),
-                        user.get().getGender().getName(), df.format(user.get().getBirthday()), user.get().getEmail(),
+                userServ.saveOrUpdateUser(user.get().getEid(), user.get().getCurrentGivenName(), user.get().getCurrentFamilyName(),
+                        user.get().getGender().getName(), df.format(user.get().getDateOfBirth()), user.get().getEmail(),
                         user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
                         principalFullName, user.get().getEngName(), user.get().getEngSurname());
                 return randomPass;

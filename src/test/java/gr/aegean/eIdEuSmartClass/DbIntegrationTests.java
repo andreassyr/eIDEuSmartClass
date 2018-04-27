@@ -77,7 +77,7 @@ public class DbIntegrationTests {
 
         User user2 = userRepository.findById(user.getId()).get();
         System.out.println(user2.toString());
-        assertEquals(user.getName(), user2.getName());
+        assertEquals(user.getCurrentGivenName(), user2.getCurrentGivenName());
 
     }
 
@@ -91,7 +91,7 @@ public class DbIntegrationTests {
         System.out.println(user.toString());
         userRepository.save(user);
         User user3 = userRepository.findFirstByEIDASId("eidas-id4").get();
-        assertEquals(user3.geteIDAS_id(), "eidas-id4");
+        assertEquals(user3.getEid(), "eidas-id4");
 
     }
 
@@ -211,7 +211,7 @@ public class DbIntegrationTests {
     @Test
     @Transactional
     public void saveSkype() {
-        SkypeRoom room = new SkypeRoom("url", "testRoomDB", LocalDateTime.now(), LocalDateTime.now());
+        SkypeRoom room = new SkypeRoom("url", "testRoomDB", LocalDateTime.now(), LocalDateTime.now(),"");
         skypeRepo.save(room);
         Optional<SkypeRoom> test = skypeRepo.findByName("testRoomDB");
         assertEquals(room.getName(),test.get().getName());
@@ -225,7 +225,7 @@ public class DbIntegrationTests {
         teamsRepo.save(team1);
      
         
-        assertEquals(teamsRepo.findAll().size(),1);
+        assertEquals(teamsRepo.findAll().size(),2);
         assertEquals(teamsRepo.findAll().get(0).getName(),"team1");
     }
 
