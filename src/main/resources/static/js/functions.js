@@ -3649,7 +3649,7 @@ var SEMICOLON = SEMICOLON || {};
             });
         },
 
-//        contactForm: function () {
+        contactForm: function () {},
 //
 //            if (!$().validate) {
 //                console.log('contactForm: Form Validate not Defined.');
@@ -3726,7 +3726,7 @@ var SEMICOLON = SEMICOLON || {};
 //            });
 //        },
 
-//        subscription: function () {
+        subscription: function () {},
 //
 //            if (!$().validate) {
 //                console.log('subscription: Form Validate not Defined.');

@@ -36,7 +36,7 @@ and open the template in the editor.
                 let typeCookie = getCookie("type");
                 if (typeCookie !== "admin") {
                     document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                    window.location.replace("http://195.251.134.160:9091/login");
+                    window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
                 } else {
                     window.location.href = "/admin";
                 }

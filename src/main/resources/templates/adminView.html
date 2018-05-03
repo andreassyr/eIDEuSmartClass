@@ -55,7 +55,7 @@ and open the template in the editor.
                 <option value=""> -- </option>
                 <option th:each="usr : ${unidentifiedUsers}"
                         th:value="${usr.id}"
-                        th:utext="${usr.name  + ','+  usr.surname  + ','+ usr.email}"/>
+                        th:utext="${usr.currentGivenName  + ','+  usr.currentFamilyName  + ','+ usr.role.name}"/>
             </select>
             <button id="editUserBtn" onclick="edit()">Edit User</button>
         </div>

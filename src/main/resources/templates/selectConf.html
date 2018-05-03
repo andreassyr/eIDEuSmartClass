@@ -33,13 +33,13 @@
         ============================================= -->
         <div id="wrapper" class="clearfix">
 
-            <!-- Header
+           <!-- Header
             ============================================= -->
-            <header id="header" class="full-header">
+            <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
 
                 <div id="header-wrap">
 
-                    <div class="container clearfix">
+                    <div class="container clearfix" th:switch="${loggedIn == true}">
 
                         <div id="primary-menu-trigger"><i class="icon-reorder"></i></div>
 
@@ -52,23 +52,50 @@
 
                         <!-- #logo end -->
 
+                        <!-- #logo end -->
+
                         <!-- Primary Navigation
                         ============================================= -->
-                        <nav id="primary-menu">
+
+                        <nav id="primary-menu"  th:case="${false}">
 
                             <ul>
                                 <li><a href="/"><div>Home</div></a></li>
-                                <li><a href="#"><div>Services</div></a></li>
-                                <li><a href="#"><div>eID_EU: What is it?</div></a></li>
-                                <li><a href="#"><div>About</div></a></li>
-                                <li><a href="#"><div>Contact</div></a></li>
-                                <li><a href="/profile"><div>Profile</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+                                <li><a onclick="register()" target="_blank"><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Register</div></a></li>
 
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <!--                                <li><a style="margin-top: 1.8em;color: white;" onclick="register()"  class="btn btn-primary d-none d-md-inline-block">Register</a>
+                                                                    <a onclick="register()"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a></li>-->
                             </ul>
 
-                            <a href="/logout" class="btn btn-primary d-none d-md-inline-block">Logout</a>
-                            <a href="/logout" class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                            </p>
+
                         </nav>
+
+                        <nav id="primary-menu"  th:case="${true}">
+                            <ul>
+                                <li><a href="/"><div>Home</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <li><a  href="/profile"><div>Profile</div></a></li>
+                                <li><a href="/logout" ><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Logout</div></a></li>
+
+                                <!--                                <li> <a  style="margin-top: 1.8em;color: white;" href="/logout"  class="btn btn-primary d-none d-md-inline-block">Logout</a>
+                                                                    <a href="/logout"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                                                                </li>-->
+                            </ul>
+
+
+                            </p>
+
+                        </nav>
+
 
                         <!-- #primary-menu end -->
 
@@ -120,38 +147,39 @@
             <!-- #content end -->
 
             <!-- Footer
-            ============================================= -->
-
+             ============================================= -->
             <footer id="footer">
 
                 <div class="container">
 
                     <!-- Footer Widgets
-                    ============================================= -->
-                    <div class="footer-widgets-wrap clearfix">
+            ============================================= -->
+                    <div class="footer-widgets-wrap clearfix row" >
 
-                        <div class="col_one_third">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="widget clearfix">
-                                <img src="images/cef-logo.png" alt="" class="footer-logo">
-                                <p>Co-financed by the European Union Connecting Europe Facility</p>
+                                <img src="http://dss.aegean.gr:8080/img/en_cef.jpg" alt="" class="footer-logo">
+                                <!--                                <p>Co-financed by the European Union Connecting Europe Facility</p>-->
                             </div>
                         </div>
 
-                        <div class="col_one_third">
+                        <div class="col-sm-6 col-md-6 col-lg-6">
                             <div class="widget clearfix">
-                                <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
+                                <!--<p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>-->
+                                <p style="font-size: 0.8rem;">Integration of the UAegean Smart Class Services with the eIDAS Network has been implemented by <a href="http://www.atlantis-group.gr" target="_blank"> UAegean | i4m Lab</a>, and funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/ A2015/1147836)</p>
                             </div>
                         </div>
 
-                        <div class="col_one_third col_last">
-                            <img src="images/open-source-initiative.png" alt="" class="footer-logo">
-                            <p>Developed with Open Source Software (OSS)</p>
+                        <div class="col-sm-2 col-md-2 col-lg-2">
+                            <!--                            <img src="images/open-source-initiative.png" alt="" class="footer-logo"   style="margin-bottom: 0;" >
+                                                        <p style="font-size: 0.8rem;clear: both;">Developed with Open Source Software (OSS)</p>-->
+                            <p style="font-size: 0.8rem;clear: both;">Developed with <br> Open Source Software (OSS)</p>
 
                         </div>
 
                     </div>
 
-                    <!-- #footer end -->
+                    <!-- .footer-widgets-wrap end -->
 
                 </div><!-- #wrapper end -->
 
@@ -170,44 +198,44 @@
 
                 <script>
 
-                    function skype(roomId) {
+                                function skype(roomId) {
 //                        var e = document.getElementById("skypeSelect");
 //                        var roomId = e.options[e.selectedIndex].value;
-                        setCookieAndRedirect("type", "skype-" + roomId, 1);
-                    }
-                    // smart class stuff
-                    function setCookieAndRedirect(name, value, days) {
-                        var expires = "";
-                        if (days) {
-                            var date = new Date();
-                            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                            expires = "; expires=" + date.toUTCString();
-                        }
-                        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                        let typeCookie = getCookie("type");
-                        let authCookie = getCookie("access_token");
-                        if (typeCookie == "" || authCookie == "") {
-                            window.location.replace("http://195.251.134.160:9091/login");
-                        } else {
-                            window.location.href = "/eIDASSuccess";
-                        }
-                    }
+                                    setCookieAndRedirect("type", "skype-" + roomId, 1);
+                                }
+                                // smart class stuff
+                                function setCookieAndRedirect(name, value, days) {
+                                    var expires = "";
+                                    if (days) {
+                                        var date = new Date();
+                                        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                                        expires = "; expires=" + date.toUTCString();
+                                    }
+                                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                                    let typeCookie = getCookie("type");
+                                    let authCookie = getCookie("access_token");
+                                    if (typeCookie == "" || authCookie == "") {
+                                        window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
+                                    } else {
+                                        window.location.href = "/eIDASSuccess";
+                                    }
+                                }
 
-                    function getCookie(cname) {
-                        var name = cname + "=";
-                        var decodedCookie = decodeURIComponent(document.cookie);
-                        var ca = decodedCookie.split(';');
-                        for (var i = 0; i < ca.length; i++) {
-                            var c = ca[i];
-                            while (c.charAt(0) == ' ') {
-                                c = c.substring(1);
-                            }
-                            if (c.indexOf(name) == 0) {
-                                return c.substring(name.length, c.length);
-                            }
-                        }
-                        return "";
-                    }
+                                function getCookie(cname) {
+                                    var name = cname + "=";
+                                    var decodedCookie = decodeURIComponent(document.cookie);
+                                    var ca = decodedCookie.split(';');
+                                    for (var i = 0; i < ca.length; i++) {
+                                        var c = ca[i];
+                                        while (c.charAt(0) == ' ') {
+                                            c = c.substring(1);
+                                        }
+                                        if (c.indexOf(name) == 0) {
+                                            return c.substring(name.length, c.length);
+                                        }
+                                    }
+                                    return "";
+                                }
 
 
                 </script>

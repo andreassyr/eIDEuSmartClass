@@ -62,6 +62,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         webSecurity.ignoring().antMatchers("/checkclassRasp**").antMatchers("/tmp**");
         webSecurity.ignoring().antMatchers("/css**");
         webSecurity.ignoring().antMatchers("/js**");
+        webSecurity.ignoring().antMatchers("/smart-class**");
+        webSecurity.ignoring().antMatchers("/selectTeam**");
+         webSecurity.ignoring().antMatchers("/selectConf**");
         webSecurity.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 //        webSecurity.ignoring().antMatchers("/tmp**");
 //        
@@ -103,9 +106,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/error")
                 .and()
                 .logout()
-                    .logoutUrl("/logout")
-                    .deleteCookies("access_token")
-                    .logoutSuccessUrl("/")  //logoutSuccessUrl("/login?logout")
+                .logoutUrl("/logout")
+                .deleteCookies("access_token")
+                .logoutSuccessUrl("/") //logoutSuccessUrl("/login?logout")
                 .and()
                 .csrf().disable();
 
@@ -139,7 +142,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable();
 
-     
     }
 
     @Bean

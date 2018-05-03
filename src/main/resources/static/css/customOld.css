@@ -40,15 +40,11 @@ h6 {
   background-color: #0a57bb;
 }
 
-.slider-caption:not(.dark), .slider-caption:not(.dark) h2 {
-    color: #222;
-    text-shadow: none;
-}
-
 .slider-caption h2 {
   font-size: 3rem;
+  letter-spacing: 2px;
   text-transform: capitalize;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1;
   margin-bottom: 0;
 }
@@ -65,28 +61,10 @@ h6 {
   margin-top: 20px;
   margin-bottom: 10px;
   font-size: 16px;
-  font-weight: 400;
 }
 
 #courses .section:first-child {
   padding: 0;
-}
-
-#qr {
-  background-color: #071e4f;
-  padding: 10%;
-  margin: auto;
-  overflow: hidden;
-  text-align: center;
-
-  box-shadow: 0px 6px 16px 0px rgba(174,174,174,0.75);
--webkit-box-shadow: 0px 6px 16px 0px rgba(174,174,174,0.75);
--moz-box-shadow: 0px 6px 16px 0px rgba(174,174,174,0.75);
-}
-
-#qr img {
-  width: 80%;
-  height: auto;
 }
 /*
 #courses .section:first-child {
@@ -131,7 +109,7 @@ h6 {
 
 
 #SmartClass {
-  /*border-right: solid 1px #b7b7b7;*/
+  border-right: solid 1px #b7b7b7;
 }
 
 #courses .topmargin-lg {
@@ -153,7 +131,7 @@ h6 {
 
 #courses h3 {
   font-size: 3em;
-  font-weight: 400;
+  font-weight: 100;
   text-align: center;
   text-transform: capitalize;;
 }

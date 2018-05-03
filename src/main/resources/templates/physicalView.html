@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="css/font-icons.css" type="text/css" />
         <link rel="stylesheet" href="css/animate.css" type="text/css" />
         <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+        <link rel="stylesheet" href="css/calendar.css" type="text/css" />
 
         <link rel="stylesheet" href="css/responsive.css" type="text/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,23 +24,23 @@
 
         <!-- Document Title
         ============================================= -->
-        <title>Login to Smart Class Online Teams | Smart Class Portal | University of the Aegean</title>
+        <title>Smart Class IoT: digital passport | Smart Class Portal | University of the Aegean</title>
 
     </head>
 
-    <body class="stretched">
+    <body class="stretched bpass">
 
         <!-- Document Wrapper
         ============================================= -->
         <div id="wrapper" class="clearfix">
 
             <!-- Header
-            ============================================= -->
-            <header id="header" class="full-header">
+                        ============================================= -->
+            <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
 
                 <div id="header-wrap">
 
-                    <div class="container clearfix">
+                    <div class="container clearfix" th:switch="${loggedIn == true}">
 
                         <div id="primary-menu-trigger"><i class="icon-reorder"></i></div>
 
@@ -52,25 +53,50 @@
 
                         <!-- #logo end -->
 
+                        <!-- #logo end -->
+
                         <!-- Primary Navigation
                         ============================================= -->
-                        <nav id="primary-menu">
+
+                        <nav id="primary-menu"  th:case="${false}">
 
                             <ul>
                                 <li><a href="/"><div>Home</div></a></li>
-                                <li><a href="#"><div>Services</div></a></li>
-                                <li><a href="#"><div>eID_EU: What is it?</div></a></li>
-                                <li><a href="#"><div>About</div></a></li>
-                                <li><a href="#"><div>Contact</div></a></li>
-                                <li><a href="/profile"><div>Profile</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+                                <li><a onclick="register()" target="_blank"><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Register</div></a></li>
+
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <!--                                <li><a style="margin-top: 1.8em;color: white;" onclick="register()"  class="btn btn-primary d-none d-md-inline-block">Register</a>
+                                                                    <a onclick="register()"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a></li>-->
                             </ul>
 
-<!--                            <a href="/profile" class="btn btn-primary d-none d-md-inline-block">Profile</a>
-                            <a href="/profile" class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>-->
-                            
-                            <a href="/logout" class="btn btn-primary d-none d-md-inline-block">Logout</a>
-                            <a href="/logout" class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                            </p>
+
                         </nav>
+
+                        <nav id="primary-menu"  th:case="${true}">
+                            <ul>
+                                <li><a href="/"><div>Home</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <li><a  href="/profile"><div>Profile</div></a></li>
+                                <li><a href="/logout" ><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Logout</div></a></li>
+
+                                <!--                                <li> <a  style="margin-top: 1.8em;color: white;" href="/logout"  class="btn btn-primary d-none d-md-inline-block">Logout</a>
+                                                                    <a href="/logout"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                                                                </li>-->
+                            </ul>
+
+
+                            </p>
+
+                        </nav>
+
 
                         <!-- #primary-menu end -->
 
@@ -80,128 +106,126 @@
 
             </header><!-- #header end -->
 
+
             <!-- Page Title
             ============================================= -->
             <section id="page-title">
 
                 <div class="container clearfix">
-                    <h1>Login to Smart Class Online Teams</h1>
+                    <h1>Smart Class IoT: digital passport</h1>
+                    <h3>UAegean-HP Smart Class at Maria Tsakos Foundation</h3>
                 </div>
 
             </section><!-- #page-title end -->
 
+
             <!-- Content
             ============================================= -->
             <section id="content">
-
                 <div class="content-wrap">
+                    <div class="parallax header-stick bottommargin-lg dark" style="padding: 60px 0; background-image: url('images/workstation.jpg'); height: auto;" data-bottom-top="background-position:0px 0px;" data-top-bottom="	background-position:0px -500px;">
+                        <div class="container clearfix">
+                            <div class="tabs divcenter nobottommargin clearfix" id="tab-login-register" style="max-width: 700px;">
+                                <div class="clearfix">
+                                    <div class="card nobottommargin">
+                                        <div class="card-body" style="padding: 40px;">
 
-                    <div class="container clearfix">
-
-                        <div class="tabs divcenter nobottommargin clearfix" id="tab-login-register" style="max-width: 500px;">
-                            <!--
-                                                                            <ul class="tab-nav tab-nav2 center clearfix">
-                                                                                    <li class="inline-block"><a href="#tab-login">Login</a></li>
-                                                                                    <li class="inline-block"><a href="#tab-register">Register</a></li>
-                                                                            </ul>
-                            -->
-
-
-                            <div class="clearfix">
-                                <div class="card nobottommargin">
-                                    <div class="card-body" style="padding: 40px;">
-                                        <form id="login-form" name="login-form" class="nobottommargin" action="#" method="post">
-
-                                            <h3>Gain Physical Access to the class room</h3>
-                                            <div class="col_full">
-                                                <label for="login-form-username">PIN number:</label>
-                                                <input th:value="${pin}"  class="form-control" disabled></input>
-                                            </div>
-                                            
+                                            <h3 th:text="${room.name}">Class 365</h3>
 
                                             <div class="col_full">
-                                                <img class="rounded mx-auto d-block"  th:src="${qrPath}"/>
+                                                <p><strong>Name:</strong></p>
+                                                <div class="prefilled dont-break-out" th:text="${user.currentGivenName}"></div>
                                             </div>
 
-                                           
+                                            <div class="col_full">
+                                                <p><strong>Surname:</strong></p>
+                                                <div class="prefilled dont-break-out" th:text="${user.currentFamilyName}"></div>
+                                            </div>
 
-                                           
+                                            <div class="col_full">
+                                                <p><strong>Pin number:</strong></p>
+                                                <div class="prefilled dont-break-out" th:text="${pin}">445566</div>
+                                            </div>
 
-                                        </form>
+                                            <div class="col_full">
+                                                <p><strong>Your QR code:</strong></p>
+                                                <div id="qr">
+                                                    <img th:src="${qrPath}" width="276" height="276" />
+                                                </div>
+                                            </div>
+
+                                            <!--                                            <div class="col_full nobottommargin">
+                                                                                            <button class="button button-3d nomargin" id="login-form-submit" name="login-form-submit" value="login">Download QR code</button>
+                                                                                        </div>-->
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
+            </section>
 
-            </section><!-- #content end -->
+            <!-- #content end -->
 
-            <!-- Footer
-            ============================================= -->
+
             <footer id="footer">
 
                 <div class="container">
 
                     <!-- Footer Widgets
                     ============================================= -->
+                    <div class="footer-widgets-wrap clearfix">
 
-                    <footer id="footer">
+                        <div class="col_one_third">
+                            <div class="widget clearfix">
+                                <img src="images/cef-logo.png" alt="" class="footer-logo">
+                                <p>Co-financed by the European Union Connecting Europe Facility</p>
+                            </div>
+                        </div>
 
-                        <div class="container">
+                        <div class="col_one_third">
+                            <div class="widget clearfix">
+                                <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
+                            </div>
+                        </div>
 
-                            <!-- Footer Widgets
-                            ============================================= -->
-                            <div class="footer-widgets-wrap clearfix">
-
-                                <div class="col_one_third">
-                                    <div class="widget clearfix">
-                                        <img src="images/cef-logo.png" alt="" class="footer-logo">
-                                        <p>Co-financed by the European Union Connecting Europe Facility</p>
-                                    </div>
-                                </div>
-
-                                <div class="col_one_third">
-                                    <div class="widget clearfix">
-                                        <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
-                                    </div>
-                                </div>
-
-                                <div class="col_one_third col_last">
-                                    <img src="images/open-source-initiative.png" alt="" class="footer-logo">
-                                    <p>Developed with Open Source Software (OSS)</p>
-
-                                </div>
-
-                            </div><!-- .footer-widgets-wrap end -->
+                        <div class="col_one_third col_last">
+                            <img src="images/open-source-initiative.png" alt="" class="footer-logo">
+                            <p>Developed with Open Source Software (OSS)</p>
 
                         </div>
 
-                        <!-- Copyrights
-                        ============================================= -->
-                        <!-- #copyrights end -->
+                    </div><!-- .footer-widgets-wrap end -->
 
-                    </footer>
+                </div>
 
-                    <!-- #footer end -->
-
-                </div><!-- #wrapper end -->
-
-                <!-- Go To Top
+                <!-- Copyrights
                 ============================================= -->
-                <div id="gotoTop" class="icon-angle-up"></div>
+                <!-- #copyrights end -->
 
-                <!-- External JavaScripts
-                ============================================= -->
-                <script src="js/jquery.js"></script>
-                <script src="js/plugins.js"></script>
+            </footer>
 
-                <!-- Footer Scripts
-                ============================================= -->
-                <script src="js/functions.js"></script>
+            <!-- #footer end -->
 
-                </body>
-                </html>
+        </div>
+        <!-- #wrapper end -->
+
+        <!-- Go To Top
+        ============================================= -->
+        <div id="gotoTop" class="icon-angle-up"></div>
+
+        <!-- External JavaScripts
+        ============================================= -->
+        <script src="js/jquery.js"></script>
+        <script src="js/plugins.js"></script>
+
+        <!-- Footer Scripts
+        ============================================= -->
+        <script src="js/functions.js"></script>
+
+
+
+    </body>
+</html>

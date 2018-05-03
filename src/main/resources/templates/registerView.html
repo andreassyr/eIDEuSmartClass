@@ -38,13 +38,13 @@
         ============================================= -->
         <div id="wrapper" class="clearfix">
 
-            <!-- Header
+           <!-- Header
             ============================================= -->
-            <header id="header" class="transparent-header dark full-header" data-sticky-class="not-dark">
+            <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
 
                 <div id="header-wrap">
 
-                    <div class="container clearfix">
+                    <div class="container clearfix" th:switch="${loggedIn == true}">
 
                         <div id="primary-menu-trigger"><i class="icon-reorder"></i></div>
 
@@ -57,22 +57,50 @@
 
                         <!-- #logo end -->
 
+                        <!-- #logo end -->
+
                         <!-- Primary Navigation
                         ============================================= -->
 
-                        <nav id="primary-menu">
+                        <nav id="primary-menu"  th:case="${false}">
 
                             <ul>
                                 <li><a href="/"><div>Home</div></a></li>
-                                <li><a href="#"><div>Services</div></a></li>
-                                <li><a href="#"><div>eID_EU: What is it?</div></a></li>
-                                <li><a href="#"><div>About</div></a></li>
-                                <li><a href="#"><div>Contact</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+                                <li><a onclick="register()" target="_blank"><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Register</div></a></li>
+
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <!--                                <li><a style="margin-top: 1.8em;color: white;" onclick="register()"  class="btn btn-primary d-none d-md-inline-block">Register</a>
+                                                                    <a onclick="register()"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a></li>-->
                             </ul>
 
-                            <a href="/logout" class="btn btn-primary d-none d-md-inline-block">Logout</a>
-                            <a href="/logout" class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                            </p>
+
                         </nav>
+
+                        <nav id="primary-menu"  th:case="${true}">
+                            <ul>
+                                <li><a href="/"><div>Home</div></a></li>
+                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
+                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
+                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
+
+                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
+                                <li><a  href="/profile"><div>Profile</div></a></li>
+                                <li><a href="/logout" ><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Logout</div></a></li>
+
+                                <!--                                <li> <a  style="margin-top: 1.8em;color: white;" href="/logout"  class="btn btn-primary d-none d-md-inline-block">Logout</a>
+                                                                    <a href="/logout"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
+                                                                </li>-->
+                            </ul>
+
+
+                            </p>
+
+                        </nav>
+
 
                         <!-- #primary-menu end -->
 
@@ -89,7 +117,7 @@
 
                 <div class="container clearfix">
                     <h1>Account Registration</h1>
-                    <p>Please fill in the following information to register to the service.</p>
+                    <!--                    <p>Please fill in the following information to register to the service.</p>-->
                 </div>
 
             </section>
@@ -109,15 +137,15 @@
                         <div class="col_three_fifth nobottommargin">
 
                             <div class="fancy-title title-bottom-border">
-                                <h3>Terms of Use</h3>
+                                <h3>Instructions</h3>
                             </div>
 
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, natus voluptatibus adipisci porro magni dolore eos eius ducimus corporis quos perspiciatis quis iste, vitae autem libero ullam omnis cupiditate quam.</p>
-                            <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
-                            <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, natus voluptatibus adipisci porro magni dolore eos eius ducimus corporis quos perspiciatis quis iste, vitae autem libero ullam omnis cupiditate quam.</p>
-                            <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
-                            <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
+                            <p style="font-size: 1.2em;">The fields <b>First Name</b>, <b>Last Name</b> and <b>Date of Birth</b> are provided by your Identity Provider</p>
+                            <p style="font-size: 1.2em;">To complete the registration please fill in the rest of the fields with your personal attributes</p>
+                            <!--                            <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, natus voluptatibus adipisci porro magni dolore eos eius ducimus corporis quos perspiciatis quis iste, vitae autem libero ullam omnis cupiditate quam.</p>
+                                                        <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>
+                                                        <p>Repudiandae quasi perspiciatis ea placeat nobis asperiores quod fuga ipsa facere enim ipsum expedita debitis, sit quia adipisci deserunt vitae hic obcaecati voluptates rerum nihil.</p>-->
 
                         </div>
 
@@ -173,8 +201,8 @@
 
                                     <input type="text" name="engName" th:value="${user.engName}" th:readonly="true" th:hidden="true"/> 
                                     <input type="text" name="engSurname" th:value="${user.engSurname}" th:readonly="true" th:hidden="true"/> 
-                                    
-                                    
+
+
                                     <div class="col_full">
                                         <label for="inputCountry">Country </label>
                                         <select id="inputCountry" th:field="*{country}" class="form-control">
@@ -431,9 +459,9 @@
                                         </select>
                                     </div>
 
-<!--                                    <div class="col_full hidden">
-                                        <input type="text" id="template-jobform-botcheck" name="template-jobform-botcheck" value="" class="sm-form-control" />
-                                    </div>-->
+                                    <!--                                    <div class="col_full hidden">
+                                                                            <input type="text" id="template-jobform-botcheck" name="template-jobform-botcheck" value="" class="sm-form-control" />
+                                                                        </div>-->
 
                                     <div class="col_full">
                                         <input class="button button-3d button-large btn-block nomargin"  type="submit" value="Submit" />
@@ -456,74 +484,78 @@
 
             <!-- #content end -->
 
-            <!-- Footer
-            ============================================= -->
-            <footer id="footer">
+                    <!-- Footer
+  ============================================= -->
+                    <footer id="footer">
 
-                <div class="container">
+                        <div class="container">
 
-                    <!-- Footer Widgets
+                            <!-- Footer Widgets
                     ============================================= -->
-                    <div class="footer-widgets-wrap clearfix">
+                            <div class="footer-widgets-wrap clearfix row" >
 
-                        <div class="col_one_third">
-                            <div class="widget clearfix">
-                                <img src="images/cef-logo.png" alt="" class="footer-logo">
-                                <p>Co-financed by the European Union Connecting Europe Facility</p>
+                                <div class="col-sm-4 col-md-4 col-lg-4">
+                                    <div class="widget clearfix">
+                                        <img src="http://dss.aegean.gr:8080/img/en_cef.jpg" alt="" class="footer-logo">
+                                        <!--                                <p>Co-financed by the European Union Connecting Europe Facility</p>-->
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 col-md-6 col-lg-6">
+                                    <div class="widget clearfix">
+                                        <!--<p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>-->
+                                        <p style="font-size: 0.8rem;">Integration of the UAegean Smart Class Services with the eIDAS Network has been implemented by <a href="http://www.atlantis-group.gr" target="_blank"> UAegean | i4m Lab</a>, and funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/ A2015/1147836)</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-2 col-md-2 col-lg-2">
+<!--                                    <img src="images/open-source-initiative.png" alt="" class="footer-logo"   style="margin-bottom: 0;" >
+                                    <p style="font-size: 0.8rem;clear: both;">Developed with Open Source Software (OSS)</p>-->
+                                    <p style="font-size: 0.8rem;clear: both;">Developed with <br> Open Source Software (OSS)</p>
+
+                                </div>
+
                             </div>
-                        </div>
 
-                        <div class="col_one_third">
-                            <div class="widget clearfix">
-                                <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
-                            </div>
-                        </div>
-
-                        <div class="col_one_third col_last">
-                            <img src="images/open-source-initiative.png" alt="" class="footer-logo">
-                            <p>Developed with Open Source Software (OSS)</p>
+                            <!-- .footer-widgets-wrap end -->
 
                         </div>
 
-                    </div><!-- .footer-widgets-wrap end -->
+                        <!-- Copyrights
+                        ============================================= -->
+                        <!-- #copyrights end -->
 
-                </div>
+                    </footer>
 
-                <!-- Copyrights
+                    <!-- #footer end -->
+
+                </div><!-- #wrapper end -->
+
+                <!-- Go To Top
                 ============================================= -->
-                <!-- #copyrights end -->
+                <div id="gotoTop" class="icon-angle-up"></div>
 
-            </footer>
+                <!-- External JavaScripts
+                ============================================= -->
+                <script src="js/jquery.js"></script>
+                <script src="js/plugins.js"></script>
 
-            <!-- #footer end -->
+                <!-- Date & Time Picker JS -->
+                <script src="js/components/moment.js"></script>
+                <script src="js/datepicker.js"></script>
+                <script src="js/components/timepicker.js"></script>
 
-        </div><!-- #wrapper end -->
+                <!-- Footer Scripts
+                ============================================= -->
+                <script src="js/functions.js"></script>
 
-        <!-- Go To Top
-        ============================================= -->
-        <div id="gotoTop" class="icon-angle-up"></div>
-
-        <!-- External JavaScripts
-        ============================================= -->
-        <script src="js/jquery.js"></script>
-        <script src="js/plugins.js"></script>
-
-        <!-- Date & Time Picker JS -->
-        <script src="js/components/moment.js"></script>
-        <script src="js/datepicker.js"></script>
-        <script src="js/components/timepicker.js"></script>
-
-        <!-- Footer Scripts
-        ============================================= -->
-        <script src="js/functions.js"></script>
-
-        <script>
-            $(function () {
-                $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
-            });
-        </script>
+                <script>
+                                $(function () {
+                                    $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
+                                });
+                </script>
 
 
 
-    </body>
-</html>
+                </body>
+                </html>

@@ -125,8 +125,14 @@ public class ViewControllers {
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
         model.addAttribute("teams", teamServ.findAll());
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
-                
+
         return "landingView";
+    }
+
+    @RequestMapping(value = {"smart-class"})
+    public String smartClass(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        return "smartclassView";
     }
 
     /**
@@ -208,23 +214,33 @@ public class ViewControllers {
             if (typeCookie.contains("admin")) {
                 return "redirect:/admin";
             }
+
+            if (typeCookie.contains("register")) {
+                return "redirect:/";
+            }
+
         }
         return "redirect:/error";
     }
 
     @RequestMapping(value = {"pending"})
-    public String pending() {
+    public String pending(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+
         return "pendingView";
     }
 
     @RequestMapping(value = {"register"})
-    public String register() {
+    public String register(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         return "registerView";
     }
 
     @RequestMapping(value = {"profile", "edit"})
-    public String editProfile(Principal principal, Model model) {
+    public String editProfile(Principal principal, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         Optional<User> user = userServ.findByEid(principal.getName());
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+
         if (user.isPresent()) {
             try {
                 model.addAttribute("user", UserWrappers.wrapDBUsertoFormUser(user.get()));
@@ -238,25 +254,32 @@ public class ViewControllers {
     }
 
     @RequestMapping(value = {"team"})
-    public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model) {
+    public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         Optional<User> user = userServ.findByEid(principal.getName());
         //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
-//        String teamId = typeCookie.split("-")[1];
+        String teamId = typeCookie.split("-")[1];
 //        String teamId = String.valueOf(teamServ.findFirst().get().getId());
-//        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
-        Optional<Teams> team =teamServ.findFirst();
+        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
+//        Optional<Teams> team = teamServ.findFirst();
+        List<Teams> teams = teamServ.findAll();
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         if (user.isPresent() && team.isPresent()) {
             if (StringUtils.isEmpty(user.get().getPrincipal())) {
                 String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
-                        team.get().getName(), user.get().getPrincipal(), password);
+                if (password.equals("NOK")) {
+                    mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(), team.get().getName(), user.get().getPrincipal());
+                } else {
+                    mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
+                            team.get().getName(), user.get().getPrincipal(), password);
+                }
+
             } else {
                 mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
                         team.get().getName(), user.get().getPrincipal());
             }
 
             try {
-                adServ.add2Group(user.get().getAdId(), "Teams", false);
+                adServ.add2Group(user.get().getAdId(), team.get().getName(), false);
             } catch (IOException ex) {
                 log.info("Error: ", ex);
             }
@@ -264,26 +287,40 @@ public class ViewControllers {
             if (team.isPresent()) {
                 model.addAttribute("TeamName", team.get().getName());
                 model.addAttribute("TeamURL", team.get().getUrl());
+                model.addAttribute("UserName", user.get().getPrincipal());
+                model.addAttribute("user",user.get());
             }
+            model.addAttribute("teams", teams);
+
             return "teamView";
         }
         return "error";
     }
 
+    @RequestMapping(value = {"selectTeam"})
+    public String teamSelect(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        List<Teams> teams = teamServ.findAll();
+        model.addAttribute("teams", teams);
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        return "selectTeam";
+    }
+
     @RequestMapping(value = {"selectConf"})
-    public String teamSelect(Model model) {
+    public String skypeSelect(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         List<SkypeRoom> rooms = skypeRoomServ.getAllRooms();
         model.addAttribute("rooms", rooms);
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         return "selectConf";
     }
 
     @RequestMapping(value = {"skype"})
     public String skype(Model model,
             Principal principal,
-            @CookieValue(value = "type", required = true) String typeCookie
+            @CookieValue(value = "type", required = true) String typeCookie,
+            @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie
     ) {
         Optional<User> user = userServ.findByEid(principal.getName());
-
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         // insert user to Group “SkypeForBusiness” of the Azure AD
         if (user.isPresent()) {
             String roomId = typeCookie.split("-")[1];
@@ -304,7 +341,9 @@ public class ViewControllers {
                     log.info("Error: ", ex);
                 }
             }
+            model.addAttribute("user", user.get());
         }
+
         return "skypeView";
     }
 
@@ -312,8 +351,9 @@ public class ViewControllers {
     @RequestMapping(value = {"roomaccess"})
     public String physical(Model model,
             Principal principal,
-            @CookieValue(value = "type", required = true) String typeCookie) {
-
+            @CookieValue(value = "type", required = true) String typeCookie,
+            @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         Optional<User> user = userServ.findByEid(principal.getName());
         String roomId = typeCookie.split("-")[1];
         Optional<ClassRoom> room = classServ.getRoomById(roomId);
@@ -331,6 +371,8 @@ public class ViewControllers {
             ac.setId(key);
             activeServ.save(ac);
             model.addAttribute("pin", ac.getContent());
+            model.addAttribute("room", room.get());
+            model.addAttribute("user", user.get());
             String qrImgPath;
             try {
                 qrImgPath = QRGenerator.generateQR(roomId, user.get().getEid(), ac.getContent());
@@ -355,8 +397,8 @@ public class ViewControllers {
      * in the API call***
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public String createUser(@ModelAttribute("user") FormUser user, Model model) {
-
+    public String createUser(@ModelAttribute("user") FormUser user, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         String userName;
         if (user.getEngName() != null && user.getEngSurname() != null) {
             userName = user.getEngName() + "." + user.getEngSurname();
@@ -365,7 +407,7 @@ public class ViewControllers {
                     user.getMobile(), user.getAffiliation(), user.getCountry(), null, null, user.getEngName(), user.getEngSurname());
             if (resp.getStatus().equals("OK")) {
                 mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName);
-                return "updateSuccessView";
+                return "updateSuccessViewRegister";
             }
         } else {
             model.addAttribute("error", "no english user name found!! Cannot create user");
@@ -378,10 +420,10 @@ public class ViewControllers {
      * call to add the user to the active directory
      */
     @RequestMapping(value = "updateUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public String updateUser(@ModelAttribute("user") FormUser user) {
+    public String updateUser(@ModelAttribute("user") FormUser user, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie, Model model) {
         Optional<User> oldUser = userServ.findByEid(user.getEid());
         String gender = GenderEnum.UNSPECIFIED.gender();
-
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         if (oldUser.isPresent()) {
             gender = oldUser.get().getGender().getName();
             BaseResponse resp = userServ.saveOrUpdateUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
