@@ -253,50 +253,6 @@ public class ViewControllers {
         return "error";
     }
 
-    @RequestMapping(value = {"team"})
-    public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
-        Optional<User> user = userServ.findByEid(principal.getName());
-        //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
-        String teamId = typeCookie.split("-")[1];
-//        String teamId = String.valueOf(teamServ.findFirst().get().getId());
-        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
-//        Optional<Teams> team = teamServ.findFirst();
-        List<Teams> teams = teamServ.findAll();
-        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
-        if (user.isPresent() && team.isPresent()) {
-            if (StringUtils.isEmpty(user.get().getPrincipal())) {
-                String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                if (password.equals("NOK")) {
-                    mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(), team.get().getName(), user.get().getPrincipal());
-                } else {
-                    mailServ.prepareAndSendTeamMessage(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
-                            team.get().getName(), user.get().getPrincipal(), password);
-                }
-
-            } else {
-                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
-                        team.get().getName(), user.get().getPrincipal());
-            }
-
-            try {
-                adServ.add2Group(user.get().getAdId(), team.get().getName(), false);
-            } catch (IOException ex) {
-                log.info("Error: ", ex);
-            }
-//            model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
-            if (team.isPresent()) {
-                model.addAttribute("TeamName", team.get().getName());
-                model.addAttribute("TeamURL", team.get().getUrl());
-                model.addAttribute("UserName", user.get().getPrincipal());
-                model.addAttribute("user",user.get());
-            }
-            model.addAttribute("teams", teams);
-
-            return "teamView";
-        }
-        return "error";
-    }
-
     @RequestMapping(value = {"selectTeam"})
     public String teamSelect(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         List<Teams> teams = teamServ.findAll();
@@ -327,12 +283,24 @@ public class ViewControllers {
             SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
             if (room != null) {
                 model.addAttribute("room", room);
+                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
                 if (StringUtils.isEmpty(user.get().getPrincipal())) {
-                    String password = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                    mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
-                            user.get().getCurrentGivenName() + user.get().getCurrentFamilyName(), room.getUrl(), user.get().getPrincipal(), password);
+                    String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+                    if (creationResponse.equals("EXISTS")) {
+                        mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getUrl(),
+                                user.get().getPrincipal());
+                    } else {
+                        if (!creationResponse.equals("NOK")) {
+                            mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
+                                    mailName + " " + mailSurname, room.getUrl(), user.get().getPrincipal(), creationResponse);
+                        } else {
+                            log.info("Error adding user to active directory");
+                            return "error";
+                        }
+                    }
                 } else {
-                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), user.get().getCurrentGivenName() + user.get().getCurrentFamilyName(), room.getUrl(),
+                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getUrl(),
                             user.get().getPrincipal());
                 }
                 try {
@@ -343,8 +311,56 @@ public class ViewControllers {
             }
             model.addAttribute("user", user.get());
         }
-
         return "skypeView";
+    }
+
+    @RequestMapping(value = {"team"})
+    public String team(Principal principal, @CookieValue(value = "type", required = true) String typeCookie, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+        Optional<User> user = userServ.findByEid(principal.getName());
+        //insert User into the Group “Teams” of the Azure AD  add2Grpup user ID is the new AD-USER-ID field in the db
+        String teamId = typeCookie.split("-")[1];
+        Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
+        List<Teams> teams = teamServ.findAll();
+        model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        if (user.isPresent() && team.isPresent()) {
+            if (StringUtils.isEmpty(user.get().getPrincipal())) {
+                String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
+
+                if (creationResponse.equals("EXISTS")) {
+                    mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname, team.get().getName(), user.get().getPrincipal());
+                } else {
+                    if (!creationResponse.equals("NOK")) {
+                        mailServ.prepareAndSendTeamMessage(user.get().getEmail(), mailName + " " + mailSurname,
+                                team.get().getName(), user.get().getPrincipal(), creationResponse);
+                    } else {
+                        log.info("Error adding user to active directory");
+                        return "error";
+                    }
+                }
+            } else {
+                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
+                        team.get().getName(), user.get().getPrincipal());
+            }
+
+            try {
+                adServ.add2Group(user.get().getAdId(), team.get().getName(), false);
+            } catch (IOException ex) {
+                log.info("Error: ", ex);
+            }
+//            model.addAttribute("TeamURL", propServ.getPropByName("TEAM_URL"));
+            if (team.isPresent()) {
+                model.addAttribute("TeamName", team.get().getName());
+                model.addAttribute("TeamURL", team.get().getUrl());
+                model.addAttribute("UserName", user.get().getPrincipal());
+                model.addAttribute("user", user.get());
+            }
+            model.addAttribute("teams", teams);
+
+            return "teamView";
+        }
+        return "error";
     }
 
     // //User Is inserted into the Group “UAegean-HPClass” of the Azure AD 

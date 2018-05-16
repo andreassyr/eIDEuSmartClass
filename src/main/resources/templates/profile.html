@@ -51,8 +51,8 @@
                         <!-- Logo
                         ============================================= -->
                         <div id="logo">
-                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m.png"><img src="images/logo-i4m.png" alt="University of the Aegean - Smart Class Portal"></a>
-                            <a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m-all.png"><img src="images/logo-i4m-all.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <!--<a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>-->
                         </div>
 
                         <!-- #logo end -->
@@ -134,7 +134,7 @@
 
                     <div class="container clearfix">
 
-                        <div class="col_three_fifth nobottommargin">
+					<div class="col_half nobottommargin">
 
                             <div class="fancy-title title-bottom-border">
                                 <h3>Instructions</h3>
@@ -154,7 +154,7 @@
 
                                 <div class="contact-form-result"></div>
                                 <!--id="template-jobform"-->
-                                <form th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user"  >
+                                <form th:action="@{/updateUser}" th:object="${user}" method="post"  commandName="user"  >
 
                                     <div class="form-process"></div>
 

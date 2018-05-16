@@ -24,7 +24,7 @@
 
         <!-- Document Title
         ============================================= -->
-        <title>Smart Class IoT: digital passport | Smart Class Portal | University of the Aegean</title>
+        <title>Smart Class IoT: eID passport | Smart Class Portal | University of the Aegean</title>
 
     </head>
 
@@ -36,7 +36,7 @@
 
             <!-- Header
                         ============================================= -->
-            <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
+            <header id="header" class="full-header">
 
                 <div id="header-wrap">
 
@@ -47,8 +47,8 @@
                         <!-- Logo
                         ============================================= -->
                         <div id="logo">
-                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m.png"><img src="images/logo-i4m.png" alt="University of the Aegean - Smart Class Portal"></a>
-                            <a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m-all.png"><img src="images/logo-i4m-all.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <!--<a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>-->
                         </div>
 
                         <!-- #logo end -->
@@ -112,7 +112,7 @@
             <section id="page-title">
 
                 <div class="container clearfix">
-                    <h1>Smart Class IoT: digital passport</h1>
+                    <h1 style="text-transform: none;">Smart Class IoT: eID Passport</h1>
                     <h3>UAegean-HP Smart Class at Maria Tsakos Foundation</h3>
                 </div>
 
@@ -130,33 +130,34 @@
                                     <div class="card nobottommargin">
                                         <div class="card-body" style="padding: 40px;">
 
-                                            <h3 th:text="${room.name}">Class 365</h3>
+                                            <h3  style="text-align: center;margin-bottom: 15px;" th:text="${room.name}">Class 365</h3>
+                                            <h4 style="text-align: center">Location: Maria Tsakos Foundation, 51 Michail Livanou, Chios</h4>
 
-                                            <div class="col_full">
-                                                <p><strong>Name:</strong></p>
-                                                <div class="prefilled dont-break-out" th:text="${user.currentGivenName}"></div>
+                                            <div class="col_full dont-break-out">
+                                                <p><span>Name: </span> <span style="color:white" th:text="${user.currentGivenName}">John</span></p>
                                             </div>
 
-                                            <div class="col_full">
-                                                <p><strong>Surname:</strong></p>
-                                                <div class="prefilled dont-break-out" th:text="${user.currentFamilyName}"></div>
+                                            <div class="col_full dont-break-out">
+                                                <p><span>Surname: </span><span style="color:white" th:text="${user.currentFamilyName}"> Smith</span></p>
                                             </div>
 
-                                            <div class="col_full">
-                                                <p><strong>Pin number:</strong></p>
-                                                <div class="prefilled dont-break-out" th:text="${pin}">445566</div>
+
+                                            <div class="col_full dont-break-out">
+                                                <p><span style="color:white;font-size: 1.2rem;">PIN: </span> <span style="color:white;font-size: 1.2rem;" th:text="${pin}">445566</span></p>
                                             </div>
 
-                                            <div class="col_full">
-                                                <p><strong>Your QR code:</strong></p>
-                                                <div id="qr">
-                                                    <img th:src="${qrPath}" width="276" height="276" />
+                                            <div class="col_full" style="border-bottom:none;">
+                                                <p style="color:white">QR code: </p>
+                                                <div id="qr" style="padding:0;background-color: #7ca3f6" >
+                                                    <img style="width: auto;" th:src="${qrPath}" width="276" height="276" />
                                                 </div>
                                             </div>
 
-                                            <!--                                            <div class="col_full nobottommargin">
-                                                                                            <button class="button button-3d nomargin" id="login-form-submit" name="login-form-submit" value="login">Download QR code</button>
-                                                                                        </div>-->
+                                            <div class="col_full nobottommargin" style="border-bottom:none;">
+                                                <div style="margin:auto;width: 13rem;">
+                                                    <a style="width:100%;color:white;font-size: 0.9rem;text-transform: none;" class="button button-3d nomargin"  th:href="${qrPath}" download value="login">Save your eID passport</a>
+                                                </div>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -169,35 +170,40 @@
 
             <!-- #content end -->
 
-
+            <!-- Footer
+                        ============================================= -->
             <footer id="footer">
 
                 <div class="container">
 
                     <!-- Footer Widgets
-                    ============================================= -->
-                    <div class="footer-widgets-wrap clearfix">
+            ============================================= -->
+                    <div class="footer-widgets-wrap clearfix row" >
 
-                        <div class="col_one_third">
+                        <div class="col-sm-4 col-md-4 col-lg-4">
                             <div class="widget clearfix">
-                                <img src="images/cef-logo.png" alt="" class="footer-logo">
-                                <p>Co-financed by the European Union Connecting Europe Facility</p>
+                                <img src="http://dss.aegean.gr:8080/img/en_cef.jpg" alt="" class="footer-logo">
+                                <!--                                <p>Co-financed by the European Union Connecting Europe Facility</p>-->
                             </div>
                         </div>
 
-                        <div class="col_one_third">
+                        <div class="col-sm-6 col-md-6 col-lg-6">
                             <div class="widget clearfix">
-                                <p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>
+                                <!--<p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>-->
+                                <p style="font-size: 0.8rem;">Integration of the UAegean Smart Class Services with the eIDAS Network has been implemented by <a href="http://www.atlantis-group.gr" target="_blank"> UAegean | i4m Lab</a>, and funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/ A2015/1147836)</p>
                             </div>
                         </div>
 
-                        <div class="col_one_third col_last">
-                            <img src="images/open-source-initiative.png" alt="" class="footer-logo">
-                            <p>Developed with Open Source Software (OSS)</p>
+                        <div class="col-sm-2 col-md-2 col-lg-2">
+                            <!--                            <img src="images/open-source-initiative.png" alt="" class="footer-logo"   style="margin-bottom: 0;" >
+                                                        <p style="font-size: 0.8rem;clear: both;">Developed with Open Source Software (OSS)</p>-->
+                            <p style="font-size: 0.8rem;clear: both;">Developed with <br> Open Source Software (OSS)</p>
 
                         </div>
 
-                    </div><!-- .footer-widgets-wrap end -->
+                    </div>
+
+                    <!-- .footer-widgets-wrap end -->
 
                 </div>
 

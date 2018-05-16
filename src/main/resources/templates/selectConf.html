@@ -33,8 +33,8 @@
         ============================================= -->
         <div id="wrapper" class="clearfix">
 
-           <!-- Header
-            ============================================= -->
+            <!-- Header
+             ============================================= -->
             <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
 
                 <div id="header-wrap">
@@ -46,8 +46,8 @@
                         <!-- Logo
                         ============================================= -->
                         <div id="logo">
-                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m.png"><img src="images/logo-i4m.png" alt="University of the Aegean - Smart Class Portal"></a>
-                            <a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m-all.png"><img src="images/logo-i4m-all.png" alt="University of the Aegean - Smart Class Portal"></a>
+                            <!--<a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>-->
                         </div>
 
                         <!-- #logo end -->
@@ -123,17 +123,17 @@
 
                     <div class="container clearfix">
                         <div class="col_full" th:each="room : ${rooms}">
+                            <div class="CourseList">
 
+                                <h3 th:text="${room.name}">Programming for Everybody (Getting Started with Python)</h3>
+                                <p th:text="${room.description}">Donec sed odio dui. Nulla vitae elit libero, a pharetra augue. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Duis mollis, est non commodo luctus. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id ligula porta felis euismod semper.</p>
 
-                            <h3 th:text="${room.name}">Programming for Everybody (Getting Started with Python)</h3>
-                            <p th:text="${room.description}">Donec sed odio dui. Nulla vitae elit libero, a pharetra augue. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Duis mollis, est non commodo luctus. Aenean lacinia bibendum nulla sed consectetur. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id ligula porta felis euismod semper.</p>
-
-                            <p ><strong>
-                                    Start:<span th:text="${#temporals.format(room.start, 'dd-MM-yyyy HH:mm')}"> Monday 30 April 2018, 12.00 p.m </span><br>
-                                    End:<span th:text="${#temporals.format(room.end, 'dd-MM-yyyy HH:mm')}">End:  Monday 30 April 2018, 14.00 p.m </span></strong></p>
-                            <a  style="color:white;" th:onclick="'skype(\'' + ${room.id} + '\');'" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span>Join</span></a>
-                            <div class="line"></div>
-
+                                <p ><strong>
+                                        Start:<span th:text="${#temporals.format(room.start, 'dd-MM-yyyy HH:mm')}"> Monday 30 April 2018, 12.00 p.m </span><br>
+                                        End:<span th:text="${#temporals.format(room.end, 'dd-MM-yyyy HH:mm')}">End:  Monday 30 April 2018, 14.00 p.m </span></strong></p>
+                                <a  style="color:white;" th:onclick="'skype(\'' + ${room.id} + '\');'" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span>Join</span></a>
+                                <div class="line"></div>
+                            </div> 
 
                         </div>
 
@@ -198,44 +198,44 @@
 
                 <script>
 
-                                function skype(roomId) {
+                                    function skype(roomId) {
 //                        var e = document.getElementById("skypeSelect");
 //                        var roomId = e.options[e.selectedIndex].value;
-                                    setCookieAndRedirect("type", "skype-" + roomId, 1);
-                                }
-                                // smart class stuff
-                                function setCookieAndRedirect(name, value, days) {
-                                    var expires = "";
-                                    if (days) {
-                                        var date = new Date();
-                                        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                                        expires = "; expires=" + date.toUTCString();
+                                        setCookieAndRedirect("type", "skype-" + roomId, 1);
                                     }
-                                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-                                    let typeCookie = getCookie("type");
-                                    let authCookie = getCookie("access_token");
-                                    if (typeCookie == "" || authCookie == "") {
-                                        window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
-                                    } else {
-                                        window.location.href = "/eIDASSuccess";
+                                    // smart class stuff
+                                    function setCookieAndRedirect(name, value, days) {
+                                        var expires = "";
+                                        if (days) {
+                                            var date = new Date();
+                                            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                                            expires = "; expires=" + date.toUTCString();
+                                        }
+                                        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                                        let typeCookie = getCookie("type");
+                                        let authCookie = getCookie("access_token");
+                                        if (typeCookie == "" || authCookie == "") {
+                                            window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
+                                        } else {
+                                            window.location.href = "/eIDASSuccess";
+                                        }
                                     }
-                                }
 
-                                function getCookie(cname) {
-                                    var name = cname + "=";
-                                    var decodedCookie = decodeURIComponent(document.cookie);
-                                    var ca = decodedCookie.split(';');
-                                    for (var i = 0; i < ca.length; i++) {
-                                        var c = ca[i];
-                                        while (c.charAt(0) == ' ') {
-                                            c = c.substring(1);
+                                    function getCookie(cname) {
+                                        var name = cname + "=";
+                                        var decodedCookie = decodeURIComponent(document.cookie);
+                                        var ca = decodedCookie.split(';');
+                                        for (var i = 0; i < ca.length; i++) {
+                                            var c = ca[i];
+                                            while (c.charAt(0) == ' ') {
+                                                c = c.substring(1);
+                                            }
+                                            if (c.indexOf(name) == 0) {
+                                                return c.substring(name.length, c.length);
+                                            }
                                         }
-                                        if (c.indexOf(name) == 0) {
-                                            return c.substring(name.length, c.length);
-                                        }
+                                        return "";
                                     }
-                                    return "";
-                                }
 
 
                 </script>

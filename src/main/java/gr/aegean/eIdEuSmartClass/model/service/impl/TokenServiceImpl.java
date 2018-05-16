@@ -29,7 +29,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String decode(String token) throws UnsupportedEncodingException {
         try {
-            log.info("JWT KEY" + propServ.getPropByName("KEY"));
+//            log.info("JWT KEY" + propServ.getPropByName("KEY"));
             return Jwts.parser().setSigningKey(propServ.getPropByName("KEY").getBytes("UTF-8"))
                     .parseClaimsJws(token).getBody().getSubject();
         } catch (Exception e) {

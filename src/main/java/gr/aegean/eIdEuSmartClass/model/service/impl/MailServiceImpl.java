@@ -39,7 +39,7 @@ public class MailServiceImpl implements MailService {
             helper.setTo(recipient);
 //            helper.setBcc(bcc);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject(subject);
+            helper.setSubject("Smart Class Account initiation");
 
             String content = MailContentBuilder.buildWelcome(userName);
 
@@ -103,7 +103,7 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
+            helper.setSubject("Smart Class Account activation");
             String content = MailContentBuilder.buildAccountActivated(name);
             helper.setText(content, true);
             mailSender.send(message);

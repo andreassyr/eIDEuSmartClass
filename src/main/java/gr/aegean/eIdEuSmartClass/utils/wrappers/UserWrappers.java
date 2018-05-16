@@ -19,6 +19,8 @@ import gr.aegean.eIdEuSmartClass.utils.pojo.TokenUserDetails;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
@@ -27,7 +29,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  */
 public class UserWrappers {
 
-    private static String IS_LATIN =  "[\\p{Punct}\\p{Space}\\p{IsLatin}]+$" ; 
+    
+    private static Logger log = LoggerFactory.getLogger(UserWrappers.class);
+    
+    private static String IS_LATIN = "[\\p{Punct}\\p{Space}\\p{IsLatin}]+$";
     // "[\\p{L}\\p{M}&&[^\\p{Alpha}]]+";
 
     public static TokenUserDetails wrapEidasToTokenUser(FormUser usr, String token, PreAuthenticatedAuthenticationToken authentication) throws IOException {
@@ -83,7 +88,11 @@ public class UserWrappers {
         res.setCountry(user.getCountry());
         res.setCurrentFamilyName(user.getCurrentFamilyName());
         res.setCurrentGivenName(user.getCurrentGivenName());
-        res.setDateOfBirth(df.format(user.getDateOfBirth()));
+        try {
+            res.setDateOfBirth(df.format(user.getDateOfBirth()));
+        } catch (Exception e) {
+            log.info("No DATE found",e);
+        }
         res.setEid(user.getEid());
         res.setEmail(user.getEmail());
         res.setGender(user.getGender().getName());

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -166,17 +167,40 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
             String userName = user.get().getEngName() + "." + user.get().getEngSurname();
             String userPrincipal = userName + safeEid.substring(0, 2);
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            ADResponse adResp = createUser(userName,
-                    safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal,
-                    randomPass, user.get().getEid());
-            String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
-            if (!StringUtils.isEmpty(adResp.getId())) {
-                userServ.saveOrUpdateUser(user.get().getEid(), user.get().getCurrentGivenName(), user.get().getCurrentFamilyName(),
-                        user.get().getGender().getName(), df.format(user.get().getDateOfBirth()), user.get().getEmail(),
-                        user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
-                        principalFullName, user.get().getEngName(), user.get().getEngSurname());
-                return randomPass;
+            //check to see if a user exits
+            //if not create him and return the password
+            //else return NOK -- maybe a better message here not nok
+            RestTemplate restTemplate = new RestTemplate();
+
+            ADResponse resp = restTemplate.getForObject("http://communities-i4mlab.aegean.gr/ad/findUserByPrincipalName?userPrincipalName=" + userPrincipal, ADResponse.class);
+            if (resp.getStatus().equals("OK")) {
+                //user found in AD
+                log.info("User already exists in AD");
+                if (resp.getDetails() != null && resp.getDetails().getPrincipal() != null) {
+                    String theDate = user.get().getDateOfBirth() != null ? df.format(user.get().getDateOfBirth()) : "";
+                    userServ.saveOrUpdateUser(user.get().getEid(), user.get().getCurrentGivenName(), user.get().getCurrentFamilyName(),
+                            user.get().getGender().getName(), theDate, user.get().getEmail(),
+                            user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), resp.getDetails().getId(),
+                            resp.getDetails().getPrincipal(), user.get().getEngName(), user.get().getEngSurname());
+                    return "EXISTS";
+                } else {
+                    return "NOK";
+                }
+            } else {
+                ADResponse adResp = createUser(userName,
+                        safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal,
+                        randomPass, user.get().getEid());
+                String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
+                String theDate = user.get().getDateOfBirth() != null ? df.format(user.get().getDateOfBirth()) : "";
+                if (!StringUtils.isEmpty(adResp.getId())) {
+                    userServ.saveOrUpdateUser(user.get().getEid(), user.get().getCurrentGivenName(), user.get().getCurrentFamilyName(),
+                            user.get().getGender().getName(), theDate, user.get().getEmail(),
+                            user.get().getMobile(), user.get().getAffiliation(), user.get().getCountry(), adResp.getId(),
+                            principalFullName, user.get().getEngName(), user.get().getEngSurname());
+                    return randomPass;
+                }
             }
+
         } catch (Exception e) {
             log.info("Error form AD", e);
         }

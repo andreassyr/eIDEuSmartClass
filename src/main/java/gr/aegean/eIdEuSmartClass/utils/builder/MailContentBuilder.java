@@ -22,17 +22,15 @@ public class MailContentBuilder {
             + "        <span th:text=\"${userName}\">%1$s,</span> "
             + "\n"
             + "        <p>\n"
-            + "            Welcome the UAegean Smar Class. Your account has been created. \n"
-            + "            However it is inactive until it is authorized by an administrator. \n"
-            + "        </p>\n"
-            //            + "        <p>\n"
-            //            + "           Once activated you can use MS Team and Skype for Business with\n"
-            //            + "           UserName: %2$s \n"
-            //            + "           PrincipalName: %3$s \n"
-            //            + "           Password: %4$s \n"
-            //            + "           Please remember to change your password as soon as possible \n"
-            //            + "        </p>\n"
-            + "\n";
+            + "            Welcome to the UAegean-HP Smart Class. Your account has been created."
+            +             " However it is inactive until it is authorized by an administrator. Once this authorization provided, you will be notified by email!"
+            + "        </p>"
+            + "        <p> "
+            + "            Note: You're receiving this transactional email message because you have been registered with UAegean-HP Smart Class"
+            + "           through your eID provider (via <a href=\"https://ec.europa.eu/cefdigital/wiki/display/EIDCOOPNET/eIDAS+Cooperation+Network\">\n"
+            + "           eIDAS </a>  infastructure). "
+            + "        </p>";
+            
 
     private final static String teamCredentialsBody = "    <body>\n"
             + "\n"
@@ -69,9 +67,21 @@ public class MailContentBuilder {
             + "        <span th:text=\"${name}\">%1$s,</span> "
             + "\n"
             + "        <p>\n"
-            + "            You  UAegean SmartClass Account is now Active!!\n"
-            + "        </p>\n"
-            + "\n";
+            + "            Your  UAegean SmartClass Account is now Active!\n"
+            + "        </p>"
+            + "<p>Please proceed to use UAeegan-HP Smart Class servives by visiting<br/>"
+            + "<a href=\"http://eideusmartclass.aegean.gr/ \">http://eideusmartclass.aegean.gr/</a>"
+            + "</p>"
+            + "<p>UAegean Smart Class Available Services</p>"
+            + "<p><b>Online</b></p>"
+            +"<ul>"
+            + "<li>Join one of the Smart Class Online Activities (Login to an Online Class)</li>"
+            + "<li>Join instantly a Video-Conference Session (Select from a List and Login)</li>"
+            + "</ul>"
+            + "<p><b>Physical</b> (Location: Maria Tsakos Public Foundation, 51 Michail Livanou, 82100 Chios)</p>"
+            +"<ul><li>Access to Smart Class facilities via IoT (Get en eID Passport)</li></ul>"
+            +"<br/>";
+            
 
     //return String.format(header + skypeAccessBody + footer, "Skype for Business link", name, link, principalName, password);
     private final static String skypeAccessBody = "    <body>\n"
@@ -96,7 +106,7 @@ public class MailContentBuilder {
             + "        <span th:text=\"${name}\">%1$s,</span> "
             + "\n"
             + "        <p>\n"
-            + "            You can enter your conference from the followin link: \n"
+            + "            You can enter your conference from the following link: \n"
             + "                     %2$s \n"
             + "        <p>"
             + "            Your userName is : %3$s\n"
@@ -104,23 +114,15 @@ public class MailContentBuilder {
             + "        </p>\n";
 
     private final static String footer
-            = "        <p>\n"
-            + "            You're receiving this transactional email message because you have been registered with UAegean \n"
-            + "           Smart Class Program through your eID provider (via <a href=\"https://ec.europa.eu/cefdigital/wiki/display/EIDCOOPNET/eIDAS+Cooperation+Network\">\n"
-            + "           eIDAS </a>  infastructure). \n"
+            = 
+            "        <p>"
+            + "            This email is sent from an automated account which is not monitored and so we’re unable to respond to replies to this email.\n"
             + "        </p>\n"
             + "        <p>\n"
-            + "            This email is sent from an automated account which is not monitored and so we’re unable to respond to replies to this email..\n"
+            + "            Thank you, The administration team <br/>"
+            + "          UAegean HP-Smart Class by i4m Lab <br/>"
+            + "          email:  <a href=\"mailto:eidapps@atlantis-group.gr\">eidapps@atlantis-group.gr</a>"
             + "        </p>\n"
-            + "\n"
-            + "        <p>\n"
-            + "            Thank you,\n"
-            + "            The administration team \n"
-            + "        </p>\n"
-            + "\n"
-            + "        <div>\n"
-            + "          UAegean Smart Class by i4m Lab\n"
-            + "        </div>\n"
             + "    </body>\n"
             + "</html>";
 
