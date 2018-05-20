@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -196,7 +197,9 @@ public class RestControllers {
                     RolesEnum.ADMIN.role(), RolesEnum.COORDINATOR.role(),
                     RolesEnum.SUPERADMIN.role(), RolesEnum.VISITOR.role());
             if (user.isPresent() && activatedRoles.contains(newRoleName)) {
-                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), user.get().getCurrentGivenName() +" "+user.get().getCurrentFamilyName());
+                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
+                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), mailName +" "+mailSurname);
             }
             return new BaseResponse(BaseResponse.SUCCESS);
         }

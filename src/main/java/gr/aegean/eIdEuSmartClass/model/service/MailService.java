@@ -17,13 +17,13 @@ public interface MailService {
     public String prepareAndSendAccountCreated(String recipient, String subject, String userName);
     
     public String prepareAndSendTeamMessage(String recipient, String name, String teamName, String principalName,String password);
-    public String prepareAndSendSkypeLink(String recipient, String name, String url,String principalName,String password);
+    public String prepareAndSendSkypeLink(String recipient, String name, String confRoom, String url,String principalName,String password);
     
     public String prepareAndSendTeamMessageExisting(String recipient, String name, String teamName,String principal);
-    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String url,String principal);
+    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String confRoom, String url,String principal);
     
     
     public String prepareAndSendAccountActivated(String recipient, String name);
    
-   
+   public String sendMailToAdmin(String name);
 }

@@ -182,7 +182,7 @@ public class ViewControllers {
                     } else {
                         redirectAttrs.addFlashAttribute("message", "In order to use the service you first need to register. Please fill in the following form");
                     }
-
+                    mailServ.sendMailToAdmin(user.get().getEngSurname());
                     return "redirect:/register";
                 } catch (UnsupportedEncodingException ex) {
                     log.info("ERROR ", ex);
@@ -288,19 +288,19 @@ public class ViewControllers {
                 if (StringUtils.isEmpty(user.get().getPrincipal())) {
                     String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
                     if (creationResponse.equals("EXISTS")) {
-                        mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getUrl(),
+                        mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
                                 user.get().getPrincipal());
                     } else {
                         if (!creationResponse.equals("NOK")) {
                             mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
-                                    mailName + " " + mailSurname, room.getUrl(), user.get().getPrincipal(), creationResponse);
+                                    mailName + " " + mailSurname, room.getName(), room.getUrl(), user.get().getPrincipal(), creationResponse);
                         } else {
                             log.info("Error adding user to active directory");
                             return "error";
                         }
                     }
                 } else {
-                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getUrl(),
+                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
                             user.get().getPrincipal());
                 }
                 try {
@@ -322,11 +322,12 @@ public class ViewControllers {
         Optional<Teams> team = teamServ.findById(Long.parseLong(teamId));
         List<Teams> teams = teamServ.findAll();
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+
+        String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+        String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
         if (user.isPresent() && team.isPresent()) {
             if (StringUtils.isEmpty(user.get().getPrincipal())) {
                 String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
-                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
 
                 if (creationResponse.equals("EXISTS")) {
                     mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname, team.get().getName(), user.get().getPrincipal());
@@ -340,7 +341,7 @@ public class ViewControllers {
                     }
                 }
             } else {
-                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), user.get().getCurrentGivenName() + " " + user.get().getCurrentFamilyName(),
+                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname,
                         team.get().getName(), user.get().getPrincipal());
             }
 

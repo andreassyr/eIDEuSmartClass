@@ -61,7 +61,7 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("You have been added to the MS TEAMS from UAegean SMART CLASS");
+            helper.setSubject("Welcome to online class " + teamName);
             String content = MailContentBuilder.buildTeamRegistration(name, teamName, principalName, password);
 
             helper.setText(content, true);
@@ -76,15 +76,15 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public String prepareAndSendSkypeLink(String recipient, String name, String url, String principalName, String password) {
+    public String prepareAndSendSkypeLink(String recipient, String name, String confRoom, String url, String principalName, String password) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Your Skype for Business link");
-            String content = MailContentBuilder.buildSkypeForBusinessContent(name, url, principalName, password);
+            helper.setSubject("Welcome to conference room" + confRoom);
+            String content = MailContentBuilder.buildSkypeForBusinessContent(name, confRoom, url, principalName, password);
             helper.setText(content, true);
 
             mailSender.send(message);
@@ -122,7 +122,7 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("You have been added to the MS TEAMS from UAegean SMART CLASS");
+            helper.setSubject("Welcome to online class" + teamName);
             String content = MailContentBuilder.buildTeamRegistrationExisting(name, teamName, principal);
             helper.setText(content, true);
             mailSender.send(message);
@@ -134,20 +134,38 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String url, String principal) {
+    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String confRoom, String url, String principal) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Your Skype for Business link");
+            helper.setSubject("Welcome to conference room" + confRoom);
 
-            String content = MailContentBuilder.buildSkypeForBusinessContenExisting(name, url, principal);
+            String content = MailContentBuilder.buildSkypeForBusinessContenExisting(name, confRoom, url, principal);
             helper.setText(content, true);
             mailSender.send(message);
             return "OK";
         } catch (Exception e) {
             log.info("Error sending email", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String sendMailToAdmin(String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo("triantafyllou.ni@gmail.com");
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("New account requested!");
+            String content = MailContentBuilder.buildNewAccountInfoAdmin(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
