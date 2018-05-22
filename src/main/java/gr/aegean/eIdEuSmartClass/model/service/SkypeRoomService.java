@@ -13,8 +13,12 @@ import java.util.List;
  * @author nikos
  */
 public interface SkypeRoomService {
-    
+
     public List<SkypeRoom> getAllRooms();
-    
+
     public SkypeRoom getRoomFromId(String id);
+
+    public void save(SkypeRoom room);
+
+    public void delete(String id);
 }

@@ -7,6 +7,7 @@ package gr.aegean.eIdEuSmartClass.model.service;
 
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,13 +15,17 @@ import java.util.Optional;
  * @author nikos
  */
 public interface UserService {
-    
+
     public BaseResponse saveUser(User user);
-    
-    public BaseResponse saveUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
-            String mobile, String affiliation, String country);
-    
+
+    public BaseResponse saveOrUpdateUser(String eIDASid, String name, String surname, String gender, String dateOfBirth, String email,
+            String mobile, String affiliation, String country, String adId, String userPrincipal,String engName,String engSurname);
+
     public BaseResponse updateLogin(String eIDasid);
-    
+
     public Optional<User> findByEid(String eID);
+
+    public Optional<User> findById(Long id);
+
+    public List<User> findAllUIdentified();
 }

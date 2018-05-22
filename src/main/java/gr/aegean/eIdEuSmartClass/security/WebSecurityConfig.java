@@ -19,6 +19,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 /**
  *
@@ -26,6 +28,7 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
  */
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private TokenAuthenticationUserDetailsService userDetailsService;
@@ -38,15 +41,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationManager customAuthenticationManager() throws Exception {
+    public AuthenticationManager customAuthenticatiotnManager() throws Exception {
         return authenticationManager();
+    }
+
+    @Bean
+    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);
+        firewall.setAllowSemicolon(true);
+        return firewall;
     }
 
     @Override
     public void configure(WebSecurity webSecurity) {
         webSecurity.ignoring().antMatchers("/validateCode**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/updateclassRasp**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/landingTest**").antMatchers("/tmp**");
+//         webSecurity.ignoring().antMatchers("/adminLogin**");
+        webSecurity.ignoring().antMatchers("/checkclassRasp**").antMatchers("/tmp**");
+        webSecurity.ignoring().antMatchers("/css**");
+        webSecurity.ignoring().antMatchers("/js**");
+        webSecurity.ignoring().antMatchers("/smart-class**");
+        webSecurity.ignoring().antMatchers("/selectTeam**");
+         webSecurity.ignoring().antMatchers("/selectConf**");
+        webSecurity.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 //        webSecurity.ignoring().antMatchers("/tmp**");
-//        webSecurity.
+//        
     }
 
     @Override
@@ -55,36 +76,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/updateclass").access("hasAuthority('" + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('" + RolesEnum.COORDINATOR.role() + "')")
-                .anyRequest().authenticated()
-                //                .antMatcher("/loggedIn")
-                //                .antMatchers("/register")
-                //                .antMatchers("/requestCloseRoom")
-                //                .antMatchers("/createUser")
-                //                .authorizeRequests()
-                //                .anyRequest().anonymous()
-
+                //                .anyRequest().authenticated()
                 .antMatchers("/team").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
                 .antMatchers("/getUsersByRole**").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
                 .antMatchers("/updateUserRole**").access("hasAuthority('"
                 + RolesEnum.ADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
                 + RolesEnum.COORDINATOR.role() + "') or hasAuthority('"
                 + RolesEnum.VIRTUALPARTICIPANT.role() + "') or hasAuthority('"
                 + RolesEnum.VISITOR.role() + "')")
-                
-                .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/landing").permitAll()
                 .and()
@@ -92,7 +102,46 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .exceptionHandling()
+                .accessDeniedPage("/error")
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .deleteCookies("access_token")
+                .logoutSuccessUrl("/") //logoutSuccessUrl("/login?logout")
+                .and()
                 .csrf().disable();
+
+        http.authorizeRequests()
+                .antMatchers("/admin**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                //                .anyRequest().authenticated()
+                .antMatchers("/admin/edit**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                .antMatchers("/addSkypeRoom**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                .antMatchers("/deleteSkypeRoom**").access("hasAuthority('"
+                + RolesEnum.ADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.SUPERADMIN.role() + "') or hasAuthority('"
+                + RolesEnum.COORDINATOR.role() + "')")
+                .and().formLogin()
+                .loginPage("/adminLogin").permitAll()
+                .and()
+                .addFilterBefore(authFilter(), RequestHeaderAuthenticationFilter.class)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .accessDeniedPage("/error")
+                .and()
+                .csrf().disable();
+
     }
 
     @Bean

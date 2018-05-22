@@ -10,6 +10,7 @@ import gr.aegean.eIdEuSmartClass.model.dao.UserRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,11 @@ public class RoleServiceImpl implements RoleService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Role> findAllRoles() {
+        return roleRepo.findAll();
     }
     
 }

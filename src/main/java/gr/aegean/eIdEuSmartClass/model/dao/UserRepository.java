@@ -23,11 +23,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Override
     public List<User> findAll();
 
-    @Query("from User U where U.eIDAS_id = :id")
+    @Query("from User U where U.eid = :id")
     public Optional<User> findFirstByEIDASId(@Param("id")String eIDASid);
     
     @Modifying(clearAutomatically = true)
-    @Query("update User u set u.lastLogin = :date where u.eIDAS_id = :eId")
+    @Query("update User u set u.lastLogin = :date where u.eid = :eId")
     public void updateLastLoginByeIDASID(@Param("eId")String eId, @Param("date") Timestamp date);
     
 }

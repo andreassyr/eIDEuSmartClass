@@ -31,6 +31,8 @@ public class FormUser {
     private String mobile;
     private String affiliation;
     private String country;
+    private String engName;
+    private String engSurname;
 
     public FormUser() {
     }
@@ -121,6 +123,22 @@ public class FormUser {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getEngName() {
+        return engName;
+    }
+
+    public void setEngName(String engName) {
+        this.engName = engName;
+    }
+
+    public String getEngSurname() {
+        return engSurname;
+    }
+
+    public void setEngSurname(String engSurname) {
+        this.engSurname = engSurname;
     }
 
 }

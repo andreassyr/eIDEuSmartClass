@@ -23,6 +23,12 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry
                 .addResourceHandler("/tmp/**")
                 .addResourceLocations("file:/tmp/");
+       
+//        if (!registry.hasMappingForPattern("/js/**")) {
+//		registry.addResourceHandler("/js/**").addResourceLocations(
+//				"classpath:/resources/static/js/");
+//	}
+        
         super.addResourceHandlers(registry);
     }
 }

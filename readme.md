@@ -9,3 +9,4 @@ Required env variable:
 - RASPBERRY_URL=url of raspberry api
 - RASPBERRY_CLOSE_ROOM= close room end point of raspberry
 - TEAM_URL = the url of the MS TEAM webpage that the user can redirect ot
+- AD_MICROSERV= http://localhost:8000

@@ -5,17 +5,33 @@
  */
 package gr.aegean.eIdEuSmartClass.model.service;
 
+import gr.aegean.eIdEuSmartClass.model.dmo.User;
+import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  *
  * @author nikos
  */
 public interface ActiveDirectoryService {
+
+    public ADResponse createUser(String displayName, String mailNickname, String givenName, String surname,
+            String userPrincipalName, String password, String eId) throws MalformedURLException, IOException;
+
+    public ADResponse createGroup(String displayName, String mailNickname) throws MalformedURLException, IOException;
+
+    public ADResponse createTeam(String groupId) throws MalformedURLException, IOException;
     
+    public ADResponse sendInvite(String userEmail, String redirectURL, String invitedUserDisplayName) throws MalformedURLException, IOException;
     
-    public boolean registerUser(String userEmail)  throws MalformedURLException, IOException;
+    public ADResponse add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException;
+    
+    public ADResponse updateUserAttribute(String userId, String attributeName, String attributeValue) throws MalformedURLException, IOException;
+    
+    public String createADCredentialsUpdateUserGetPass(Optional<User> user, UserService userServ);
+    
     
 }

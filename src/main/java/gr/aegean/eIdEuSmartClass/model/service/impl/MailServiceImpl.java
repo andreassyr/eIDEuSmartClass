@@ -23,8 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailServiceImpl implements MailService {
 
-    private final static String MAIL_HOST = "smtp.aegean.gr";
-    private final static String MAIL_FRIENDLY_NAME = "UAegean Online Communities";
+    private final static String MAIL_FRIENDLY_NAME = "UAegean Smart Class";
     private final String FROM = "smartclass@aegean.gr";
     private static Logger log = LoggerFactory.getLogger(MailService.class);
 
@@ -32,15 +31,15 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
-    public String prepareAndSend(String recipient, String subject, String userName) {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+    public String prepareAndSendAccountCreated(String recipient, String subject, String userName) {
 
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
 //            helper.setBcc(bcc);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject(subject);
+            helper.setSubject("Smart Class Account initiation");
 
             String content = MailContentBuilder.buildWelcome(userName);
 
@@ -50,21 +49,20 @@ public class MailServiceImpl implements MailService {
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e.getMessage());
-            log.error(e.getMessage());
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
 
     @Override
-    public String prepareAndSendTeamCredentials(String recipient, String teamUserName, String teamPassword, String name) {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+    public String prepareAndSendTeamMessage(String recipient, String name, String teamName, String principalName, String password) {
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
-            String content = MailContentBuilder.buildTeamRegistration(teamUserName, teamPassword, name);
+            helper.setSubject("Welcome to online class " + teamName);
+            String content = MailContentBuilder.buildTeamRegistration(name, teamName, principalName, password);
 
             helper.setText(content, true);
 
@@ -72,29 +70,102 @@ public class MailServiceImpl implements MailService {
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e.getMessage());
-            log.error(e.getMessage());
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }
 
     @Override
-    public String prepareAndSendSkypeLink(String recipient, String name, String url) {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+    public String prepareAndSendSkypeLink(String recipient, String name, String confRoom, String url, String principalName, String password) {
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
             helper.setTo(recipient);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("Credentials To Access MS TEAMS from UAegean SMART CLASS");
-            String content = MailContentBuilder.buildSkypeForBusinessContent(name, url);
+            helper.setSubject("Welcome to conference room" + confRoom);
+            String content = MailContentBuilder.buildSkypeForBusinessContent(name, confRoom, url, principalName, password);
             helper.setText(content, true);
 
             mailSender.send(message);
 
             return "OK";
         } catch (Exception e) {
-            log.error("Error sending mail", e.getMessage());
-            log.error(e.getMessage());
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendAccountActivated(String recipient, String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Smart Class Account activation");
+            String content = MailContentBuilder.buildAccountActivated(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendTeamMessageExisting(String recipient, String name, String teamName, String principal) {
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to online class" + teamName);
+            String content = MailContentBuilder.buildTeamRegistrationExisting(name, teamName, principal);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending email", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendSkypeLinkExisting(String recipient, String name, String confRoom, String url, String principal) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to conference room" + confRoom);
+
+            String content = MailContentBuilder.buildSkypeForBusinessContenExisting(name, confRoom, url, principal);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending email", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String sendMailToAdmin(String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo("triantafyllou.ni@gmail.com");
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("New account requested!");
+            String content = MailContentBuilder.buildNewAccountInfoAdmin(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
             return "ERROR";
         }
     }

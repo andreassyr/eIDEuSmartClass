@@ -77,4 +77,9 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         return (room.isPresent())?Optional.of(room.get()):Optional.empty();
     }
 
+    @Override
+    public List<ClassRoomState> getAllRoomStates() {
+        return statesRepo.findAll();
+    }
+
 }

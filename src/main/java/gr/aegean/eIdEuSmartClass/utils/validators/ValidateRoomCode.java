@@ -27,29 +27,34 @@ public class ValidateRoomCode {
      */
     public static boolean validateCode(String ac, ActiveCodeService activeService, LocalDateTime present) {
         List<ActiveCode> codes = activeService.getCodesByContent(ac);
+        
+        
         if (codes.size() == 1) {
             ActiveCode matchingCode = codes.get(0);
+            //super user codes are allways valid!
+            if(matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.SUPERADMIN.role())) return true;
+            
             LocalDateTime codeTime = matchingCode.getGrantedAt();
 //            LocalDateTime present = LocalDateTime.now();
             long hours = codeTime.until(present, ChronoUnit.HOURS);
             
-            if (present.getHour() < 22) {
+            if (present.getHour() < 22 ) {
                 long minutes = codeTime.until(present, ChronoUnit.MINUTES);
                 if (!matchingCode.isActivated()) {
-                    if (minutes < 5 || isOwnedBySuperUser(matchingCode)) {
+                    if (minutes < 5 || isOwnedByPowerUser(matchingCode)) {
                         matchingCode.setActivated(true);
                         activeService.save(matchingCode);
                         return true;
                     }
                     return false;
                 }
-                return hours <= 4 || isOwnedBySuperUser(matchingCode);
+                return (hours <= 4 && hours > 0 )|| isOwnedByPowerUser(matchingCode);
             }
         }
         return false;
     }
 
-    public static boolean isOwnedBySuperUser(ActiveCode matchingCode) {
+    public static boolean isOwnedByPowerUser(ActiveCode matchingCode) {
         return matchingCode.getId() != null && (matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.ADMIN.role())
                 || matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.COORDINATOR.role())
                 || matchingCode.getId().getUser().getRole().getName().equals(RolesEnum.SUPERADMIN.role()));

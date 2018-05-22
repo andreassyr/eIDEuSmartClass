@@ -5,18 +5,15 @@
  */
 package gr.aegean.eIdEuSmartClass.controllers;
 
-import gr.aegean.eIdEuSmartClass.model.dao.RoleRepository;
 import gr.aegean.eIdEuSmartClass.model.dmo.ClassRoomState;
 import gr.aegean.eIdEuSmartClass.model.dmo.Role;
+import gr.aegean.eIdEuSmartClass.model.dmo.SkypeRoom;
 import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.model.service.ActiveCodeService;
-import gr.aegean.eIdEuSmartClass.model.service.ActiveDirectoryService;
 import gr.aegean.eIdEuSmartClass.model.service.ClassRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.MailService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
-import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,19 +21,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import gr.aegean.eIdEuSmartClass.model.service.RaspberryInterface;
 import gr.aegean.eIdEuSmartClass.model.service.RoleService;
+import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
+import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.validators.ValidateRoomCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -60,9 +63,6 @@ public class RestControllers {
     private ClassRoomService classroomServ;
 
     @Autowired
-    private ActiveDirectoryService adServ;
-
-    @Autowired
     private RaspberryInterface rasbServ;
 
     @Autowired
@@ -70,6 +70,9 @@ public class RestControllers {
 
     @Autowired
     private ActiveCodeService activeServ;
+
+    @Autowired
+    private SkypeRoomService skypeServ;
 
     public RestControllers() {
         SUPER_USERS = new HashSet<String>();
@@ -79,48 +82,26 @@ public class RestControllers {
     }
 
     /**
-     * Adds a new user to the database and to the Active Directory by making an
-     * appropriate API call ***TODO desired role!!!!!
-     *
-     ****
-     * @return
-     */
-    @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public @ResponseBody
-    BaseResponse createUser(@ModelAttribute("user") FormUser user) {
-        try {
-            adServ.registerUser("smartclassguest1@outlook.com");
-        } catch (IOException ex) {
-            log.error("ERROR", ex);
-        }
-        BaseResponse resp = userServ.saveUser(user.getEid(), user.getCurrentGivenName(), user.getCurrentFamilyName(),
-                "Unspecified", user.getDateOfBirth(), user.getEmail(), user.getMobile(), user.getAffiliation(), user.getCountry());
-        if (resp.getStatus().equals("OK")) {
-            mailServ.prepareAndSend(user.getEmail(), "test", user.getProfileName());
-        }
-        return resp;
-    }
-
-    /**
      * checks taht the give qr code/pin was belongs to the codes issued for the
      * give roomID that the room is ACTIVE and that the code was issued in the
      * last 4 hours. and that it is not past 22:00
      *
      * Also, if the key is not used within 5 mins of creation it is made
-     * inactive!!! the admin keys codes do not expire!!!
+     * inactive!!! the admin keys codes do not expire!!!Ο
      *
-     * @param roomId
+     * @param roomName
      * @param qrCode
      * @return
      */
+    @CrossOrigin
     @RequestMapping(value = "validateCode", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public @ResponseBody
-    BaseResponse doorCodeValidity(@RequestParam(value = "roomId", required = true) String roomId,
+    BaseResponse doorCodeValidity(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "qrCode", required = true) String qrCode) {
         //TODO send email
-        List<String> roomCodes = classroomServ.getValidCodeByName(roomId);
+        List<String> roomCodes = classroomServ.getValidCodeByName(roomName);
 
-        Optional<ClassRoomState> state = classroomServ.getRoomStatus(roomId);
+        Optional<ClassRoomState> state = classroomServ.getRoomStatus(roomName);
         if (state.isPresent() && !state.get().getName().equals(RoomStatesEnum.INACTIVE.state())
                 && roomCodes != null && roomCodes.contains(qrCode)
                 && ValidateRoomCode.validateCode(qrCode, activeServ, LocalDateTime.now())) {
@@ -139,7 +120,7 @@ public class RestControllers {
      * @param principal
      * @return
      */
-    @RequestMapping(value = "updateclass", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value = "updateclass", method = {RequestMethod.POST} )
     public @ResponseBody
     BaseResponse updateClassRoom(@RequestParam(value = "roomName", required = true) String roomName,
             @RequestParam(value = "roomStatus", required = true) String status,
@@ -148,9 +129,9 @@ public class RestControllers {
         Optional<User> user = userServ.findByEid(userEid);
         if (user.isPresent()) {
             try {
-                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
-                    rasbServ.requestCloseRoom(roomName);
-                }
+//                if (status.equals(RoomStatesEnum.INACTIVE.state())) {
+//                    rasbServ.requestCloseRoom(roomName);
+//                }
                 classroomServ.setRoomStatusByStateName(status, roomName);
                 return new BaseResponse(BaseResponse.SUCCESS);
             } catch (Exception err) {
@@ -159,6 +140,41 @@ public class RestControllers {
         }
         return new BaseResponse(BaseResponse.FAILED);
     }
+
+    /**
+     * Updates the classRoomStatus Can only be called from raspberry
+     *
+     * @param roomName
+     * @param principal
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "updateclassRasp", method = {RequestMethod.POST, RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse updateClassRoomRasp(@RequestParam(value = "roomName", required = true) String roomName,
+            @RequestParam(value = "roomStatus", required = true) String status) {
+        try {
+            if (status.equals(RoomStatesEnum.INACTIVE.state())) {
+                rasbServ.requestCloseRoom(roomName);
+            }
+            classroomServ.setRoomStatusByStateName(status, roomName);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: " + err.getMessage());
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+    
+    
+    @RequestMapping(value = "checkclassRasp", method = {RequestMethod.GET}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody BaseResponse checkclassRasp(@RequestParam(value="roomName") String roomName){
+        Optional<ClassRoomState> room = classroomServ.getRoomStatus(roomName);
+        if(room.isPresent()){
+            return new BaseResponse(room.get().getName());
+        }
+        return new BaseResponse("N/A");
+    }
+    
 
     @RequestMapping(value = "getUsersByRole", method = {RequestMethod.GET})
     public @ResponseBody
@@ -174,8 +190,53 @@ public class RestControllers {
 
     @RequestMapping(value = "updateUserRole", method = {RequestMethod.POST, RequestMethod.PUT})
     public @ResponseBody
-    BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRole) {
-        return roleServ.updateUserRole(userEid, newRole)?new BaseResponse(BaseResponse.SUCCESS): new BaseResponse(BaseResponse.FAILED);
+    BaseResponse updateUserRole(@RequestParam(value = "eID") String userEid, @RequestParam(value = "role") String newRoleName) {
+        if (roleServ.updateUserRole(userEid, newRoleName)) {
+            Optional<User> user = userServ.findByEid(userEid);
+            List<String> activatedRoles = Arrays.asList(RolesEnum.VIRTUALPARTICIPANT.role(),
+                    RolesEnum.ADMIN.role(), RolesEnum.COORDINATOR.role(),
+                    RolesEnum.SUPERADMIN.role(), RolesEnum.VISITOR.role());
+            if (user.isPresent() && activatedRoles.contains(newRoleName)) {
+                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
+                mailServ.prepareAndSendAccountActivated(user.get().getEmail(), mailName +" "+mailSurname);
+            }
+            return new BaseResponse(BaseResponse.SUCCESS);
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "addSkypeRoom", method = {RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse addSkypeRoom(@RequestParam(value = "roomName", required = true) String roomName,
+            @RequestParam(value = "roomUrl", required = true) String roomUrl, @RequestParam(value="start") String start, 
+            @RequestParam(value= "end") String end){
+        try {
+            SkypeRoom room = new SkypeRoom();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDate startDate = LocalDate.parse(start,formatter);
+            LocalDate endDate = LocalDate.parse(end,formatter);
+            room.setName(roomName);
+            room.setUrl(roomUrl);
+            skypeServ.save(room);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: " + err.getMessage());
+        }
+        return new BaseResponse(BaseResponse.FAILED);
+    }
+
+    @RequestMapping(value = "deleteSkypeRoom", method = {RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public @ResponseBody
+    BaseResponse delSkypeRoom(@RequestParam(value = "roomId", required = true) String roomId) {
+        try {
+            skypeServ.delete(roomId);
+            return new BaseResponse(BaseResponse.SUCCESS);
+        } catch (Exception err) {
+            log.info("ERROR: ", err);
+        }
+        return new BaseResponse(BaseResponse.FAILED);
     }
 
 }

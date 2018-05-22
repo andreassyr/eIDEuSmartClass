@@ -44,20 +44,23 @@ public class IntegrationServiceTests {
 
     @Test
     public void testSaveNew() {
-        BaseResponse resp = userServ.saveUser("eidasTestServ", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", "GR");
+        BaseResponse resp = userServ.saveOrUpdateUser("eidasTestServ", "n1", "n2", "", "1983-05-10", "test@test.gr",
+                "123456", "ntua", "GR",null,null,"engName","engSurname");
         assertEquals(resp.getStatus(), BaseResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLogin() {
-        userServ.saveUser("eidasTestServ2", "n1", "n2", "", "1983-10-10", "test@test.gr", "123456", "ntua", "GR");
+        userServ.saveOrUpdateUser("eidasTestServ2", "n1", "n2", "", "1983-10-10", "test@test.gr", "123456",
+                "ntua", "GR",null,null,"engName","engSurname");
         BaseResponse resp = userServ.updateLogin("eidasTestServ2");
         assertEquals(resp.getStatus(), BaseResponse.SUCCESS);
     }
 
     @Test
     public void testUpdateUserLoginUserNotFound() {
-        userServ.saveUser("eidasTestServ3", "n1", "n2", "", "1983-12-20", "test@test.gr", "123456", "ntua", "GR");
+        userServ.saveOrUpdateUser("eidasTestServ3", "n1", "n2", "", "1983-12-20", "test@test.gr", "123456", "ntua", 
+                "GR",null,null,"engName","engSurname");
         BaseResponse resp = userServ.updateLogin("eidasTestServErr");
         assertEquals(resp.getStatus(), BaseResponse.FAILED);
     }
@@ -73,7 +76,8 @@ public class IntegrationServiceTests {
     @Test
     @Transactional
     public void updateUserRole() {
-        userServ.saveUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", "GR");
+        userServ.saveOrUpdateUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", 
+                "GR",null,null,"engName","engSurname");
         roleServ.updateUserRole("updateUser", RolesEnum.ADMIN.role());
         Optional<User> user = userServ.findByEid("updateUser");
         assertEquals(user.get().getRole().getName(),RolesEnum.ADMIN.role());
@@ -83,7 +87,8 @@ public class IntegrationServiceTests {
     @Test
     @Transactional
     public void updateUserRoleRoleNOTFOUND() {
-        userServ.saveUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456", "ntua", "GR");
+        userServ.saveOrUpdateUser("updateUser", "n1", "n2", "", "1983-05-10", "test@test.gr", "123456",
+                "ntua", "GR",null,null,"engName","engSurname");
         roleServ.updateUserRole("updateUser", "foobar");
         Optional<User> user = userServ.findByEid("updateUser");
         assertEquals(user.get().getRole().getName(),RolesEnum.UNREGISTERED.role());

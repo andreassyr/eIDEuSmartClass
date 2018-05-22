@@ -31,7 +31,10 @@
                 <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath gr.aegean.eIdEuSmartClass.EIdEuSmartClassApplication</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <env.KEY>secret</env.KEY>
+                <Env.KEY>secret</Env.KEY>
+                <Env.FOO>bar</Env.FOO>
+                <Env.AD_MICROSERV>http://communities-i4mlab.aegean.gr/ad</Env.AD_MICROSERV>
+                
                 
             </properties>
         </action>
@@ -92,6 +95,38 @@
             </goals>
             <properties>
                 <Env.KEY>secret</Env.KEY>
+                
+            </properties>
+        </action>
+        <action>
+            <actionName>debug.single.main</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName}</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.classpathScope>${classPathScope}</exec.classpathScope>
+                <jpda.listen>true</jpda.listen>
+                <Env.KEY>secret</Env.KEY>
+                
+            </properties>
+        </action>
+        <action>
+            <actionName>build-with-dependencies</actionName>
+            <reactor>also-make</reactor>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
             </properties>
         </action>
     </actions>

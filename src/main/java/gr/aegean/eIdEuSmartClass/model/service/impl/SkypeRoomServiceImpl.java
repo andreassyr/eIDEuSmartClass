@@ -11,6 +11,7 @@ import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author nikos
  */
 @Service
-public class SkypeRoomServiceImpl implements SkypeRoomService{
+public class SkypeRoomServiceImpl implements SkypeRoomService {
 
     @Autowired
     private SkypeRoomRepository roomRepo;
-    
+
     @Override
     @Transactional
     public List<SkypeRoom> getAllRooms() {
@@ -33,7 +34,19 @@ public class SkypeRoomServiceImpl implements SkypeRoomService{
     @Override
     public SkypeRoom getRoomFromId(String id) {
         Optional<SkypeRoom> room = roomRepo.findById(Long.parseLong(id));
-        return (room.isPresent())?room.get():null;
+        return (room.isPresent()) ? room.get() : null;
     }
-    
+
+    @Override
+    public void save(SkypeRoom room) {
+        roomRepo.save(room);
+    }
+
+    @Override
+    @Transactional
+    @Modifying
+    public void delete(String id) {
+        roomRepo.deleteRoom(Long.parseLong(id));
+    }
+
 }

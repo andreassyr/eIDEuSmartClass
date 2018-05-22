@@ -5,6 +5,8 @@
  */
 package gr.aegean.eIdEuSmartClass.model.dmo;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +30,21 @@ public class SkypeRoom {
     private String url;
     private String name;
 
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private String description;
+
+    public SkypeRoom() {
+    }
+
+    public SkypeRoom(String url, String name, LocalDateTime start, LocalDateTime end, String description) {
+        this.url = url;
+        this.name = name;
+        this.start = start;
+        this.end = end;
+        this.description = description;
+    }
+
     public long getId() {
         return id;
     }
@@ -50,6 +67,30 @@ public class SkypeRoom {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

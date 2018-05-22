@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -50,17 +51,25 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 return cookie.getValue();
             }).findFirst();
 
-            if (token.isPresent()) {
+            if (token.isPresent() && !StringUtils.isEmpty(token.get())) {
 
                 String tokenDecoded = this.tokenService.decode(token.get());
 
-                if (!tokenDecoded.equals("")) {
+                if (!tokenDecoded.equals("{}") && !StringUtils.isEmpty(tokenDecoded)) {
                     PreAuthenticatedAuthenticationToken authtoken = new PreAuthenticatedAuthenticationToken(tokenDecoded, tokenDecoded);
                     UserDetails userDetails = this.tokenAuthUserDetailsService.loadUserDetails(authtoken);
                     SecurityContextHolder.getContext().setAuthentication(new TokenBasedAuthentication(userDetails));
+                } else {
+                    SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
                 }
-            }
-        
+
+            } 
+//            else {
+//                // if JWT is empty
+//                //prevent show login form again... but instead we provide an unAunticated user here with no authorities
+//                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
+//            }
+
         }
         chain.doFilter(request, response);
     }
