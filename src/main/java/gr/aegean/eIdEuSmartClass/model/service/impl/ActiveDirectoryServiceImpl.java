@@ -133,6 +133,8 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         return mapper.readValue(response.toString(), ADResponse.class);
     }
 
+    //ADDS the user to the group and 
+    // also gives him a required license to allow them to join skype for business etc...
     @Override
     public ADResponse add2Group(String userId, String groupName, boolean isOwner) throws MalformedURLException, IOException {
         String url = propServ.getPropByName("AD_MICROSERV") + "/add2Group";
@@ -140,9 +142,16 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         params.put("userId", userId);
         params.put("groupName", groupName);
         params.put("isOwner", isOwner);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         String response = writeParamsAndSendPost(params, url);
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        //give license to user
+        params = new LinkedHashMap<>();
+        params.put("principal", userId);
+        url = propServ.getPropByName("AD_MICROSERV") + "/addLicenses";
+        response = writeParamsAndSendPost(params, url);
+        
         return mapper.readValue(response.toString(), ADResponse.class);
     }
 

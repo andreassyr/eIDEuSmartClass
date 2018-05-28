@@ -24,11 +24,13 @@ import gr.aegean.eIdEuSmartClass.model.service.SkypeRoomService;
 import gr.aegean.eIdEuSmartClass.model.service.TeamsService;
 import gr.aegean.eIdEuSmartClass.model.service.TokenService;
 import gr.aegean.eIdEuSmartClass.model.service.UserService;
+import gr.aegean.eIdEuSmartClass.utils.enums.EmailTypes;
 import gr.aegean.eIdEuSmartClass.utils.enums.GenderEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RolesEnum;
 import gr.aegean.eIdEuSmartClass.utils.enums.RoomStatesEnum;
 import gr.aegean.eIdEuSmartClass.utils.generators.QRGenerator;
 import gr.aegean.eIdEuSmartClass.utils.generators.UtilGenerators;
+import gr.aegean.eIdEuSmartClass.utils.pojo.ADHelpers;
 import gr.aegean.eIdEuSmartClass.utils.pojo.BaseResponse;
 import gr.aegean.eIdEuSmartClass.utils.pojo.FormUser;
 import gr.aegean.eIdEuSmartClass.utils.wrappers.UserWrappers;
@@ -283,26 +285,27 @@ public class ViewControllers {
             SkypeRoom room = skypeRoomServ.getRoomFromId(roomId);
             if (room != null) {
                 model.addAttribute("room", room);
-                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
-                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
-                if (StringUtils.isEmpty(user.get().getPrincipal())) {
-                    String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-                    if (creationResponse.equals("EXISTS")) {
-                        mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
-                                user.get().getPrincipal());
-                    } else {
-                        if (!creationResponse.equals("NOK")) {
-                            mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
-                                    mailName + " " + mailSurname, room.getName(), room.getUrl(), user.get().getPrincipal(), creationResponse);
-                        } else {
-                            log.info("Error adding user to active directory");
-                            return "error";
-                        }
-                    }
-                } else {
-                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
-                            user.get().getPrincipal());
-                }
+//                String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+//                String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
+//                if (StringUtils.isEmpty(user.get().getPrincipal())) {
+//                    String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+//                    if (creationResponse.equals("EXISTS")) {
+//                        mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
+//                                user.get().getPrincipal());
+//                    } else {
+//                        if (!creationResponse.equals("NOK")) {
+//                            mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
+//                                    mailName + " " + mailSurname, room.getName(), room.getUrl(), user.get().getPrincipal(), creationResponse);
+//                        } else {
+//                            log.info("Error adding user to active directory");
+//                            return "error";
+//                        }
+//                    }
+//                } else {
+//                    mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, room.getName(), room.getUrl(),
+//                            user.get().getPrincipal());
+//                }
+                ADHelpers.createUserAndSendEmail(user, mailServ, userServ, adServ, room.getName(), room.getUrl(), EmailTypes.Skype);
                 try {
                     adServ.add2Group(user.get().getAdId(), "SkypeForBusiness", false);
                 } catch (IOException ex) {
@@ -326,24 +329,25 @@ public class ViewControllers {
         String mailName = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
         String mailSurname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
         if (user.isPresent() && team.isPresent()) {
-            if (StringUtils.isEmpty(user.get().getPrincipal())) {
-                String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
-
-                if (creationResponse.equals("EXISTS")) {
-                    mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname, team.get().getName(), user.get().getPrincipal());
-                } else {
-                    if (!creationResponse.equals("NOK")) {
-                        mailServ.prepareAndSendTeamMessage(user.get().getEmail(), mailName + " " + mailSurname,
-                                team.get().getName(), user.get().getPrincipal(), creationResponse);
-                    } else {
-                        log.info("Error adding user to active directory");
-                        return "error";
-                    }
-                }
-            } else {
-                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname,
-                        team.get().getName(), user.get().getPrincipal());
-            }
+//            if (StringUtils.isEmpty(user.get().getPrincipal())) {
+//                String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
+//
+//                if (creationResponse.equals("EXISTS")) {
+//                    mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname, team.get().getName(), user.get().getPrincipal());
+//                } else {
+//                    if (!creationResponse.equals("NOK")) {
+//                        mailServ.prepareAndSendTeamMessage(user.get().getEmail(), mailName + " " + mailSurname,
+//                                team.get().getName(), user.get().getPrincipal(), creationResponse);
+//                    } else {
+//                        log.info("Error adding user to active directory");
+//                        return "error";
+//                    }
+//                }
+//            } else {
+//                mailServ.prepareAndSendTeamMessageExisting(user.get().getEmail(), mailName + " " + mailSurname,
+//                        team.get().getName(), user.get().getPrincipal());
+//            }
+            ADHelpers.createUserAndSendEmail(user, mailServ, userServ, adServ, team.get().getName(), team.get().getUrl(), EmailTypes.Team);
 
             try {
                 adServ.add2Group(user.get().getAdId(), team.get().getName(), false);
@@ -404,6 +408,9 @@ public class ViewControllers {
                 model.addAttribute("error", "Room is not available at this time. Please contact the classroom administrator");
             }
         }
+
+        ADHelpers.createUserAndSendEmail(user, mailServ, userServ, adServ, null, null, EmailTypes.Physical);
+
         return "physicalView";
     }
 
@@ -423,7 +430,9 @@ public class ViewControllers {
                     GenderEnum.UNSPECIFIED.gender(), user.getDateOfBirth(), user.getEmail(),
                     user.getMobile(), user.getAffiliation(), user.getCountry(), null, null, user.getEngName(), user.getEngSurname());
             if (resp.getStatus().equals("OK")) {
-                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName);
+//                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName);
+                Optional<User> theUser = Optional.of(UserWrappers.wrapFormUserToDBUser(user, roleServ, genServ));
+                ADHelpers.createUserAndSendEmail(theUser, mailServ, userServ, adServ, null, null, EmailTypes.AccountCreation);
                 return "updateSuccessViewRegister";
             }
         } else {

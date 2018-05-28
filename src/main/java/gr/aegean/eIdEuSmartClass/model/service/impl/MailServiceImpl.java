@@ -31,7 +31,7 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
-    public String prepareAndSendAccountCreated(String recipient, String subject, String userName) {
+    public String prepareAndSendAccountCreated(String recipient, String userName) {
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -161,6 +161,60 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject("New account requested!");
             String content = MailContentBuilder.buildNewAccountInfoAdmin(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendAccountRejected(String recipient, String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject(" Your registration with Smart Class");
+            String content = MailContentBuilder.buildAccountRejected(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepeareAndSendPhysicalMail(String recipient, String name, String principalName, String password) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to Smart Class Physical Facilities (accessed via IoT)");
+            String content = MailContentBuilder.buildPhysicalAccount(name, principalName, password);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepeareAndSendPhysicalMailExisting(String recipient, String name, String principalName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to Smart Class Physical Facilities (accessed via IoT)");
+            String content = MailContentBuilder.buildPhysicalAccountExisting(name, principalName);
             helper.setText(content, true);
             mailSender.send(message);
             return "OK";
