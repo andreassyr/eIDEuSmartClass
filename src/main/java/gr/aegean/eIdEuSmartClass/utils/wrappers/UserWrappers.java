@@ -91,7 +91,8 @@ public class UserWrappers {
         try {
             res.setDateOfBirth(df.format(user.getDateOfBirth()));
         } catch (Exception e) {
-            log.info("No DATE found",e);
+            log.info("No DATE found -- saving user w ith  no data");
+            log.debug("Debug,",e);
         }
         res.setEid(user.getEid());
         res.setEmail(user.getEmail());

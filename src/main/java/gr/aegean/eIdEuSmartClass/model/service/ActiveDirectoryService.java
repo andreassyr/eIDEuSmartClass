@@ -9,7 +9,6 @@ import gr.aegean.eIdEuSmartClass.model.dmo.User;
 import gr.aegean.eIdEuSmartClass.utils.pojo.ADResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.Optional;
 
 /**

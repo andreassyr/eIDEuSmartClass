@@ -94,7 +94,8 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         String response = writeParamsAndSendPost(params, url);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         ADResponse resp = mapper.readValue(response.toString(), ADResponse.class);
-        log.info(resp.getStatus() + " id : " + resp.getId());
+        log.info("!!!!!!Saved new AD use with id " + resp.getId());
+//        log.info(resp.getStatus() + " id : " + resp.getId());
         return resp;
     }
 
@@ -147,10 +148,10 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         String response = writeParamsAndSendPost(params, url);
 
         //give license to user
-        params = new LinkedHashMap<>();
-        params.put("principal", userId);
-        url = propServ.getPropByName("AD_MICROSERV") + "/addLicenses";
-        response = writeParamsAndSendPost(params, url);
+//        params = new LinkedHashMap<>();
+//        params.put("principal", userId);
+//        url = propServ.getPropByName("AD_MICROSERV") + "/addLicenses";
+//        response = writeParamsAndSendPost(params, url);
         
         return mapper.readValue(response.toString(), ADResponse.class);
     }
