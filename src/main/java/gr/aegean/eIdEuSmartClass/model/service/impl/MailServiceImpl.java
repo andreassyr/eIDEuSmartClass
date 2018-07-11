@@ -159,10 +159,11 @@ public class MailServiceImpl implements MailService {
     @Override
     public String sendMailToAdmin(String name) {
         log.info("Sending email to admin");
+        String[] admins = {"triantafyllou.ni@gmail.com","pkavassalis@atlantis-group.gr","adanar@atlantis-group.gr","msofianop@gmail.com"};
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
-            helper.setTo("triantafyllou.ni@gmail.com;pkavassalis@atlantis-group.gr;adanar@atlantis-group.gr;msofianop@gmail.com");
+            helper.setTo(admins);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
             helper.setSubject("New smartclass account requested!");
             String content = MailContentBuilder.buildNewAccountInfoAdmin(name);

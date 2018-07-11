@@ -12,7 +12,8 @@ services:
             - KEY=secret
             - RASPBERRY_URL=http://test.com
             - RASPBERRY_CLOSE_ROOM=closeroom
-            - AD_MICROSERV= http://localhost:8000
+            - AD_MICROSERV=http://localhost:8000
+            - LOGIN_URL=http://eideusmartclass.aegean.gr:9091/login
 
     loginWebApp2:
        container_name: loginWebApp

@@ -95,6 +95,7 @@
             </goals>
             <properties>
                 <Env.KEY>secret</Env.KEY>
+                <skipTests>true</skipTests>
                 
             </properties>
         </action>

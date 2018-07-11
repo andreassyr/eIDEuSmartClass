@@ -127,7 +127,7 @@ public class ViewControllers {
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
         model.addAttribute("teams", teamServ.findAll());
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
-
+        model.addAttribute("loginPath",propServ.getPropByName("LOGIN_URL"));
         return "landingView";
     }
 

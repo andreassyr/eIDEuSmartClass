@@ -129,6 +129,9 @@
                                 <li>As a condition of your use of the UAegean-HP  Smart Class Services, you will not use these services for any purpose that is unlawful or not compatible with the academic ethics. You may not use the these Services in any manner that could damage, disable, overburden, or impair any software and hardware asset related to the Smart Class Program, the University of the Aegean and its partner organizations</li>
                             </ol>
                         </div>
+                    
+                        <div class="container clearfix">Read our k <a href="https://docs.google.com/document/d/1JpXJIOfo8FodjI1MvEFVRxC846VIW2ySlTdTkQ_Ctb4/edit?usp=sharing">privacy and  cookie policy</a> </div>
+                    
                     </div>
 
                     <div class="clear"></div>
@@ -173,7 +176,8 @@
         ============================================= -->
         <script src="js/functions.js"></script>
 
-        <script>
+        <script  th:inline="javascript">
+                                        /*<![CDATA[*/
                                         $(function () {
                                             $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
                                         });
@@ -191,7 +195,7 @@
                                             let typeCookie = getCookie("type");
                                             let authCookie = getCookie("access_token");
                                             if (typeCookie == "" || authCookie == "") {
-                                                window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
+                                                window.location.replace(/*[[${loginPath}]]*/"http://eideusmartclass.aegean.gr:9091/login");
                                             } else {
                                                 window.location.href = "/eIDASSuccess";
                                             }
@@ -237,9 +241,74 @@
                                             return "";
                                         }
 
+                                        // Creare's 'Implied Consent' EU Cookie Law Banner v:2.4
+                                        // Conceived by Robert Kent, James Bavington & Tom Foyster
+
+                                        var dropCookie = true;                      // false disables the Cookie, allowing you to style the banner
+                                        var cookieDuration = 14;                    // Number of days before the cookie expires, and the banner reappears
+                                        var cookieName = 'complianceCookie';        // Name of our cookie
+                                        var cookieValue = 'on';                     // Value of cookie
+
+                                        function createDiv() {
+                                            var bodytag = document.getElementsByTagName('body')[0];
+                                            var div = document.createElement('div');
+                                            div.setAttribute('id', 'cookie-law');
+                                            div.innerHTML = '<p style="background:rgba(52, 64, 81, 0.88) url(/img/cookie.png) 20px 50% no-repeat; width:100%; text-align: center; padding:1rem; color:white; fontSize:15px; position:fixed; left:0;z-index:999">Our website uses cookies only for making the authentication experience more user friendly.  By continuing we assume your permission to deploy cookies, as detailed in our <a href="https://docs.google.com/document/d/1JpXJIOfo8FodjI1MvEFVRxC846VIW2ySlTdTkQ_Ctb4/edit?usp=sharing" rel="nofollow" title="Privacy &amp; Cookies Policy" target="_blank" style="font-weight:800; color:white;">privacy and cookies policy</a>. <a style="color:orange" class="close-cookie-banner" href="javascript:void(0);" onclick="removeMe();"><span>X</span></a></p>';
+
+                                            // Be advised the Close Banner 'X' link requires jQuery
+
+                                            // bodytag.appendChild(div); // Adds the Cookie Law Banner just before the closing </body> tag
+                                            // or
+                                            bodytag.insertBefore(div, bodytag.firstChild); // Adds the Cookie Law Banner just after the opening <body> tag
+
+                                            document.getElementsByTagName('body')[0].className += ' cookiebanner'; //Adds a class tothe <body> tag when the banner is visible
+                                        }
 
 
+                                        function createCookie(name, value, days) {
+                                            if (days) {
+                                                var date = new Date();
+                                                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                                                var expires = "; expires=" + date.toGMTString();
+                                            } else
+                                                var expires = "";
+                                            if (window.dropCookie) {
+                                                document.cookie = name + "=" + value + expires + "; path=/";
+                                            }
+                                        }
 
+                                        function checkCookie(name) {
+                                            var nameEQ = name + "=";
+                                            var ca = document.cookie.split(';');
+                                            for (var i = 0; i < ca.length; i++) {
+                                                var c = ca[i];
+                                                while (c.charAt(0) == ' ')
+                                                    c = c.substring(1, c.length);
+                                                if (c.indexOf(nameEQ) == 0)
+                                                    return c.substring(nameEQ.length, c.length);
+                                            }
+                                            return null;
+                                        }
+
+                                        function eraseCookie(name) {
+                                            createCookie(name, "", -1);
+                                        }
+
+                                        window.onload = function () {
+                                            if (checkCookie(window.cookieName) != window.cookieValue) {
+                                                createDiv();
+                                            }
+                                        }
+
+                                        function removeMe() {
+                                            var element = document.getElementById('cookie-law');
+                                            element.parentNode.removeChild(element);
+                                            createCookie(window.cookieName, window.cookieValue, window.cookieDuration); // Create the cookie
+
+                                        }
+
+
+                                        /*]]>*/
         </script>
 
     </body>
