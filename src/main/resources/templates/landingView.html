@@ -195,7 +195,8 @@
                                             let typeCookie = getCookie("type");
                                             let authCookie = getCookie("access_token");
                                             if (typeCookie == "" || authCookie == "") {
-                                                window.location.replace(/*[[${loginPath}]]*/"http://eideusmartclass.aegean.gr:9091/login");
+                                                //
+                                                window.location.replace(/*[[${loginPath}]]*/'https://eideusmartclass.aegean.gr/eidasLogin/login');
                                             } else {
                                                 window.location.href = "/eIDASSuccess";
                                             }

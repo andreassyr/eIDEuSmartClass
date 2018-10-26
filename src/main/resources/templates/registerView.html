@@ -91,7 +91,7 @@
 
                                 <div class="contact-form-result"></div>
                                 <!--id="template-jobform"-->
-                                <form th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user"  >
+                                <form  id="regForm" th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user"  >
 
                                     <div class="form-process"></div>
 
@@ -105,7 +105,7 @@
                                         <input type="text" id="template-jobform-lname" name="currentFamilyName" th:value="${user.currentFamilyName}" th:readonly="true" class="sm-form-control required" tabindex="2"/>
                                     </div>
 
-                                    <div class="col_full input-daterange travel-date-group bottommargin-sm">
+                                    <div class="col_full input-daterange travel-date-group bottommargin-sm" style="display:none">
                                         <label for="">Date of Birth</label>
                                         <input type="text" name="dateOfBirth" th:value="${user.dateOfBirth}" th:readonly="true" class="form-control tleft format" placeholder="DD-MM-YYYY">
                                     </div>
@@ -121,12 +121,16 @@
                                     </div>
 
                                     <div class="col_full">
-                                        <label for="template-jobform-mobile">Mobile <small>*</small></label>
+                                        <label for="template-jobform-mobile" style="margin-bottom: 0em;
+                                               padding-bottom: 0em;">Mobile <small>*</small></label>
+                                        <div style="color: darkgrey;"> <small>e.g. +3069ΧΧΧΧΧΧΧΧ</small></div>    
                                         <input type="text" th:field="*{mobile}"  id="template-jobform-mobile" value="" class="sm-form-control required" tabindex="6"/>
                                     </div>
 
                                     <div class="col_full">
-                                        <label for="template-jobform-aff">Affiliation <small>*</small></label>
+                                        <label for="template-jobform-aff" style="margin-bottom: 0em;
+                                               padding-bottom: 0em;">Affiliation <small>*</small></label>
+                                        <div style="color: darkgrey;"><small>H.E.I.L.N.(Higher Education Institution Legal Name) or Company Name or Linkedin</small></div>
                                         <input type="text" th:field="*{affiliation}" id="template-jobform-aff" value="" class="sm-form-control required" tabindex="7"/>
                                     </div>
 
@@ -395,7 +399,7 @@
                                                                         </div>-->
 
                                     <div class="col_full">
-                                        <input class="button button-3d button-large btn-block nomargin"  type="submit" value="Submit" />
+                                        <button id="submit" class="button button-3d button-large btn-block nomargin"  onclick="submitForm(event)">Submit</button>
                                         <!--<button class="button button-3d button-large btn-block nomargin" name="template-jobform-apply" type="submit" value="apply">Register</button>-->
                                     </div>
 
@@ -451,9 +455,34 @@
 <script src="js/functions.js"></script>
 
 <script>
-    $(function () {
-        $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
-    });
+
+
+                                            function submitForm(e) {
+                                                e.preventDefault();
+                                                let aff = $("#template-jobform-aff").val();
+                                                let email = $("#template-jobform-email").val();
+                                                let mobile = $("#template-jobform-mobile").val();
+
+                                                let form = $("#regForm");
+                                                if (aff !== "" && aff !== "" && email !== "n/a" && email !== "" && email
+                                                        && mobile !== "" && mobile) {
+
+                                                    form.submit();
+                                                } else {
+                                                    alert("please fill in all mandatory fields!");
+                                                }
+                                            }
+                                            ;
+
+                                            $(function () {
+                                                $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
+
+
+                                            });
+
+
+
+
 </script>
 
 

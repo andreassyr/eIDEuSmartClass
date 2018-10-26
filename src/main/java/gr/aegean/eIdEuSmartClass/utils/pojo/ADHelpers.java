@@ -31,10 +31,6 @@ public class ADHelpers {
         if (StringUtils.isEmpty(user.get().getPrincipal())) {
             String creationResponse = adServ.createADCredentialsUpdateUserGetPass(user, userServ);
             if (creationResponse.equals("EXISTS")) {
-//                mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, emailBodyFirstParam, emailBodySecondParam,
-//                        user.get().getPrincipal());
-// mailServ.prepareAndSendSkypeLink(user.get().getEmail(),
-//                                    mailName + " " + mailSurname, room.getName(), room.getUrl(), user.get().getPrincipal(), creationResponse);
                 sendMailUsingType(emailType, mailServ,
                         user.get().getEmail(), mailName + " " + mailSurname, serviceName, serviceUrl, user.get().getPrincipal(), null, true);
             } else {
@@ -47,8 +43,6 @@ public class ADHelpers {
                 }
             }
         } else {
-//            mailServ.prepareAndSendSkypeLinkExisting(user.get().getEmail(), mailName + " " + mailSurname, emailBodyFirstParam, emailBodySecondParam,
-//                    user.get().getPrincipal());
             sendMailUsingType(emailType, mailServ,
                     user.get().getEmail(), mailName + " " + mailSurname, serviceName, serviceUrl, user.get().getPrincipal(), null, true);
         }

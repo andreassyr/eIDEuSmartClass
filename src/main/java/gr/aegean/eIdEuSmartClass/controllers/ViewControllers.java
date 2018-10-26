@@ -127,13 +127,14 @@ public class ViewControllers {
         model.addAttribute("skypeRooms", skypeRoomServ.getAllRooms());
         model.addAttribute("teams", teamServ.findAll());
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
-        model.addAttribute("loginPath",propServ.getPropByName("LOGIN_URL"));
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "landingView";
     }
 
     @RequestMapping(value = {"smart-class"})
     public String smartClass(Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "smartclassView";
     }
 
@@ -184,7 +185,8 @@ public class ViewControllers {
                     } else {
                         redirectAttrs.addFlashAttribute("message", "In order to use the service you first need to register. Please fill in the following form");
                     }
-                    mailServ.sendMailToAdmin(user.get().getEngSurname());
+
+                    mailServ.sendMailToAdmin(user.get().getCurrentGivenName() + user.get().getCurrentFamilyName());
                     return "redirect:/register";
                 } catch (UnsupportedEncodingException ex) {
                     log.info("ERROR ", ex);
@@ -260,6 +262,7 @@ public class ViewControllers {
         List<Teams> teams = teamServ.findAll();
         model.addAttribute("teams", teams);
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "selectTeam";
     }
 
@@ -268,6 +271,7 @@ public class ViewControllers {
         List<SkypeRoom> rooms = skypeRoomServ.getAllRooms();
         model.addAttribute("rooms", rooms);
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "selectConf";
     }
 
@@ -313,7 +317,9 @@ public class ViewControllers {
                 }
             }
             model.addAttribute("user", user.get());
+
         }
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "skypeView";
     }
 
@@ -362,7 +368,7 @@ public class ViewControllers {
                 model.addAttribute("user", user.get());
             }
             model.addAttribute("teams", teams);
-
+            model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
             return "teamView";
         }
         return "error";
@@ -410,7 +416,7 @@ public class ViewControllers {
         }
 
         ADHelpers.createUserAndSendEmail(user, mailServ, userServ, adServ, null, null, EmailTypes.Physical);
-
+        model.addAttribute("loginPath", propServ.getPropByName("LOGIN_URL"));
         return "physicalView";
     }
 
@@ -432,8 +438,13 @@ public class ViewControllers {
             if (resp.getStatus().equals("OK")) {
 //                mailServ.prepareAndSendAccountCreated(user.getEmail(), "Smart Class Account Details", userName);
                 Optional<User> theUser = Optional.of(UserWrappers.wrapFormUserToDBUser(user, roleServ, genServ));
-                ADHelpers.createUserAndSendEmail(theUser, mailServ, userServ, adServ, null, null, EmailTypes.AccountCreation);
-                return "updateSuccessViewRegister";
+                String creationResult = ADHelpers.createUserAndSendEmail(theUser, mailServ, userServ, adServ, null, null, EmailTypes.AccountCreation);
+                if (!creationResult.equals("error")) {
+                    return "updateSuccessViewRegister";
+                } else {
+                    model.addAttribute("error", "could not add user to AD");
+                    return "error";
+                }
             }
         } else {
             model.addAttribute("error", "no english user name found!! Cannot create user");

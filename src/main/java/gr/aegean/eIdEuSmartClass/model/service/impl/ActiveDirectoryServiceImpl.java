@@ -152,7 +152,6 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
 //        params.put("principal", userId);
 //        url = propServ.getPropByName("AD_MICROSERV") + "/addLicenses";
 //        response = writeParamsAndSendPost(params, url);
-        
         return mapper.readValue(response.toString(), ADResponse.class);
     }
 
@@ -174,15 +173,18 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
         try {
             String safeEid = DigestUtils.md5DigestAsHex(user.get().getEid().getBytes(StandardCharsets.UTF_8));
             String randomPass = UtilGenerators.generateRandomADPass(8);
-            String userName = user.get().getEngName() + "." + user.get().getEngSurname();
-            String userPrincipal = userName + safeEid.substring(0, 2);
+
+            String name = StringUtils.isEmpty(user.get().getEngName()) ? user.get().getCurrentGivenName() : user.get().getEngName();
+            String surname = StringUtils.isEmpty(user.get().getEngSurname()) ? user.get().getCurrentFamilyName() : user.get().getEngSurname();
+            String userName = name + "." + surname;
+            String userPrincipal = userName.replace(" ","") + safeEid.substring(0, 2);
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             //check to see if a user exits
             //if not create him and return the password
             //else return NOK -- maybe a better message here not nok
             RestTemplate restTemplate = new RestTemplate();
 
-            ADResponse resp = restTemplate.getForObject("http://communities-i4mlab.aegean.gr/ad/findUserByPrincipalName?userPrincipalName=" + userPrincipal, ADResponse.class);
+            ADResponse resp = restTemplate.getForObject("https://communities-i4mlab.aegean.gr/ad/findUserByPrincipalName?userPrincipalName=" + userPrincipal, ADResponse.class);
             if (resp.getStatus().equals("OK")) {
                 //user found in AD
                 log.info("User already exists in AD");
@@ -198,7 +200,7 @@ public class ActiveDirectoryServiceImpl implements ActiveDirectoryService {
                 }
             } else {
                 ADResponse adResp = createUser(userName,
-                        safeEid, user.get().getEngName(), user.get().getEngSurname(), userPrincipal,
+                        safeEid, name, surname, userPrincipal,
                         randomPass, user.get().getEid());
                 String principalFullName = userPrincipal + "@i4mlabUAegean.onmicrosoft.com";
                 String theDate = user.get().getDateOfBirth() != null ? df.format(user.get().getDateOfBirth()) : "";
