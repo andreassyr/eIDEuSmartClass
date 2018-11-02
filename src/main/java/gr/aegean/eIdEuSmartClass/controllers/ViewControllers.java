@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -427,8 +429,16 @@ public class ViewControllers {
      * in the API call***
      */
     @RequestMapping(value = "createUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public String createUser(@ModelAttribute("user") FormUser user, Model model, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
+    public String createUser(@ModelAttribute("user") @Valid FormUser user, BindingResult bindingResult, Model model,
+            @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie) {
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
+
+        if (bindingResult.hasErrors()) {
+//            log.info("errors in form submition");
+            return "registerView";
+
+        }
+
         String userName;
         if (user.getEngName() != null && user.getEngSurname() != null) {
             userName = user.getEngName() + "." + user.getEngSurname();
@@ -457,9 +467,17 @@ public class ViewControllers {
      * call to add the user to the active directory
      */
     @RequestMapping(value = "updateUser", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public String updateUser(@ModelAttribute("user") FormUser user, @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie, Model model) {
+    public String updateUser(@ModelAttribute("user") @Valid FormUser user,
+            BindingResult bindingResult,
+            @CookieValue(value = TOKEN_NAME, required = false) String jwtCookie, Model model) {
         Optional<User> oldUser = userServ.findByEid(user.getEid());
         String gender = GenderEnum.UNSPECIFIED.gender();
+
+        if (bindingResult.hasErrors()) {
+            log.info("errors in form submition");
+            return "profile";
+        }
+
         model.addAttribute("loggedIn", !StringUtils.isEmpty(jwtCookie));
         if (oldUser.isPresent()) {
             gender = oldUser.get().getGender().getName();

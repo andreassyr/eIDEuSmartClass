@@ -50,6 +50,11 @@
                     <h1>Account Registration</h1>
                     <!--                    <p>Please fill in the following information to register to the service.</p>-->
                 </div>
+                
+                <div  th:if="${#fields.hasErrors('${user.*}')}" class="container clearfix">
+                    <h3 style="color:red">Please fill in all the required information in the form below</h3>
+
+                </div>
 
             </section>
 
@@ -118,6 +123,8 @@
                                     <div class="col_full">
                                         <label for="template-jobform-email">Email <small>*</small></label>
                                         <input type="text" id="template-jobform-email" th:field="*{email}"  class="required email sm-form-control" tabindex="5"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">A valid e-mail is required!</i>
+
                                     </div>
 
                                     <div class="col_full">
@@ -125,13 +132,15 @@
                                                padding-bottom: 0em;">Mobile <small>*</small></label>
                                         <div style="color: darkgrey;"> <small>e.g. +3069ΧΧΧΧΧΧΧΧ</small></div>    
                                         <input type="text" th:field="*{mobile}"  id="template-jobform-mobile" value="" class="sm-form-control required" tabindex="6"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}">A valid e-mail is required!</i>
                                     </div>
 
                                     <div class="col_full">
                                         <label for="template-jobform-aff" style="margin-bottom: 0em;
                                                padding-bottom: 0em;">Affiliation <small>*</small></label>
-                                        <div style="color: darkgrey;"><small>H.E.I.L.N.(Higher Education Institution Legal Name) or Company Name or Linkedin</small></div>
+                                        <div style="color: darkgrey;"><small>H.E.I.L.N.(Higher Education Institution Legal Name, e.g. UAegean) or Company Name or Linkedin</small></div>
                                         <input type="text" th:field="*{affiliation}" id="template-jobform-aff" value="" class="sm-form-control required" tabindex="7"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('affiliation')}" th:errors="*{affiliation}">A valid e-mail is required!</i>
                                     </div>
 
                                     <input type="text" name="engName" th:value="${user.engName}" th:readonly="true" th:hidden="true"/> 
@@ -392,6 +401,8 @@
                                             <option value="ZM">Zambia</option>
                                             <option value="ZW">Zimbabwe</option>
                                         </select>
+                                        <i style="color:red" th:if="${#fields.hasErrors('country')}" th:errors="*{country}">A valid e-mail is required!</i>
+
                                     </div>
 
                                     <!--                                    <div class="col_full hidden">
@@ -457,22 +468,23 @@
 <script>
 
 
-                                            function submitForm(e) {
-                                                e.preventDefault();
-                                                let aff = $("#template-jobform-aff").val();
-                                                let email = $("#template-jobform-email").val();
-                                                let mobile = $("#template-jobform-mobile").val();
-
-                                                let form = $("#regForm");
-                                                if (aff !== "" && aff !== "" && email !== "n/a" && email !== "" && email
-                                                        && mobile !== "" && mobile) {
-
-                                                    form.submit();
-                                                } else {
-                                                    alert("please fill in all mandatory fields!");
-                                                }
-                                            }
-                                            ;
+//                                            function submitForm(e) {
+//
+//                                                let aff = $("#template-jobform-aff").val();
+//                                                let email = $("#template-jobform-email").val();
+//                                                let mobile = $("#template-jobform-mobile").val();
+//
+//                                                let form = $("#regForm");
+////                                                if (aff !== "" && aff !== "" && email !== "n/a" && email !== "" && email
+////                                                        && mobile !== "" && mobile) {
+//
+//                                                form.submit();
+////                                                } else {
+////                                                    e.preventDefault();
+////                                                    alert("please fill in all mandatory fields!");
+////                                                }
+//                                            }
+//                                            ;
 
                                             $(function () {
                                                 $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
