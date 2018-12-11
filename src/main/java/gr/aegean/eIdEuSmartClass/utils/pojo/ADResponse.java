@@ -19,6 +19,7 @@ public class ADResponse {
     private String id;
     private ErrorWrapper error;
     private Details details;
+    
 
     public ADResponse() {
     }

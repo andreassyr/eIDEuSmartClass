@@ -33,8 +33,39 @@ public class TestADResponseWrapper {
         ADResponse result = mapper.readValue(resp, ADResponse.class);
         assertEquals(result.getStatus(), "OK");
         assertEquals(result.getError(), null);
-        assertEquals(result.getDetails().getId(),"77fb1362-3c03-4769-8ff8-8925a83a073e");
-        assertEquals(result.getDetails().getPrincipal(),"NIKOS.Test1@i4mlabUAegean.onmicrosoft.com");
+        assertEquals(result.getDetails().getId(), "77fb1362-3c03-4769-8ff8-8925a83a073e");
+        assertEquals(result.getDetails().getPrincipal(), "NIKOS.Test1@i4mlabUAegean.onmicrosoft.com");
     }
 
+    /*
+    '{
+  "error": {
+    "code": "Request_ResourceNotFound",
+    "message": "Resource '0db9d518-4f59-4c7c-9fd3-8f7e835e93ac' does not exist or one of its queried reference-property objects are not present.",
+    "innerError": {
+      "request-id": "27893c80-7603-451f-82df-2ec2eeb10b75",
+      "date": "2018-05-30T17:20:02"
+    }
+  }
+}'
+     */
+    @Test
+    public void TestWrapErrorResponse() throws IOException {
+        String resp = "{\n"
+                + "  \"error\": {\n"
+                + "    \"code\": \"Request_ResourceNotFound\",\n"
+                + "    \"message\": \"Resource '0db9d518-4f59-4c7c-9fd3-8f7e835e93ac' does not exist or one of its queried reference-property objects are not present.\",\n"
+                + "    \"innerError\": {\n"
+                + "      \"request-id\": \"27893c80-7603-451f-82df-2ec2eeb10b75\",\n"
+                + "      \"date\": \"2018-05-30T17:20:02\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "}";
+        ObjectMapper mapper = new ObjectMapper();
+        ADResponse result = mapper.readValue(resp, ADResponse.class);
+//        assertEquals(result.getStatus(), "OK");
+//        assertEquals(result.getError(), null);
+//        assertEquals(result.getDetails().getId(), "77fb1362-3c03-4769-8ff8-8925a83a073e");
+//        assertEquals(result.getDetails().getPrincipal(), "NIKOS.Test1@i4mlabUAegean.onmicrosoft.com");
+    }
 }

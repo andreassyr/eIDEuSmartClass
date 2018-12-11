@@ -31,8 +31,8 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
-    public String prepareAndSendAccountCreated(String recipient, String subject, String userName) {
-
+    public String prepareAndSendAccountCreated(String recipient, String userName) {
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -56,6 +56,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String prepareAndSendTeamMessage(String recipient, String name, String teamName, String principalName, String password) {
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -77,6 +78,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String prepareAndSendSkypeLink(String recipient, String name, String confRoom, String url, String principalName, String password) {
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -98,6 +100,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String prepareAndSendAccountActivated(String recipient, String name) {
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -116,7 +119,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String prepareAndSendTeamMessageExisting(String recipient, String name, String teamName, String principal) {
-
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -135,6 +138,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String prepareAndSendSkypeLinkExisting(String recipient, String name, String confRoom, String url, String principal) {
+        log.info("Sending email to " +recipient);
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
@@ -154,13 +158,72 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String sendMailToAdmin(String name) {
+        log.info("Sending email to admin");
+        String[] admins = {"triantafyllou.ni@gmail.com","pkavassalis@atlantis-group.gr","adanar@atlantis-group.gr","msofianop@gmail.com"};
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
-            helper.setTo("triantafyllou.ni@gmail.com");
+            helper.setTo(admins);
             helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
-            helper.setSubject("New account requested!");
+            helper.setSubject("New smartclass account requested!");
             String content = MailContentBuilder.buildNewAccountInfoAdmin(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepareAndSendAccountRejected(String recipient, String name) {
+        log.info("Sending email to " +recipient);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject(" Your registration with Smart Class");
+            String content = MailContentBuilder.buildAccountRejected(name);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepeareAndSendPhysicalMail(String recipient, String name, String principalName, String password) {
+        log.info("Sending email to " +recipient);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to Smart Class Physical Facilities (accessed via IoT)");
+            String content = MailContentBuilder.buildPhysicalAccount(name, principalName, password);
+            helper.setText(content, true);
+            mailSender.send(message);
+            return "OK";
+        } catch (Exception e) {
+            log.info("Error sending mail", e);
+            return "ERROR";
+        }
+    }
+
+    @Override
+    public String prepeareAndSendPhysicalMailExisting(String recipient, String name, String principalName) {
+        log.info("Sending email to " +recipient);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setTo(recipient);
+            helper.setFrom(new InternetAddress(FROM, MAIL_FRIENDLY_NAME));
+            helper.setSubject("Welcome to Smart Class Physical Facilities (accessed via IoT)");
+            String content = MailContentBuilder.buildPhysicalAccountExisting(name, principalName);
             helper.setText(content, true);
             mailSender.send(message);
             return "OK";

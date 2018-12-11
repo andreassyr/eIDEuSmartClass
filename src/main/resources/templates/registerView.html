@@ -38,78 +38,9 @@
         ============================================= -->
         <div id="wrapper" class="clearfix">
 
-           <!-- Header
-            ============================================= -->
-            <header id="header" class="transparent-header full-header" data-sticky-class="not-dark">
-
-                <div id="header-wrap">
-
-                    <div class="container clearfix" th:switch="${loggedIn == true}">
-
-                        <div id="primary-menu-trigger"><i class="icon-reorder"></i></div>
-
-                        <!-- Logo
-                        ============================================= -->
-                        <div id="logo">
-                            <a href="/" class="standard-logo" data-dark-logo="images/logo-i4m-all.png"><img src="images/logo-i4m-all.png" alt="University of the Aegean - Smart Class Portal"></a>
-                            <!--<a href="/" class="retina-logo" data-dark-logo="images/logo-i4m@2x.png"><img src="images/logo-i4m@2x.png" alt="University of the Aegean - Smart Class Portal"></a>-->
-                        </div>
-
-                        <!-- #logo end -->
-
-                        <!-- #logo end -->
-
-                        <!-- Primary Navigation
-                        ============================================= -->
-
-                        <nav id="primary-menu"  th:case="${false}">
-
-                            <ul>
-                                <li><a href="/"><div>Home</div></a></li>
-                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
-                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
-                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
-                                <li><a onclick="register()" target="_blank"><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Register</div></a></li>
-
-                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
-                                <!--                                <li><a style="margin-top: 1.8em;color: white;" onclick="register()"  class="btn btn-primary d-none d-md-inline-block">Register</a>
-                                                                    <a onclick="register()"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a></li>-->
-                            </ul>
-
-                            </p>
-
-                        </nav>
-
-                        <nav id="primary-menu"  th:case="${true}">
-                            <ul>
-                                <li><a href="/"><div>Home</div></a></li>
-                                <!--                                <li><a href="#"><div>Services</div></a></li>-->
-                                <li><a href="https://docs.google.com/document/d/17EKb0gAhDPDOuCTgolxR5Ydzxa97VywpHzuM_-c4mdk/edit?usp=sharing" target="_blank"><div>About</div></a></li>
-                                <li><a href="https://docs.google.com/document/d/1MeRO2ZI97FC_H12WQiOdnMgvfWJ6i6YGTZ6KGUnD4VU/edit?usp=sharing" target="_blank"><div>eID_EU: What is it?</div></a></li>
-
-                                <!--                                <li><a href="#" target="_blank"><div>Contact</div></a></li>-->
-                                <li><a  href="/profile"><div>Profile</div></a></li>
-                                <li><a href="/logout" ><div style="background-color:blue;color: white;padding:1em;padding: 0 0.5em 0 0.5em; ">Logout</div></a></li>
-
-                                <!--                                <li> <a  style="margin-top: 1.8em;color: white;" href="/logout"  class="btn btn-primary d-none d-md-inline-block">Logout</a>
-                                                                    <a href="/logout"  class="btn btn-primary d-inline-block d-md-none"><i class="icon-lock"></i></a>
-                                                                </li>-->
-                            </ul>
-
-
-                            </p>
-
-                        </nav>
-
-
-                        <!-- #primary-menu end -->
-
-                    </div>
-
-                </div>
-
-            </header><!-- #header end -->
-
+            <!-- Header
+             ============================================= -->
+            <div th:replace="header :: header">This is the header</div>
             <!-- Page Title
                             ============================================= -->
 
@@ -118,6 +49,11 @@
                 <div class="container clearfix">
                     <h1>Account Registration</h1>
                     <!--                    <p>Please fill in the following information to register to the service.</p>-->
+                </div>
+                
+                <div  th:if="${#fields.hasErrors('${user.*}')}" class="container clearfix">
+                    <h3 style="color:red">Please fill in all the required information in the form below</h3>
+
                 </div>
 
             </section>
@@ -134,10 +70,10 @@
 
                     <div class="container clearfix">
 
-					<div class="col_half nobottommargin">
+                        <div class="col_half nobottommargin">
 
                             <div class="fancy-title title-bottom-border">
-							<h3>Terms of Use</h3>
+                                <h3>Terms of Use</h3>
                             </div>
 
                             <p style="font-size: 1.2em;">The fields <b>First Name</b>, <b>Last Name</b> and <b>Date of Birth</b> are provided by your Identity Provider</p>
@@ -149,7 +85,7 @@
 
                         </div>
 
-					<div class="col_half nobottommargin col_last">
+                        <div class="col_half nobottommargin col_last">
 
                             <!--<div id="job-apply" class="heading-block highlight-me">
                                     <h2>Apply Now</h2>
@@ -160,7 +96,7 @@
 
                                 <div class="contact-form-result"></div>
                                 <!--id="template-jobform"-->
-                                <form th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user"  >
+                                <form  id="regForm" th:action="@{/createUser}" th:object="${user}" method="post"  commandName="user"  >
 
                                     <div class="form-process"></div>
 
@@ -174,7 +110,7 @@
                                         <input type="text" id="template-jobform-lname" name="currentFamilyName" th:value="${user.currentFamilyName}" th:readonly="true" class="sm-form-control required" tabindex="2"/>
                                     </div>
 
-                                    <div class="col_full input-daterange travel-date-group bottommargin-sm">
+                                    <div class="col_full input-daterange travel-date-group bottommargin-sm" style="display:none">
                                         <label for="">Date of Birth</label>
                                         <input type="text" name="dateOfBirth" th:value="${user.dateOfBirth}" th:readonly="true" class="form-control tleft format" placeholder="DD-MM-YYYY">
                                     </div>
@@ -187,16 +123,24 @@
                                     <div class="col_full">
                                         <label for="template-jobform-email">Email <small>*</small></label>
                                         <input type="text" id="template-jobform-email" th:field="*{email}"  class="required email sm-form-control" tabindex="5"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">A valid e-mail is required!</i>
+
                                     </div>
 
                                     <div class="col_full">
-                                        <label for="template-jobform-mobile">Mobile <small>*</small></label>
+                                        <label for="template-jobform-mobile" style="margin-bottom: 0em;
+                                               padding-bottom: 0em;">Mobile <small>*</small></label>
+                                        <div style="color: darkgrey;"> <small>e.g. +3069ΧΧΧΧΧΧΧΧ</small></div>    
                                         <input type="text" th:field="*{mobile}"  id="template-jobform-mobile" value="" class="sm-form-control required" tabindex="6"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}">A valid e-mail is required!</i>
                                     </div>
 
                                     <div class="col_full">
-                                        <label for="template-jobform-aff">Affiliation <small>*</small></label>
+                                        <label for="template-jobform-aff" style="margin-bottom: 0em;
+                                               padding-bottom: 0em;">Affiliation <small>*</small></label>
+                                        <div style="color: darkgrey;"><small>H.E.I.L.N.(Higher Education Institution Legal Name, e.g. UAegean) or Company Name or Linkedin</small></div>
                                         <input type="text" th:field="*{affiliation}" id="template-jobform-aff" value="" class="sm-form-control required" tabindex="7"/>
+                                        <i style="color:red" th:if="${#fields.hasErrors('affiliation')}" th:errors="*{affiliation}">A valid e-mail is required!</i>
                                     </div>
 
                                     <input type="text" name="engName" th:value="${user.engName}" th:readonly="true" th:hidden="true"/> 
@@ -457,6 +401,8 @@
                                             <option value="ZM">Zambia</option>
                                             <option value="ZW">Zimbabwe</option>
                                         </select>
+                                        <i style="color:red" th:if="${#fields.hasErrors('country')}" th:errors="*{country}">A valid e-mail is required!</i>
+
                                     </div>
 
                                     <!--                                    <div class="col_full hidden">
@@ -464,7 +410,7 @@
                                                                         </div>-->
 
                                     <div class="col_full">
-                                        <input class="button button-3d button-large btn-block nomargin"  type="submit" value="Submit" />
+                                        <button id="submit" class="button button-3d button-large btn-block nomargin"  onclick="submitForm(event)">Submit</button>
                                         <!--<button class="button button-3d button-large btn-block nomargin" name="template-jobform-apply" type="submit" value="apply">Register</button>-->
                                     </div>
 
@@ -484,78 +430,74 @@
 
             <!-- #content end -->
 
-                    <!-- Footer
-  ============================================= -->
-                    <footer id="footer">
+            <!-- Footer
+============================================= -->
+            <div th:replace="footer :: footer">&copy; 2016 The Static Templates</div>
+            <!-- .footer-widgets-wrap end -->
 
-                        <div class="container">
+        </div>
 
-                            <!-- Footer Widgets
-                    ============================================= -->
-                            <div class="footer-widgets-wrap clearfix row" >
+        <!-- Copyrights
+        ============================================= -->
+        <!-- #copyrights end -->
 
-                                <div class="col-sm-4 col-md-4 col-lg-4">
-                                    <div class="widget clearfix">
-                                        <img src="http://dss.aegean.gr:8080/img/en_cef.jpg" alt="" class="footer-logo">
-                                        <!--                                <p>Co-financed by the European Union Connecting Europe Facility</p>-->
-                                    </div>
-                                </div>
+    </footer>
 
-                                <div class="col-sm-6 col-md-6 col-lg-6">
-                                    <div class="widget clearfix">
-                                        <!--<p><a href="http://www.aegean.gr/" target="_blank">UAegean</a> Online Community Student Program | P2P Communities Project (Software provided by <a href="https://app.teem.works/teems/featured" target="_blank">Teem</a> and <a href="http://swellrt.org/" target="_blank">SwellRT</a>). The use of eIDAS Network for the authentication into UAegean P2P Communities has been funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/A2015/1147836)</p>-->
-                                        <p style="font-size: 0.8rem;">Integration of the UAegean Smart Class Services with the eIDAS Network has been implemented by <a href="http://www.atlantis-group.gr" target="_blank"> UAegean | i4m Lab</a>, and funded by the European Commission (<a href="https://ec.europa.eu/inea/en/connecting-europe-facility/cef-telecom" target="_blank">CEF Programme</a> - Agreement No INEA/CEF/ICT/ A2015/1147836)</p>
-                                    </div>
-                                </div>
+    <!-- #footer end -->
 
-                                <div class="col-sm-2 col-md-2 col-lg-2">
-<!--                                    <img src="images/open-source-initiative.png" alt="" class="footer-logo"   style="margin-bottom: 0;" >
-                                    <p style="font-size: 0.8rem;clear: both;">Developed with Open Source Software (OSS)</p>-->
-                                    <p style="font-size: 0.8rem;clear: both;">Developed with <br> Open Source Software (OSS)</p>
+</div><!-- #wrapper end -->
 
-                                </div>
+<!-- Go To Top
+============================================= -->
+<div id="gotoTop" class="icon-angle-up"></div>
 
-                            </div>
+<!-- External JavaScripts
+============================================= -->
+<script src="js/jquery.js"></script>
+<script src="js/plugins.js"></script>
 
-                            <!-- .footer-widgets-wrap end -->
+<!-- Date & Time Picker JS -->
+<script src="js/components/moment.js"></script>
+<script src="js/datepicker.js"></script>
+<script src="js/components/timepicker.js"></script>
 
-                        </div>
+<!-- Footer Scripts
+============================================= -->
+<script src="js/functions.js"></script>
 
-                        <!-- Copyrights
-                        ============================================= -->
-                        <!-- #copyrights end -->
+<script>
 
-                    </footer>
 
-                    <!-- #footer end -->
+//                                            function submitForm(e) {
+//
+//                                                let aff = $("#template-jobform-aff").val();
+//                                                let email = $("#template-jobform-email").val();
+//                                                let mobile = $("#template-jobform-mobile").val();
+//
+//                                                let form = $("#regForm");
+////                                                if (aff !== "" && aff !== "" && email !== "n/a" && email !== "" && email
+////                                                        && mobile !== "" && mobile) {
+//
+//                                                form.submit();
+////                                                } else {
+////                                                    e.preventDefault();
+////                                                    alert("please fill in all mandatory fields!");
+////                                                }
+//                                            }
+//                                            ;
 
-                </div><!-- #wrapper end -->
+                                            $(function () {
+                                                $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
 
-                <!-- Go To Top
-                ============================================= -->
-                <div id="gotoTop" class="icon-angle-up"></div>
 
-                <!-- External JavaScripts
-                ============================================= -->
-                <script src="js/jquery.js"></script>
-                <script src="js/plugins.js"></script>
-
-                <!-- Date & Time Picker JS -->
-                <script src="js/components/moment.js"></script>
-                <script src="js/datepicker.js"></script>
-                <script src="js/components/timepicker.js"></script>
-
-                <!-- Footer Scripts
-                ============================================= -->
-                <script src="js/functions.js"></script>
-
-                <script>
-                                $(function () {
-                                    $("#side-navigation").tabs({show: {effect: "fade", duration: 400}});
-                                });
-                </script>
+                                            });
 
 
 
-                </body>
-                </html>
+
+</script>
+
+
+
+</body>
+</html>
