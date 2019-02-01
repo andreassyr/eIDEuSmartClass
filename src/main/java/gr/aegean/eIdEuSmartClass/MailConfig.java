@@ -6,6 +6,7 @@
 package gr.aegean.eIdEuSmartClass;
 
 import java.util.Properties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +23,9 @@ public class MailConfig {
     private final static String MAIL_FRIENDLY_NAME = "UAegean Online Communities";
     private final String FROM = "smartclass@aegean.gr";
 
+    @Value("${mail.pass}")
+    private String pass;
+
     @Bean
     public JavaMailSender javaMailService() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
@@ -29,7 +33,7 @@ public class MailConfig {
         javaMailSender.setHost(MAIL_HOST);
         javaMailSender.setPort(587);
         javaMailSender.setUsername("onlinecommunities@aegean.gr");
-        javaMailSender.setPassword("ooo111!!!");
+        javaMailSender.setPassword(pass);
         javaMailSender.setJavaMailProperties(getMailProperties());
         return javaMailSender;
     }

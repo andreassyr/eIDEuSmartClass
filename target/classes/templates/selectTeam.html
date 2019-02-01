@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="author" content="SemiColonWeb" />
+
+        <!-- Stylesheets
+        ============================================= -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <link rel="stylesheet" href="css/dark.css" type="text/css" />
+        <link rel="stylesheet" href="css/font-icons.css" type="text/css" />
+        <link rel="stylesheet" href="css/animate.css" type="text/css" />
+        <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+
+        <link rel="stylesheet" href="css/responsive.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link rel="stylesheet" href="css/colors.css" type="text/css" />
+        <link rel="stylesheet" href="css/custom.css" type="text/css" />
+
+        <!-- Document Title
+        ============================================= -->
+        <title>Online Activities | Smart Class Portal | University of the Aegean</title>
+
+    </head>
+
+    <body class="stretched">
+
+        <!-- Document Wrapper
+        ============================================= -->
+        <div id="wrapper" class="clearfix">
+
+            <!-- Header
+              ============================================= -->
+            <div th:replace="header :: header">This is the header</div>
+
+            <!-- Page Title
+            ============================================= -->
+            <section id="page-title">
+
+                <div class="container clearfix">
+                    <h1>Online Activities</h1>
+                </div>
+
+            </section><!-- #page-title end -->
+
+            <!-- Content
+            ============================================= -->
+            <section id="content">
+
+                <div class="content-wrap">
+
+                    <div class="container clearfix">
+                        <div class="col_full" th:each="team : ${teams}">
+
+                            <div class="CourseList">
+                                <h3 th:text="${team.name}">Programming for Everybody (Getting Started with Python)</h3>
+                                <a  style="color:white;" th:onclick="'team(\'' + ${team.id} + '\');'" class="button button-rounded button-reveal button-small button-myBlue tright"><i class="icon-angle-right"></i><span>Join</span></a>
+                                <div class="line"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+            <!-- #content end -->
+
+            <!-- Footer
+             ============================================= -->
+            <footer id="footer">
+
+                <div class="container">
+
+                    <!-- Footer Widgets
+            ============================================= -->
+                    <div th:replace="footer :: footer">&copy; 2016 The Static Templates</div>
+                    <!-- .footer-widgets-wrap end -->
+
+                </div><!-- #wrapper end -->
+
+                <!-- Go To Top
+                ============================================= -->
+                <div id="gotoTop" class="icon-angle-up"></div>
+
+                <!-- External JavaScripts
+                ============================================= -->
+                <script src="js/jquery.js"></script>
+                <script src="js/plugins.js"></script>
+
+                <!-- Footer Scripts
+                ============================================= -->
+                <script src="js/functions.js"></script>
+
+                <script>
+
+                    function team(teamId) {
+                        setCookieAndRedirect("type", "team-" + teamId, 1);
+                    }
+                    // smart class stuff
+                    function setCookieAndRedirect(name, value, days) {
+                        var expires = "";
+                        if (days) {
+                            var date = new Date();
+                            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                            expires = "; expires=" + date.toUTCString();
+                        }
+                        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                        let typeCookie = getCookie("type");
+                        let authCookie = getCookie("access_token");
+                        if (typeCookie == "" || authCookie == "") {
+//                            window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
+                            window.location.replace(/*[[${loginPath}]]*/'https://eideusmartclass.aegean.gr/eidasLogin/login');
+
+                        } else {
+                            window.location.href = "/eIDASSuccess";
+                        }
+                    }
+
+                    function getCookie(cname) {
+                        var name = cname + "=";
+                        var decodedCookie = decodeURIComponent(document.cookie);
+                        var ca = decodedCookie.split(';');
+                        for (var i = 0; i < ca.length; i++) {
+                            var c = ca[i];
+                            while (c.charAt(0) == ' ') {
+                                c = c.substring(1);
+                            }
+                            if (c.indexOf(name) == 0) {
+                                return c.substring(name.length, c.length);
+                            }
+                        }
+                        return "";
+                    }
+
+
+                </script>
+
+                </body>
+                </html>

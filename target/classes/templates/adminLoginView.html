@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>This is the admin page</div>
+
+
+        <div>
+            You must login to access this page:
+            <button id="roomBtn" onclick="login()">Login with eIDAS</button>
+
+        </div>
+
+
+        <script>
+            function login() {
+                setCookieAndRedirect("type", "admin", 1);
+            }
+
+            function setCookieAndRedirect(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                let typeCookie = getCookie("type");
+                if (typeCookie !== "admin") {
+                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                    window.location.replace("http://eideusmartclass.aegean.gr:9091/login");
+                } else {
+                    window.location.href = "/admin";
+                }
+            }
+
+
+            function getCookie(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="author" content="SemiColonWeb" />
+
+        <!-- Stylesheets
+        ============================================= -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <link rel="stylesheet" href="css/dark.css" type="text/css" />
+        <link rel="stylesheet" href="css/font-icons.css" type="text/css" />
+        <link rel="stylesheet" href="css/animate.css" type="text/css" />
+        <link rel="stylesheet" href="css/magnific-popup.css" type="text/css" />
+        <link rel="stylesheet" href="css/calendar.css" type="text/css" />
+
+        <link rel="stylesheet" href="css/responsive.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link rel="stylesheet" href="css/colors.css" type="text/css" />
+        <link rel="stylesheet" href="css/custom.css" type="text/css" />
+
+        <!-- Document Title
+        ============================================= -->
+        <title>Smart Class IoT: eID passport | Smart Class Portal | University of the Aegean</title>
+
+    </head>
+
+    <body class="stretched bpass">
+
+        <!-- Document Wrapper
+        ============================================= -->
+        <div id="wrapper" class="clearfix">
+
+            <!-- Header
+                        ============================================= -->
+            <div th:replace="header :: header">This is the header</div>
+
+            <!-- Page Title
+            ============================================= -->
+            <section id="page-title">
+
+                <div class="container clearfix">
+                    <h1 style="text-transform: none;">Smart Class IoT: eID Passport</h1>
+                    <h3>UAegean-HP Smart Class at Maria Tsakos Foundation</h3>
+                </div>
+
+            </section><!-- #page-title end -->
+
+
+            <!-- Content
+            ============================================= -->
+            <section id="content">
+                <div class="content-wrap">
+                    <div class="parallax header-stick bottommargin-lg dark" style="padding: 60px 0; background-image: url('images/workstation.jpg'); height: auto;" data-bottom-top="background-position:0px 0px;" data-top-bottom="	background-position:0px -500px;">
+                        <div class="container clearfix">
+                            <div class="tabs divcenter nobottommargin clearfix" id="tab-login-register" style="max-width: 700px;">
+                                <div class="clearfix">
+                                    <div class="card nobottommargin">
+                                        <div class="card-body" style="padding: 40px;">
+
+                                            <h3  style="text-align: center;margin-bottom: 15px;" th:text="${room.name}">Class 365</h3>
+                                            <h4 style="text-align: center">Location: Maria Tsakos Foundation, 51 Michail Livanou, Chios</h4>
+
+                                            <div class="col_full dont-break-out">
+                                                <p><span>Name: </span> <span style="color:white" th:text="${user.currentGivenName}">John</span></p>
+                                            </div>
+
+                                            <div class="col_full dont-break-out">
+                                                <p><span>Surname: </span><span style="color:white" th:text="${user.currentFamilyName}"> Smith</span></p>
+                                            </div>
+
+
+                                            <div class="col_full dont-break-out">
+                                                <p><span style="color:white;font-size: 1.2rem;">PIN: </span> <span style="color:white;font-size: 1.2rem;" th:text="${pin}">445566</span></p>
+                                            </div>
+
+                                            <div class="col_full" style="border-bottom:none;">
+                                                <p style="color:white">QR code: </p>
+                                                <div id="qr" style="padding:0;background-color: #7ca3f6" >
+                                                    <img style="width: auto;" th:src="${qrPath}" width="276" height="276" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col_full nobottommargin" style="border-bottom:none;">
+                                                <div style="margin:auto;width: 13rem;">
+                                                    <a style="width:100%;color:white;font-size: 0.9rem;text-transform: none;" class="button button-3d nomargin"  th:href="${qrPath}" download value="login">Save your eID passport</a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- #content end -->
+
+            <!-- Footer
+                        ============================================= -->
+            <footer id="footer">
+
+                <div class="container">
+
+                    <!-- Footer Widgets
+            ============================================= -->
+                    <div th:replace="footer :: footer">&copy; 2016 The Static Templates</div>
+
+                    <!-- .footer-widgets-wrap end -->
+
+                </div>
+
+                <!-- Copyrights
+                ============================================= -->
+                <!-- #copyrights end -->
+
+            </footer>
+
+            <!-- #footer end -->
+
+        </div>
+        <!-- #wrapper end -->
+
+        <!-- Go To Top
+        ============================================= -->
+        <div id="gotoTop" class="icon-angle-up"></div>
+
+        <!-- External JavaScripts
+        ============================================= -->
+        <script src="js/jquery.js"></script>
+        <script src="js/plugins.js"></script>
+
+        <!-- Footer Scripts
+        ============================================= -->
+        <script src="js/functions.js"></script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,11 @@
+gr/aegean/eIdEuSmartClass/IntegrationServiceTests.class
+gr/aegean/eIdEuSmartClass/wrappers/TestADResponseWrapper.class
+gr/aegean/eIdEuSmartClass/DbIntegrationTests.class
+gr/aegean/eIdEuSmartClass/controllers/TestViewControllers$configView.class
+gr/aegean/eIdEuSmartClass/wrappers/TestUserWrappers.class
+gr/aegean/eIdEuSmartClass/utils/TestValidators$mockConfig.class
+gr/aegean/eIdEuSmartClass/utils/TestValidators.class
+gr/aegean/eIdEuSmartClass/utils/TestGenerators.class
+gr/aegean/eIdEuSmartClass/controllers/TestRestControllers$mockConfig.class
+gr/aegean/eIdEuSmartClass/controllers/TestRestControllers.class
+gr/aegean/eIdEuSmartClass/controllers/TestViewControllers.class
