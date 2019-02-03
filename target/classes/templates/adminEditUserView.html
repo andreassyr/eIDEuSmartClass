@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>This is the edit user view</div>
+
+
+        <p>Name: <input type="text" name="currentGivenName"  th:value="${user.currentGivenName}" th:readonly="true"/></p>
+        <p>Surname: <input type="text"  name="currentFamilyName" th:value="${user.currentFamilyName}" th:readonly="true"/></p>
+        <p>Date of Birth: <input type="text" name="dateOfBirth" th:value="${user.dateOfBirth}" th:readonly="true" /></p>
+        <p>Email: <input type="text" name="email" th:value="${user.email}" th:readonly="true" /></p>
+        <p>Date of Birth: <input type="text" name="email" th:value="${user.email}" th:readonly="true" /></p>
+        <p>affiliation: <input type="text" name="affiliation" th:value="${user.affiliation}" th:readonly="true" /></p>
+        <p>country <input type="text" name="country" th:value="${user.country}" th:readonly="true" /></p>
+
+        <form action="#"  th:object="${user}" method="post"  commandName="user">
+            <input type="text" id= "eID" name="eID" th:value="${user.eid}" th:readonly="true" th:hidden="true"/> 
+            Role: <select id="roleSelect" name="role">
+                <option value=""> -- </option>
+                <option th:each="role : ${roles}"
+                        th:value="${role.name}"
+                        th:utext="${role.name}"/>
+            </select>
+        </form>
+        <p><button id="submit" onclick="save()"> Save</button> </p>
+
+
+        <script>
+
+
+            function save() {
+                let e = document.getElementById("roleSelect");
+                let roleName = e.options[e.selectedIndex].value;
+                let userId = document.getElementById("eID").value;
+
+                var http = new XMLHttpRequest();
+                var url = "../../updateUserRole";
+                var params = "eID=" + userId + "&role=" + roleName;
+                http.open("POST", url, true);
+                //Send the proper header information along with the request
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.onreadystatechange = function () {//Call a function when the state changes.
+                    if (http.readyState == 4 && http.status == 200) {
+                        alert(JSON.parse(http.responseText).status);
+                        if (JSON.parse(http.responseText).status === "OK") {
+                            window.location = "/admin";
+                        }
+                    }
+                }
+                http.send(params);
+            }
+        </script>
+    </body>
+</html>
